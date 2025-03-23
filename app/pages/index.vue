@@ -18,7 +18,6 @@
             <div class="col-span-1 flex flex-col items-center mt-4 order-3 md:order-2">
                 <CalculateButton />
                 <div class="h-16" />
-                <DebugData />
             </div>
 
             <!-- ExcludedChars: Mobile below IncludedChars, Desktop first -->
