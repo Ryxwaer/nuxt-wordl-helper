@@ -30,7 +30,7 @@
                 <Transition name="list-fade" mode="out-in">
                     <ul v-if="words.length" class="space-y-1 list-decimal pl-12 pr-4">
                         <li class="word-appear text-lg tracking-wide font-mono capitalize bg-yellow-500/10 rounded-lg pr-4 pl-4 hover:bg-yellow-500/20 transition cursor-pointer"
-                            v-for="(word, index) in words" :key="index" :style="{ animationDelay: `${index * 30}ms` }"
+                            v-for="(word, index) in words" :key="index" :style="{ animationDelay: `${index <= 64 ? index * 30 : 2000}ms` }"
                             @click="copyToClipboard(word.word)"
                             :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }">
                             {{ word.word }}
