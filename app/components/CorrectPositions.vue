@@ -27,7 +27,7 @@ const wordSize = ref(5);
 state.value.position = Array(wordSize.value).fill("");
 
 function convertCase(index: number) {
-    const letter = state.value.position[index]!;
+    const letter = state.value.position[index]!.toLocaleLowerCase().trim();
     if (/^[a-z]$/.test(letter)) {
         state.value.position[index] = letter;
     }
