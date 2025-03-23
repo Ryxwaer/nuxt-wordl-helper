@@ -3,8 +3,8 @@
 
 @theme {
   --font-sans: 'Public Sans', sans-serif;
-  --color-global-dark: #181a20;
-  --color-global-light: #f0b90b;
+  --color-global-dark: #15181c;
+  --color-global-light: #e6b10b;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));

@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full max-w-5xl min-h-200 mt-16 p-6 bg-white dark:bg-gray-900 rounded-3xl shadow-lg">
+    <div class="w-full max-w-5xl min-h-200 mt-16 p-6 bg-white dark:bg-[var(--color-global-dark)] rounded-3xl shadow-lg">
         <div class="items-center flex flex-col">
             <div class="md:max-w-50 flex flex-col items-center">
                 <CorrectPositions />
