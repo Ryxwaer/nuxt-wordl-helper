@@ -1,0 +1,24 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --font-sans: 'Public Sans', sans-serif;
+  --color-global-dark: #181a20;
+  --color-global-light: #f0b90b;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .custom-bg {
+    @apply bg-white dark:bg-[var(--color-global-dark)] text-gray-900 dark:text-gray-200 transition-colors duration-700 ease-in-out;
+  }
+
+  .custom-card {
+    @apply w-full max-w-4xl p-6 rounded-lg shadow-xl border border-[var(--color-global-light)] bg-gray-200 dark:bg-gray-800 dark:text-gray-200 transition-all duration-700 ease-in-out;
+  }
+
+  .custom-button {
+    @apply px-4 py-2 rounded-lg border border-[var(--color-global-light)] bg-gray-800 hover:bg-gray-700 text-[var(--color-global-light)] transition-all duration-300 shadow-lg;
+  }
+}
