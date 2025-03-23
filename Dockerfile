@@ -1,33 +1,33 @@
-# Build Stage
-FROM node:18-alpine AS build-stage
+ARG NODE_VERSION=20.18.0
 
+FROM node:${NODE_VERSION}-slim as base
+
+# Set environment variables
 ARG DB_URI
 ENV DB_URI=${DB_URI}
 
-WORKDIR /app
+ARG PORT=3000
 
-# Install dependencies
-COPY package*.json ./
+WORKDIR /src
+
+# Build
+FROM base as build
+
+COPY --link package.json package-lock.json .
 RUN npm install
 
-# Copy all project files
-COPY . .
+COPY --link . .
 
-# Build the Nuxt app (for SSR or SSG)
 RUN npm run build
 
-# Production Stage - Run with Node
-FROM node:18-alpine AS production-stage
+# Run
+FROM base
 
-WORKDIR /app
+ENV PORT=$PORT
+ENV NODE_ENV=production
 
-# Copy the built output and node_modules
-COPY --from=build-stage /app/.output ./.output
-COPY --from=build-stage /app/node_modules ./node_modules
-COPY --from=build-stage /app/package*.json ./
+COPY --from=build /src/.output /src/.output
+# Optional, only needed if you rely on unbundled dependencies
+# COPY --from=build /src/node_modules /src/node_modules
 
-# Expose Nuxt default port
-EXPOSE 3000
-
-# Run Nuxt server
-CMD ["node", ".output/server/index.mjs"]
+CMD [ "node", ".output/server/index.mjs" ]

@@ -39,3 +39,6 @@ Thumbs.db
 *.swp
 *.swo
 *.bak
+
+# Build
+.output/
