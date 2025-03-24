@@ -6,7 +6,4 @@
 
 <script setup lang="ts">
 const { state } = useLetters();
-
-const mainWord = ref("HELLO"); // Sample data
-const wordSuggestions = ref(["WORLD", "HOUSE", "PLANE"]);
 </script>

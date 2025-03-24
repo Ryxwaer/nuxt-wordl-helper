@@ -46,8 +46,6 @@
 
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-
 const { getData } = useLetters()
 const words = ref<{ word: string }[]>([])
 const loading = ref(false)

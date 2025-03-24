@@ -3,7 +3,7 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: 'Public Sans', sans-serif;
+  --font-sans: "Public Sans", sans-serif;
   --color-global-dark: #15181c;
   --color-global-light: #e6b10b;
 }
@@ -22,4 +22,13 @@
   .custom-button {
     @apply px-4 py-2 rounded-lg border border-[var(--color-global-light)] bg-gray-800 hover:bg-gray-700 text-[var(--color-global-light)] transition-all duration-300 shadow-lg;
   }
+}
+
+/* Hide default scrollbar */
+.page-id-xx,
+html {
+    scrollbar-width: none; /* FF */
+}
+::-webkit-scrollbar {
+    width: 0px; /* Chrome & Edge */
 }

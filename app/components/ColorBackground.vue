@@ -20,14 +20,13 @@
 
     <!-- Dark Mode Toggle -->
     <button @click="next()" class="absolute top-5 right-5 custom-button">
-      <span class="transition-opacity duration-500 opacity-100 dark:hidden">🌙 Dark Mode</span>
-      <span class="transition-opacity duration-500 opacity-100 hidden dark:inline">☀️ Light Mode</span>
+        <span class="transition-opacity duration-500 opacity-100 dark:hidden">🌙 Dark Mode</span>
+        <span class="transition-opacity duration-500 opacity-100 hidden dark:inline">☀️ Light Mode</span>
     </button>
 </template>
 
 <script setup lang="ts">
 import { useColorMode, useCycleList } from '@vueuse/core';
-import { watchEffect } from 'vue';
 
 const { store } = useColorMode();
 const mode = useColorMode({
