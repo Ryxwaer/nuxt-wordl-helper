@@ -42,9 +42,9 @@ watchEffect(() => {
 
 useHead({
     meta: [
-        { name: 'theme-color', media: '(prefers-color-scheme: light)', content: mode.value === "dark" ? '#111827' : '#ffffff' },
-        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: mode.value === "dark" ? '#ffffff' : '#111827' },
-        { name: 'theme-color', content: mode.value === "dark" ? '#111827' : '#ffffff' },
+        { name: 'theme-color', media: '(prefers-color-scheme: light)', content: store.value === "dark" ? '#000000' : '#ffffff' },
+        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: mode.value === "dark" ? '#000000' : '#ffffff' },
+        { name: 'theme-color', content: mode.value === "dark" ? '#000000' : '#ffffff' },
     ],
 });
 </script>
