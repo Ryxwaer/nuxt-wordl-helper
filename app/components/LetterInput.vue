@@ -7,8 +7,12 @@
         </span>
 
         <!-- Render letters as tags -->
-        <span v-for="(letter, index) in tags" :key="`${letter}-${index}`" :class="[
-            'uppercase w-8 h-8 flex items-center justify-center bg-yellow-500 text-gray-900 rounded-md text-lg font-bold cursor-pointer transition-colors duration-300',
+        <span v-for="(letter, index) in tags" :key="`${letter}-${index}`" 
+        :style="{
+                backgroundColor: flashingLetters.includes(letter) ? 'red' : props.color
+            }"
+        :class="[
+            'uppercase w-8 h-8 flex items-center justify-center bg-yellow-500 text-black rounded-md text-lg font-bold cursor-pointer transition-colors duration-300',
             { 'bg-red-500 text-white': flashingLetters.includes(letter) }
         ]" @click.stop="removeLetter(index)">
             {{ letter }}
@@ -23,7 +27,8 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-    type: 'included' | 'excluded'
+    type: 'included' | 'excluded',
+    color: string
 }>()
 
 const { state, addLetter } = useLetters()

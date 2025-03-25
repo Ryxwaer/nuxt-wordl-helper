@@ -1,7 +1,10 @@
 <template>
     <div class="flex flex-col items-center gap-4">
         <!-- Button -->
-        <button class="px-6 py-2 bg-yellow-500 text-gray-900 rounded-lg hover:bg-yellow-400" @click="fetchWords">
+        <button class="px-6 py-2 text-gray-900 rounded-lg" @click="fetchWords" :disabled="error" :class="{
+            'bg-yellow-500 hover:bg-yellow-400': !error,  // Default color when error is false
+            'bg-gray-500 cursor-not-allowed': error  // Gray color and disabled when error is true
+        }">
             Calculate Words
         </button>
 
@@ -46,12 +49,13 @@
 
 
 <script setup lang="ts">
-const { getData } = useLetters()
+const { getData, state } = useLetters()
 const words = ref<{ word: string }[]>([])
 const loading = ref(false)
 
 const showLoadingDots = computed(() => loading.value && words.value.length === 0)
 const showResultsBox = computed(() => showLoadingDots.value || words.value.length > 0 || (searched.value && !loading.value))
+const error = computed(() => state.value.position.length < state.value.included.length)
 
 const showCopyMessage = ref(false)
 const searched = ref(false)

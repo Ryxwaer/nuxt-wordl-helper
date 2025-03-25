@@ -1,11 +1,14 @@
 <template>
-    <div class="flex mb-4 mt-4" :class="{ 'gap-1': wordSize == 9, 'gap-2': wordSize <= 8 }">
-        <input v-for="(index, i) in Array.from({ length: wordSize })" :key="i" type="text" maxlength="1"
-            v-model="state.position[i]" @input="convertCase(i), moveFocus(i), addLetterToState(i)"
-            @keydown="handleArrowKey($event, i)" @focus="selectText" :ref="`inputs${i}`"
-            class="uppercase w-8 h-10 text-center text-lg bg-yellow-500 text-gray-900 rounded-lg" />
-    </div>
+    <div class="text-sm font-semibold mb-2 text-left dark:text-[var(--color-global-light)]">
+        Exact positions
+        <div class="flex mb-2 mt-2 justify-center" :class="{ 'gap-1': wordSize == 9, 'gap-2': wordSize <= 8 }">
 
+            <input v-for="(index, i) in Array.from({ length: wordSize })" :key="i" type="text" maxlength="1"
+                v-model="state.position[i]" @input="convertCase(i), moveFocus(i), addLetterToState(i)"
+                @keydown="handleArrowKey($event, i)" @focus="selectText" :ref="`inputs${i}`"
+                class="uppercase w-8 h-10 text-center text-lg bg-[#02c076] font-bold text-black rounded-lg" />
+        </div>
+    </div>
     <!-- Range Slider for Word Size -->
     <div class="relative w-full sm:w-64 h-8">
         <!-- Background Track (non-functional visual track) -->
