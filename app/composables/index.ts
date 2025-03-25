@@ -27,6 +27,15 @@ export function useLetters() {
     return true;
   }
 
+  const removeLetter = (letter: string, type: "included" | "excluded"): Boolean => {
+    const index = state.value[type].indexOf(letter);
+    if (index > -1) {
+      state.value[type].splice(index, 1);
+      return true;
+    }
+    return false
+  }
+
   const resetFlashing = () => {
     setTimeout(() => {
       state.value.flashing.shift()
@@ -44,6 +53,7 @@ export function useLetters() {
   return {
     state,
     addLetter,
+    removeLetter,
     setPositional,
     getData,
   }

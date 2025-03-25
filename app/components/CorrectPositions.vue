@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-const { state, addLetter } = useLetters();
+const { state, addLetter, removeLetter } = useLetters();
 const wordSize = ref(5);
 
 state.value.position = Array(wordSize.value).fill("");
@@ -114,6 +114,9 @@ const handleArrowKey = (event: KeyboardEvent, index: number) => {
 
 const addLetterToState = (index: number) => {
     const letter = state.value.position[index]!.toLowerCase();
+    if (state.value.excluded.includes(letter)) {
+        removeLetter(letter, "excluded");
+    }
     if (/^[a-z]$/.test(letter)) {
         addLetter(letter, "included");
     }
