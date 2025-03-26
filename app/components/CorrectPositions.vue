@@ -4,7 +4,7 @@
         <div class="flex mb-2 mt-2 justify-center" :class="{ 'gap-1': wordSize == 9, 'gap-2': wordSize <= 8 }">
 
             <input v-for="(index, i) in Array.from({ length: wordSize })" :key="i" type="text" maxlength="1"
-                v-model="state.position[i]" @input="convertCase(i), moveFocus(i), addLetterToState(i)"
+                v-model="state.position[i]" @input="addLetterToState(i)"
                 @keydown="handleArrowKey($event, i)" @focus="selectText" :ref="`inputs${i}`"
                 class="uppercase w-8 h-10 text-center text-lg bg-[#02c076] font-bold text-black rounded-lg" />
         </div>
@@ -28,16 +28,6 @@ const { state, addLetter, removeLetter } = useLetters();
 const wordSize = ref(5);
 
 state.value.position = Array(wordSize.value).fill("");
-
-function convertCase(index: number) {
-    const letter = state.value.position[index]!.toLocaleLowerCase().trim();
-    if (/^[a-z]$/.test(letter)) {
-        state.value.position[index] = letter;
-    }
-    else {
-        state.value.position[index] = "";
-    }
-}
 
 function selectText(event: any) {
     event.target.select();
@@ -95,15 +85,14 @@ const handleArrowKey = (event: KeyboardEvent, index: number) => {
             prevInput?.focus();
         }
     } else if (event.key === "Backspace") {
+        state.value.position[index] = "";
         if (index > 0) {
-            state.value.position[index] = "";
             const prevInput: HTMLInputElement | undefined = inputs[index - 1];
             setTimeout(() => {
                 prevInput?.focus();
             }, 0);
         }
         else {
-            state.value.position[wordSize.value] = "";
             const prevInput: HTMLInputElement | undefined = inputs[wordSize.value - 1];
             setTimeout(() => {
                 prevInput?.focus();
@@ -113,12 +102,17 @@ const handleArrowKey = (event: KeyboardEvent, index: number) => {
 };
 
 const addLetterToState = (index: number) => {
-    const letter = state.value.position[index]!.toLowerCase();
+    const letter = state.value.position[index]!.toLowerCase().trim();
     if (state.value.excluded.includes(letter)) {
         removeLetter(letter, "excluded");
     }
     if (/^[a-z]$/.test(letter)) {
+        state.value.position[index] = letter;
         addLetter(letter, "included");
+        moveFocus(index);
+    }
+    else {
+        state.value.position[index] = "";
     }
 };
 </script>
