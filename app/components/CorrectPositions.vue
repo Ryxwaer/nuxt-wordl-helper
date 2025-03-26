@@ -85,6 +85,7 @@ const handleArrowKey = (event: KeyboardEvent, index: number) => {
             prevInput?.focus();
         }
     } else if (event.key === "Backspace") {
+        event.preventDefault();
         state.value.position[index] = "";
         if (index > 0) {
             const prevInput: HTMLInputElement | undefined = inputs[index - 1];
