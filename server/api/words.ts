@@ -25,7 +25,20 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    const words = await collection.find(query, { projection: { word: 1, _id: 0 } }).toArray()
+    // MongoDB aggregation to sort by the number of distinct letters in each word
+    const words = await collection.aggregate([
+        { $match: query }, // Apply the query filters
+        {
+            $addFields: {
+                distinctLettersCount: {
+                    $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
+                }
+            }
+        },
+        { $sort: { distinctLettersCount: -1 } }, // Sort by the number of distinct letters in descending order
+        { $project: { word: 1, _id: 0 } } // Only return the word field
+    ]).toArray()
+
     await client.close()
 
     return { words }
