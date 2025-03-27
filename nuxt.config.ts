@@ -4,7 +4,10 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxt/ui',
-    '@nuxt/eslint'
+    '@nuxt/eslint',
+    ['@nuxtjs/google-adsense', {
+      id: 'ca-pub-9591206482674636'
+    }]
   ],
 
   css: ['~/assets/css/main.css'],
