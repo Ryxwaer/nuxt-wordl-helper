@@ -21,4 +21,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     DB_URI: process.env.DB_URI, // accessible server-side only
   },
+
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }
+      ]
+    }
+  }
 })
