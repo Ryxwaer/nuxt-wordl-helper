@@ -8,7 +8,7 @@
 
     <div
       v-if="state.included.length > state.position.length"
-      class="text-[var(--color-primary)] dark:bg-red-800 font-bold rounded-2xl text-center m-2 p-2 -mt-2 motion-preset-bounce"
+      class="text-[var(--color-letters)] dark:bg-red-800 bg-red-600 font-bold rounded-2xl text-center m-2 p-2 -mt-2 motion-preset-bounce"
     >
       Exceeding max letters!
     </div>

@@ -2,11 +2,11 @@
   <div class="flex flex-col items-center gap-4">
     <!-- Button -->
     <button
-      class="px-6 py-2 font-bold text-white dark:text-black rounded-lg hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer"
+      class="px-6 py-2 font-bold text-[var(--color-letters)] rounded-lg"
       @click="fetchWords"
       :disabled="error"
       :class="{
-        'bg-yellow-500 hover:bg-yellow-400': !error,
+        'bg-yellow-500 hover:bg-yellow-400 hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer': !error,
         'bg-gray-500 cursor-not-allowed': error,
       }"
     >

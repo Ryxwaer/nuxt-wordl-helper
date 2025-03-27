@@ -17,7 +17,7 @@
         @keydown="handleArrowKey($event, i)"
         @focus="selectText"
         :ref="`inputs${i}`"
-        class="uppercase w-8 h-10 text-center text-lg bg-[var(--letter-correct)] font-bold text-black rounded-lg motion-preset-shrink"
+        class="uppercase w-8 h-10 text-center text-lg bg-[var(--letter-correct)] font-bold text-[var(--color-letters)] rounded-lg motion-preset-shrink"
       />
     </div>
   </div>

@@ -11,16 +11,18 @@
   --color-form-bg: #1018283f;
   --color-primary: #e6b10b;
   --color-secondary: #f9f9f9;
+  --color-letters: #000000;
   --letter-correct: #02c076;
   --letter-exclude: #474d57;
   --letter-include: #f0b90b;
 }
 
 .light {
-  --color-bg: #ffffff;
-  --color-form-bg: #f9f9f9;
+  --color-bg: #f0f0f0;
+  --color-form-bg: #e0e0e0;
   --color-primary: #000000;
   --color-secondary: #363333;
+  --color-letters: #ffffff;
   --letter-correct: #02c076;
   --letter-exclude: #474d57;
   --letter-include: #f0b90b;

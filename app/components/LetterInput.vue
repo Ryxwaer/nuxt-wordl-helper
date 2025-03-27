@@ -20,7 +20,7 @@
         color: flashingLetters.includes(letter) ? 'white' : '',
       }"
       :class="[
-        'uppercase w-8 h-8 flex items-center justify-center text-white dark:text-black rounded-md text-lg font-bold cursor-pointer transition-colors duration-300',
+        'uppercase w-8 h-8 flex items-center justify-center text-[var(--color-letters)] rounded-md text-lg font-bold cursor-pointer transition-colors duration-300',
         { 'motion-preset-shake': flashingLetters.includes(letter) },
         { 'motion-preset-shrink': recentlyAdded.includes(letter) },
       ]"
