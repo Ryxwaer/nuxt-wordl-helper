@@ -3,32 +3,40 @@
 @import "@nuxt/ui";
 
 @theme {
-  --font-sans: "Public Sans", sans-serif;
-  --color-global-dark: #15181c;
-  --color-global-light: #e6b10b;
+  --font-global: "Public Sans", "sans-serif";
 }
 
-@custom-variant dark (&:where(.dark, .dark *));
+.dark {
+  --color-bg: #15181c;
+  --color-form-bg: #1018283f;
+  --color-primary: #e6b10b;
+  --color-secondary: #f9f9f9;
+  --letter-correct: #02c076;
+  --letter-exclude: #474d57;
+  --letter-include: #f0b90b;
+}
+
+.light {
+  --color-bg: #ffffff;
+  --color-form-bg: #f9f9f9;
+  --color-primary: #000000;
+  --color-secondary: #363333;
+  --letter-correct: #02c076;
+  --letter-exclude: #474d57;
+  --letter-include: #f0b90b;
+}
 
 @layer components {
-  .custom-bg {
-    @apply bg-white dark:bg-[var(--color-global-dark)] text-gray-900 dark:text-gray-200 transition-colors duration-700 ease-in-out;
-  }
-
-  .custom-card {
-    @apply w-full max-w-4xl p-6 rounded-lg shadow-xl border border-[var(--color-global-light)] bg-gray-200 dark:bg-gray-800 dark:text-gray-200 transition-all duration-700 ease-in-out;
-  }
-
   .custom-button {
-    @apply px-4 py-2 rounded-lg border border-[var(--color-global-light)] bg-gray-800 hover:bg-gray-700 text-[var(--color-global-light)] transition-all duration-300 shadow-lg;
+    @apply px-4 py-2 rounded-lg border border-[var(--color-primary)] bg-[var(--color-bg)] hover:bg-[var(--color-secondary)] text-[var(--color-primary)] transition-all duration-300 shadow-lg;
   }
 }
 
 /* Hide default scrollbar */
 .page-id-xx,
 html {
-    scrollbar-width: none; /* FF */
+  scrollbar-width: none; /* FF */
 }
 ::-webkit-scrollbar {
-    width: 0px; /* Chrome & Edge */
+  width: 0px; /* Chrome & Edge */
 }

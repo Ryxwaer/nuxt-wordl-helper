@@ -9,14 +9,15 @@ export function useLetters() {
 
   const addLetter = (letter: string, type: "included" | "excluded"): Boolean => {
 
-    if (state.value.included.includes(letter)) {
-      state.value.flashing.push(letter);
-      resetFlashing();
-      return false;
-    }
-
-    if (state.value.excluded.includes(letter)) {
-      state.value.flashing.push(letter);
+    if (state.value.excluded.includes(letter) || state.value.included.includes(letter)) {
+      const index = state.value.flashing.indexOf(letter);
+      if (index > -1) {
+        state.value.flashing.splice(index, 1);
+      }
+      
+      setTimeout(() => {
+        state.value.flashing.push(letter);
+      }, 0);
       resetFlashing();
       return false;
     }
