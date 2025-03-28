@@ -31,4 +31,7 @@ The application then filters a word list based on these constraints and displays
 
 ## Production
 
-*  Deployed with docker on my portainer server
+*  Deployed with docker on my own server
+*  CI/CD via GitOps polling - Portainer
+*  port:domain mapping and certificates managed via Nginx Proxy Manager
+*  DNS - Cloudflare
