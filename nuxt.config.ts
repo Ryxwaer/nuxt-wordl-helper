@@ -6,7 +6,7 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxt/eslint',
     ['@nuxtjs/google-adsense', {
-      id: 'ca-pub-9591206482674636'
+      id: 'ca-pub-9197371272439471'
     }]
   ],
 
