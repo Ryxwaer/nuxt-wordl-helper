@@ -1,75 +1,37 @@
-# Nuxt UI Starter
+# 🟩🟨⬜ Nuxt Wordle Helper ⬜🟨🟩
 
-Look at [Nuxt docs](https://nuxt.com/docs/getting-started/introduction) and [Nuxt UI docs](https://ui.nuxt.com) to learn more.
+A simple web application built with [Nuxt 3](https://nuxt.com/) to help you find possible solutions for the popular word game Wordle.
 
-## Setup
+- https://wordl.ryxwaer.com/
 
-Make sure to install the dependencies:
+## 🤔 How it Works
 
-```bash
-# npm
-npm install
+This helper allows you to input the information you've gathered from your Wordle guesses:
 
-# pnpm
-pnpm install
+1.  **Correct Letters (Green):** Enter letters that are in the correct position.
+2.  **Present Letters (Yellow):** Enter letters that are in the word but in the wrong position.
+3.  **Absent Letters (Grey):** Mark letters that are not present in the word at all using the interactive keyboard.
 
-# yarn
-yarn install
+The application then filters a word list based on these constraints and displays the possible remaining words that fit the criteria.
 
-# bun
-bun install
-```
+## ✨ Features
 
-## Development Server
+*   Input known letters (correct position, wrong position, absent).
+*   Filters a comprehensive word list based on your input.
+*   Displays potential Wordle solutions (sorted for maximalizing win chance).
+*   Interactive keyboard for easy input of absent letters.
+*   Built with modern web technologies.
 
-Start the development server on `http://localhost:3000`:
+## 🛠️ Tech Stack
 
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
+*   [Nuxt 3](https://nuxt.com/) - The Intuitive Vue Framework
+*   [Tailwind CSS](https://tailwindcss.com/) + tailwilwindcss-motion
+*   [MongoDB](https://www.mongodb.com/) - Words database
+*   [TypeScript](https://www.typescriptlang.org/)
 
 ## Production
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+*  Deployed with docker on my own server
+*  CI/CD via GitOps polling - Portainer
+*  port:domain mapping and certificates managed via Nginx Proxy Manager
+*  DNS - Cloudflare
