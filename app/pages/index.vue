@@ -31,4 +31,17 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup lang="ts">
+useSeoMeta({
+  title: "Wordle & Binance WODL Helper - Find Puzzle Answers",
+  description:
+    "Stuck on today's Wordle or Binance WODL? Use our helper tool to find possible answers based on correct letters, included letters, and excluded letters for both word puzzle games.",
+  ogTitle: "Wordle & Binance WODL Helper - Find Puzzle Answers",
+  ogDescription:
+    "Get help solving Wordle and Binance WODL puzzles. Enter your known letters and find potential solutions instantly for these popular word games.",
+  // Maybe add an og:image pointing to a relevant screenshot or logo in your public/ directory
+  // ogImage: '/images/wordle-helper-promo.png',
+  keywords:
+    "wordle, wordle helper, wordle solver, binance wodl, wodl helper, wodl answers, wodl solver, binance word game, crypto word game, word puzzle, find words, word game answers",
+});
+</script>

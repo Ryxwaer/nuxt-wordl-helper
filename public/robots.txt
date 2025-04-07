@@ -1,0 +1,5 @@
+# START nuxt-robots (indexable)
+ User-agent: *
+
+Sitemap: https://wordl.ryxwaer.com/Sitemap.xml
+# END nuxt-robots

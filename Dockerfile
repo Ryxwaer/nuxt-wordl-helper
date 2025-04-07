@@ -13,19 +13,19 @@ WORKDIR /src
 # Build
 FROM base as build
 
-COPY --link package.json package-lock.json .
+COPY --link package.json package-lock.json ./
 RUN npm install
 
 COPY --link . .
 
-RUN npm run build
+RUN npm run generate
 
-# Run
-FROM base
+# --- Serve Stage ---
+FROM nginx:alpine as final
 
-ENV PORT=$PORT
-ENV NODE_ENV=production
+# Copy static assets from build stage
+COPY --from=build /src/.output/public /usr/share/nginx/html
 
-COPY --from=build /src/.output /src/.output
-
-CMD [ "node", ".output/server/index.mjs" ]
+# Expose port and start Nginx
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
