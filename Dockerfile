@@ -13,7 +13,8 @@ WORKDIR /src
 # Build
 FROM base as build
 
-COPY --link package.json package-lock.json ./
+COPY --link package.json ./
+# package-lock.json is not needed here for cross-arch builds
 RUN npm install
 
 COPY --link . .
