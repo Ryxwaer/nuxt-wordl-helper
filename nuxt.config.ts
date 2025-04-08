@@ -25,7 +25,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Wordle Helper', // Default title if a page doesn't set one
-      titleTemplate: '%s | Wordle Helper', // Appends "| Wordle Helper" to page titles
+      //titleTemplate: '%s | Wordle Helper', // Appends "| Wordle Helper" to page titles
       link: [
         { rel: 'apple-touch-icon', sizes: '57x57', href: '/favicon-57x57.png' },
         { rel: 'apple-touch-icon', sizes: '60x60', href: '/favicon-60x60.png' },

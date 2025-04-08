@@ -17,7 +17,8 @@
       ></div>
     </div>
 
-    <!-- Dark Mode Toggle -->
+    <!-- Dark Mode Toggle - Commented Out -->
+    <!--
     <button @click="next()" class="absolute top-5 right-5 custom-button">
       <span class="transition-opacity duration-500 opacity-100 dark:hidden"
         >🌙 Dark Mode</span
@@ -27,6 +28,7 @@
         >☀️ Light Mode</span
       >
     </button>
+    -->
   </div>
 </template>
 

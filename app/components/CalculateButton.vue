@@ -16,7 +16,7 @@
     <!-- Copy Notification -->
     <div
       :class="[
-        showCopyMessage ? 'motion-preset-expand' : 'motion-opacity-out-0',
+        showCopyMessage ? 'motion-preset-expand' : 'hidden',
         'fixed top-4 z-50 text-center p-2 pl-8 pr-8 bg-gray-500 text-white rounded-lg shadow-lg motion-duration-200',
       ]"
     >

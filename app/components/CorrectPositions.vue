@@ -2,7 +2,9 @@
   <div
     class="text-sm font-semibold mb-2 text-left dark:text-[var(--color-primary)]"
   >
-    Exact positions
+    <h2>
+      Exact positions
+    </h2>
     <div
       class="flex mb-2 mt-2 justify-center"
       :class="{ 'gap-1': wordSize == 9, 'gap-2': wordSize <= 8 }"

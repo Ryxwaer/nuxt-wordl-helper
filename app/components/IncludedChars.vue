@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col items-center">
-    <p class="mb-2 flex items-center">
+    <h2 class="mb-2 flex items-center">
       <span class="mr-2 text-[var(--color-primary)]">Included Letters</span>
       <span class="w-5 h-5 bg-[var(--letter-include)] rounded-md"></span>
-    </p>
+    </h2>
     <LetterInput type="included" color="var(--letter-include)" />
 
     <div
