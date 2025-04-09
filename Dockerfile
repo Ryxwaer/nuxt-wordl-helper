@@ -6,8 +6,6 @@ FROM node:${NODE_VERSION}-slim as base
 ARG DB_URI
 ENV DB_URI=${DB_URI}
 
-ARG PORT=3000
-
 WORKDIR /src
 
 # Build
