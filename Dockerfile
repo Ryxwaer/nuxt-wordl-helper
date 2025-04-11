@@ -1,30 +1,31 @@
-ARG NODE_VERSION=20.18.0
+ARG NODE_VERSION=22
 
-FROM node:${NODE_VERSION}-slim as base
+FROM node:${NODE_VERSION}-alpine AS base
 
 # Set environment variables
 ARG DB_URI
 ENV DB_URI=${DB_URI}
 
+ARG PORT=80
+
 WORKDIR /src
 
 # Build
-FROM base as build
+FROM base AS build
 
-COPY --link package.json ./
-# package-lock.json is not needed here for cross-arch builds
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci
 
-COPY --link . .
+COPY . .
 
-RUN npm run generate
+RUN npm run build
 
-# --- Serve Stage ---
-FROM nginx:alpine as final
+# Run
+FROM base
 
-# Copy static assets from build stage
-COPY --from=build /src/.output/public /usr/share/nginx/html
+ENV PORT=$PORT
+ENV NODE_ENV=production
 
-# Expose port and start Nginx
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /src/.output /src/.output
+
+CMD [ "node", ".output/server/index.mjs" ]
