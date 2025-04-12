@@ -14,7 +14,7 @@ WORKDIR /src
 FROM base AS build
 
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 
