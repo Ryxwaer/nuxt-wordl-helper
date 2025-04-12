@@ -1,6 +1,6 @@
 ARG NODE_VERSION=22
 
-FROM node:${NODE_VERSION}-alpine AS base
+FROM node:${NODE_VERSION}-slim as base
 
 # Set environment variables
 ARG DB_URI
@@ -11,12 +11,12 @@ ARG PORT=80
 WORKDIR /src
 
 # Build
-FROM base AS build
+FROM base as build
 
-COPY package.json package-lock.json ./
+COPY --link package.json package-lock.json ./
 RUN npm install
 
-COPY . .
+COPY --link . .
 
 RUN npm run build
 
