@@ -4,13 +4,13 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: [
-    '@nuxt/ui',
-    '@nuxt/eslint',
-    ['@nuxtjs/google-adsense', {
-      id: 'ca-pub-9197371272439471'
-    }]
-  ],
+  modules: ['@nuxt/ui', '@nuxt/eslint', ['@nuxtjs/google-adsense', {
+    id: 'ca-pub-9197371272439471'
+  }], 'nuxt-gtag'],
+
+  gtag: {
+    id: 'G-B925L39MYV'
+  },
 
   css: ['~/assets/css/main.css'],
 
