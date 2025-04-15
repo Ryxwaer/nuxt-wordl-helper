@@ -18,8 +18,7 @@
     "@nuxt/ui": "^3.0.1",
     "@unhead/vue": "^2.0.5",
     "mongodb": "^6.15.0",
-    "nuxt": "^3.16.1",
-    "nuxt-gtag": "^3.0.2"
+    "nuxt": "^3.16.1"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.2.0",

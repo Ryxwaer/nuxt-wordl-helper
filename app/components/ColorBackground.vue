@@ -33,41 +33,23 @@
 </template>
 
 <script setup lang="ts">
-import { useColorMode, useCycleList } from "@vueuse/core";
-
-const { store } = useColorMode();
-const mode = useColorMode({
-  emitAuto: true,
-  modes: { dark: "dark", light: "light" },
-});
-const { state, next } = useCycleList(["dark", "light"] as const, {
-  initialValue: store.value,
-});
-
-watchEffect(
-  () => {
-    mode.value = state.value;
-    store.value = state.value;
-  },
-  { flush: "sync" }
-);
-
+// Set theme-color meta tag based on system preferences only
 useHead({
   meta: [
     {
       name: "theme-color",
       media: "(prefers-color-scheme: light)",
-      content: store.value === "dark" ? "#000000" : "#ffffff",
+      content: "#ffffff",
     },
     {
       name: "theme-color",
       media: "(prefers-color-scheme: dark)",
-      content: mode.value === "dark" ? "#000000" : "#ffffff",
+      content: "#000000",
     },
     {
       name: "theme-color",
-      content: mode.value === "dark" ? "#000000" : "#ffffff",
-    },
+      content: "#000000",
+    }
   ],
 });
 </script>

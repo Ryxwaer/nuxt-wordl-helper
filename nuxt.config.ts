@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', 'nuxt-gtag', '@nuxt/scripts'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts'],
   scripts: {
     registry: {
       googleAdsense: {
@@ -15,10 +15,6 @@ export default defineNuxtConfig({
         token: '4d5de9c91e9f466e843d81b9daaef673'
       }
     },
-  },
-
-  gtag: {
-    id: 'G-B925L39MYV'
   },
 
   css: ['~/assets/css/main.css'],
