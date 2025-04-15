@@ -22,7 +22,9 @@
           >Ryxwaer</a
         >
       </p>
-      <!-- Removed extra div -->
+      <p class="mt-2">
+        <NuxtLink to="/policy" class="text-blue-500 hover:underline">Privacy Policy</NuxtLink>
+      </p>
     </footer>
   </div>
 </template>
@@ -32,12 +34,15 @@ const route = useRoute()
 
 // Determine link text and target based on current route
 const isOnAboutPage = computed(() => route.path === '/about')
+const isOnPolicyPage = computed(() => route.path === '/policy')
 
 const navLinkText = computed(() => {
-  return isOnAboutPage.value ? 'Back' : 'About'
+  if (isOnAboutPage.value || isOnPolicyPage.value) return 'Back'
+  return 'About'
 })
 
 const navLinkTarget = computed(() => {
-  return isOnAboutPage.value ? '/' : '/about'
+  if (isOnAboutPage.value || isOnPolicyPage.value) return '/'
+  return '/about'
 })
 </script>
