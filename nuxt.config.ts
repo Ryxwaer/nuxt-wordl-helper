@@ -4,9 +4,18 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', ['@nuxtjs/google-adsense', {
-    id: 'ca-pub-9197371272439471'
-  }], 'nuxt-gtag'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', 'nuxt-gtag', '@nuxt/scripts'],
+  scripts: {
+    registry: {
+      googleAdsense: {
+        client: "ca-pub-9197371272439471",
+        autoAds: true,
+      },
+      cloudflareWebAnalytics: {
+        token: '4d5de9c91e9f466e843d81b9daaef673'
+      }
+    },
+  },
 
   gtag: {
     id: 'G-B925L39MYV'
