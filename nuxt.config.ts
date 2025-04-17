@@ -4,7 +4,10 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts', ['@piwikpro/nuxt-piwik-pro', {
+    containerId: "48a0f7d5-b139-4e3d-94f8-62e23b7f1b6d",
+    containerUrl: "https://ryxwaer.containers.piwik.pro",
+  }]],
   scripts: {
     registry: {
       googleAdsense: {
