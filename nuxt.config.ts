@@ -34,8 +34,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Wordle Helper', // Default title if a page doesn't set one
-      //titleTemplate: '%s | Wordle Helper', // Appends "| Wordle Helper" to page titles
+      title: 'Binance WODL Solver & Wordle Helper',
       link: [
         { rel: 'apple-touch-icon', sizes: '57x57', href: '/favicon-57x57.png' },
         { rel: 'apple-touch-icon', sizes: '60x60', href: '/favicon-60x60.png' },
@@ -57,10 +56,11 @@ export default defineNuxtConfig({
       ],
       meta: [
         { charset: 'utf-8' },
-        { property: 'og:title', content: 'Wordle Helper - Find Wordle Answers Fast' },
-        { property: 'og:description', content: 'Filter possible Wordle words based on your guesses.' },
+        { property: 'og:title', content: 'Binance WODL Solver - Find WODL Answers Fast' },
+        { property: 'og:description', content: 'Free Binance WODL solver and Wordle helper tool I created as a personal project. Find possible answers based on your clues.' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Your friendly helper tool for solving Wordle puzzles. Find possible answers quickly and easily.' }, // Default description
+        { name: 'description', content: 'Free Binance WODL solver and Wordle helper I built to help players. Get answers for today\'s WODL puzzle instantly.' },
+        { name: 'keywords', content: 'WODL, Binance WODL, WODL solver, Binance WODL solver, Wordle' },
         { name: 'msapplication-TileColor', content: '#15181c' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
         { name: 'msapplication-config', content: '/browserconfig.xml' },

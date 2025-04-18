@@ -1,15 +1,15 @@
 # START nuxt-robots (indexable)
 User-agent: *
 Allow: /
+Allow: /wodl
+Allow: /about
 Disallow: /debug
-
-# Don't index the privacy policy
 Disallow: /policy
 
 # Allow Google AdSense crawlers
 User-agent: Mediapartners-Google
 Allow: /
 
-# Sitemap location (if you add one in the future)
-# Sitemap: https://wordl.ryxwaer.com/sitemap.xml
+# Sitemap location
+Sitemap: https://wordl.ryxwaer.com/sitemap.xml
 # END nuxt-robots

@@ -31,18 +31,15 @@
 
 <script setup lang="ts">
 const route = useRoute()
-
-// Determine link text and target based on current route
-const isOnAboutPage = computed(() => route.path === '/about')
-const isOnPolicyPage = computed(() => route.path === '/policy')
+const isOnRoot = computed(() => route.path === '/')
 
 const navLinkText = computed(() => {
-  if (isOnAboutPage.value || isOnPolicyPage.value) return 'Back'
-  return 'About'
+  if (isOnRoot.value) return 'About'
+  return 'Solver'
 })
 
 const navLinkTarget = computed(() => {
-  if (isOnAboutPage.value || isOnPolicyPage.value) return '/'
-  return '/about'
+  if (isOnRoot.value) return '/about'
+  return '/'
 })
 </script>

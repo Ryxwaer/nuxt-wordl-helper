@@ -3,7 +3,7 @@
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card -->
     <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)]">
-      Wordle / Binance WODL Helper
+      Wordle & Binance WODL Solver
     </h1>
 
     <!-- Wordle Helper Card Container (remove mt-16) -->
@@ -42,15 +42,38 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "Wordle & Binance WODL Helper",
+  title: "Binance WODL Solver & Wordle Helper | Free Word Game Tool",
   description:
-    "Stuck on today's Wordle or Binance WODL? Use our helper tool to find possible answers based on correct letters, included letters, and excluded letters for both word puzzle games.",
-  ogTitle: "Wordle & Binance WODL Helper",
+    "Free Binance WODL solver and Wordle helper I created. Get instant solutions for today's WODL puzzle. Find possible answers for Binance and NYT word games.",
+  ogTitle: "Binance WODL Solver & Wordle Helper | Find Answers Fast",
   ogDescription:
-    "Get help solving Wordle and Binance WODL puzzles. Enter your known letters and find potential solutions instantly for these popular word games.",
+    "Solve Binance WODL puzzles easily with my free tool. A personal project to help with Binance word game and Wordle with instant word suggestions.",
   // Maybe add an og:image pointing to a relevant screenshot or logo in your public/ directory
   // ogImage: '/images/wordle-helper-promo.png',
   keywords:
-    "wordle, wordle helper, wordle solver, binance wodl, wodl helper, wodl answers, wodl solver, binance word game, crypto word game, word puzzle, find words, word game answers",
+    "WODL, Binance WODL, Binance WODL solver, WODL solver, WODL answer, Binance word game, wordle, wordle helper, wordle solver, wodl helper, wodl answers, crypto word game, word puzzle, find words, word game answers",
 });
+
+// Add JSON-LD structured data for better SEO
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Binance WODL Solver",
+        "url": "https://wordl.ryxwaer.com/",
+        "description": "A free tool I created to help solve Binance WODL and Wordle puzzles by suggesting possible answers based on your clues.",
+        "applicationCategory": "Game, Utility",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      })
+    }
+  ]
+})
 </script>
