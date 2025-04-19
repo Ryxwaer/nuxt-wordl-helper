@@ -6,12 +6,34 @@
       @click="fetchWords"
       :disabled="error"
       :class="{
-        'bg-yellow-500 hover:bg-yellow-400 hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer': !error,
+        'bg-yellow-500 hover:bg-yellow-400 hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer':
+          !error,
         'bg-gray-500 cursor-not-allowed': error,
       }"
     >
       Calculate Words
     </button>
+
+    <!-- Selected Words Box -->
+    <div
+      class="w-full overflow-y-auto border border-yellow-500 rounded-lg p-4 bg-[var(--color-form-bg)] font-bold dark:text-yellow-400 motion-preset-focus-md"
+      :class="{ 'opacity-10': selectedWords.length === 0 }"
+    >
+      <ul class="space-y-1 list-decimal pl-9">
+        <li
+          class="tracking-wide hover:translate-x-4 ease-in-out"
+          v-for="(word, index) in selectedWords"
+          @click="removeFromSelectedWords(word.word)"
+        >
+          <div
+            class="capitalize text-lg tracking-wide font-mono bg-yellow-500/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-yellow-500/20 cursor-pointer motion-preset-focus-md"
+            :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }"
+          >
+            {{ word.word }}
+          </div>
+        </li>
+      </ul>
+    </div>
 
     <!-- Copy Notification -->
     <div
@@ -44,7 +66,7 @@
           class="tracking-wide hover:translate-x-4 transition-transform duration-200 ease-in-out"
           v-for="(word, index) in words"
           :key="index"
-          @click="copyToClipboard(word.word)"
+          @click="selectWord(word.word)"
         >
           <div
             class="capitalize text-lg tracking-wide font-mono bg-yellow-500/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-yellow-500/20 cursor-pointer motion-preset-focus-md"
@@ -73,6 +95,7 @@
 <script setup lang="ts">
 const { getData, state } = useLetters();
 const words = ref<{ word: string }[]>([]);
+const selectedWords = ref<{ word: string }[]>([]);
 const loading = ref(false);
 
 const showLoadingDots = computed(
@@ -101,7 +124,9 @@ const fetchWords = async () => {
       method: "POST",
       body: getData(),
     });
-    words.value = res.words;
+    words.value = res.words.filter(
+      (w) => !selectedWords.value.some((sw) => sw.word === w.word)
+    );
   } catch (error) {
     console.error("Failed to fetch words:", error);
   } finally {
@@ -109,16 +134,25 @@ const fetchWords = async () => {
   }
 };
 
-// Copy word to clipboard and show success message
-const copyToClipboard = async (word: string) => {
-  try {
-    await navigator.clipboard.writeText(word);
-    showCopyMessage.value = true;
-    setTimeout(() => {
-      showCopyMessage.value = false;
-    }, 1000);
-  } catch (error) {
-    console.error("Failed to copy text:", error);
+const removeFromSelectedWords = (word: string) => {
+  const wordObj = selectedWords.value.find((w) => w.word === word);
+  if (wordObj) {
+    selectedWords.value = selectedWords.value.filter((w) => w.word !== word);
+    words.value.push(wordObj);
+  }
+};
+
+const selectWord = async (word: string) => {
+  const wordObj = words.value.find((w) => w.word === word);
+  if (wordObj) {
+    words.value = words.value.filter((w) => w.word !== word);
+    selectedWords.value.push(wordObj);
+  }
+  if (selectedWords.value.length > 6) {
+    const removedWord = selectedWords.value.shift();
+    if (removedWord) {
+      words.value.push(removedWord);
+    }
   }
 };
 </script>
