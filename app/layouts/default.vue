@@ -38,6 +38,11 @@
         <NuxtLink to="/policy" class="text-blue-500 hover:underline">Privacy Policy</NuxtLink>
       </p>
     </footer>
+    
+    <!-- Floating Red Packet (only show when not on the red packet page) -->
+    <ClientOnly>
+      <FloatingRedPacket v-if="!isOnRedPacketPage" />
+    </ClientOnly>
   </div>
 </template>
 
