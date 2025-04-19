@@ -20,10 +20,25 @@
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
         I created this page to help you understand how Binance Red Packet works and make it easier to share with others.
       </p>
-      <a href="https://www.binance.com/en/support/faq/detail/6202e6d8dd5b4119801e0e2ecea22790" 
-         target="_blank" 
-         class="text-blue-500 hover:underline inline-block mt-2">
-        Official Binance Red Packet Guide →
+      <div class="flex flex-wrap gap-4 mt-2">
+        <a href="https://www.binance.com/en/support/faq/detail/6202e6d8dd5b4119801e0e2ecea22790" 
+           target="_blank" 
+           class="text-blue-500 hover:underline inline-block">
+          Official Binance Red Packet Guide →
+        </a>
+      </div>
+    </section>
+
+    <section class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg flex flex-col items-center">
+      <p class="mb-2 text-gray-600 dark:text-gray-400">Direct link:</p>
+      <a href="https://s.binance.com/BEsVAbTg?utm_medium=web_share_copy" 
+           target="_blank" 
+           class="bg-yellow-500 hover:bg-yellow-400 text-white font-bold py-2 px-6 rounded transition duration-300 flex items-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current">
+          <path d="M11 17H7q-2.075 0-3.537-1.463T2 12q0-2.075 1.463-3.537T7 7h4v2H7q-1.25 0-2.125.875T4 12q0 1.25.875 2.125T7 15h4v2Zm-3-4v-2h8v2H8Zm5 4v-2h4q1.25 0 2.125-.875T20 12q0-1.25-.875-2.125T17 9h-4V7h4q2.075 0 3.538 1.463T22 12q0 2.075-1.463 3.538T17 17h-4Z"/>
+        </svg>
+        Claim Red Packet Now!
       </a>
     </section>
 
@@ -43,24 +58,6 @@
           </div>
         </div>
       </div>
-    </section>
-    
-    <section class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
-        🔍 How to Create & Share a Red Packet
-      </h2>
-      <ol class="list-decimal list-inside space-y-3 text-gray-600 dark:text-gray-400 ml-4">
-        <li>Open your <strong>Binance App</strong> and go to the <strong>Pay</strong> section</li>
-        <li>Tap on <strong>Red Packet</strong> and choose <strong>Send</strong></li>
-        <li>Select the cryptocurrency you want to share</li>
-        <li>Choose between <strong>Random</strong> or <strong>Fixed</strong> amounts</li>
-        <li>Set the number of packets and amount</li>
-        <li>Add an optional message and tap <strong>Send</strong></li>
-        <li>Share the Red Packet link or code with friends</li>
-      </ol>
-      <p class="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-        Recipients can claim the Red Packet by entering the code in their Binance app or scanning the QR code.
-      </p>
     </section>
 
     <section class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg">
@@ -88,23 +85,17 @@
             <li>Confirm to claim your crypto</li>
           </ul>
         </li>
+        <li class="mt-4"><strong>Using Direct Link:</strong>
+          <ul class="list-disc list-inside ml-6 mt-2 space-y-1">
+            <li>Click the <strong>Claim This Red Packet Now</strong> button above</li>
+            <li>If you have the Binance App installed, it will open automatically</li>
+            <li>Follow the on-screen instructions to claim your crypto</li>
+          </ul>
+        </li>
       </ol>
       <p class="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
         After claiming, the crypto will be immediately deposited into your Binance wallet. Remember that Red Packets often have limited quantities, so claim them quickly!
       </p>
-    </section>
-
-    <section class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
-        💰 Benefits of Using Red Packets
-      </h2>
-      <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
-        <li>Easy way to share crypto with friends and family</li>
-        <li>Perfect for celebrations, holidays, or introducing others to crypto</li>
-        <li>Recipients don't need to share their wallet addresses</li>
-        <li>Can be distributed randomly or in fixed amounts</li>
-        <li>Fun and interactive way to engage with the crypto community</li>
-      </ul>
     </section>
     
     <div class="mt-8 text-center">
