@@ -35,7 +35,12 @@ export default defineEventHandler(async (event) => {
                 }
             }
         },
-        { $sort: { distinctLettersCount: -1 } }, // Sort by the number of distinct letters in descending order
+        { 
+            $sort: { 
+                rank: -1, // Primary sort by rank in descending order
+                distinctLettersCount: -1 // Secondary sort by distinct letters
+            }
+        },
         { $project: { word: 1, _id: 0 } } // Only return the word field
     ]).toArray()
 
