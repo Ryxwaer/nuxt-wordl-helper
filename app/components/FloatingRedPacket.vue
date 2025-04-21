@@ -47,6 +47,9 @@ const router = useRouter();
 const route = useRoute();
 const isVisible = ref(false);
 
+const appConfig = useAppConfig();
+
+// Navigate to info page (no longer used directly)
 const goToRedPacket = () => {
   router.push("/red-packet");
   closeRedPacket();
@@ -68,9 +71,12 @@ watch(
 
 onMounted(() => {
   if (route.path !== "/red-packet") {
-    setTimeout(() => {
-      isVisible.value = true;
-    }, 5000);
+    const random = Math.random();
+    if (random < appConfig.redPacket.appearChance) {
+      setTimeout(() => {
+        isVisible.value = true;
+      }, 5000);
+    }
   }
 });
 </script>
