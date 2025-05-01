@@ -14,11 +14,11 @@ export default defineAppConfig({
   },
   
   redPacket: {
-    enableNavButton: true,
+    enableNavButton: false,
     code: "BP6OJOBZM7",
     claimLink: "https://s.binance.com/BEsVAbTg?utm_medium=web_share_copy",
     // floating component
+    enableFloatingComponent: false,
     appearChance: 1/5,
-    enableFloatingComponent: true,
   }
 })
