@@ -92,28 +92,32 @@ onMounted(() => {
 
 // Group logs by hour (for daily view)
 const dailyData = computed(() => {
-  const today = new Date().toISOString().slice(0, 10);
+  // Get today's date in local timezone (midnight)
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
   const counts: Record<string, number> = {};
-
+  
   // Initialize all 24 hours with zero counts
   for (let i = 0; i < 24; i++) {
     const hour = i.toString().padStart(2, "0");
     counts[`${hour}:00`] = 0;
   }
-
+  
   // Count logs from today grouped by hour
   props.logs.forEach((log) => {
     const logDate = new Date(log.timestamp);
-    const logDateStr = logDate.toISOString().slice(0, 10);
-
-    // Only include logs from today
-    if (logDateStr === today) {
+    
+    // Check if log is from today (using local timezone comparison)
+    if (logDate >= today && logDate < tomorrow) {
       const hour = logDate.getHours().toString().padStart(2, "0");
       const timeKey = `${hour}:00`;
       counts[timeKey] = (counts[timeKey] || 0) + 1;
     }
   });
-
+  
   const sortedTimes = Object.keys(counts).sort();
   return {
     categories: sortedTimes,
@@ -126,28 +130,38 @@ const dailyData = computed(() => {
 // Group logs by day (for monthly view)
 const monthlyData = computed(() => {
   const counts: Record<string, number> = {};
+  
+  // Calculate date boundaries in local time
   const now = new Date();
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(now.getDate() - 30);
-
-  // Initialize the last 30 days with zero counts
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const thirtyDaysAgo = new Date(today);
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  
+  // Create array of dates for the last 30 days
+  const dateKeys: string[] = [];
   for (let i = 0; i < 30; i++) {
-    const date = new Date();
+    const date = new Date(today);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().slice(0, 10);
-    counts[dateStr] = 0;
+    const dateKey = date.toISOString().slice(0, 10); // Use ISO format for keys
+    dateKeys.push(dateKey);
+    counts[dateKey] = 0;
   }
-
+  
   // Count logs from the last 30 days
   props.logs.forEach((log) => {
     const logDate = new Date(log.timestamp);
     if (logDate >= thirtyDaysAgo) {
+      // Format date in YYYY-MM-DD to use as key
       const dateStr = logDate.toISOString().slice(0, 10);
-      counts[dateStr] = (counts[dateStr] || 0) + 1;
+      if (counts[dateStr] !== undefined) {
+        counts[dateStr] += 1;
+      }
     }
   });
-
-  const sortedDays = Object.keys(counts).sort();
+  
+  // Sort dates in ascending order
+  const sortedDays = dateKeys.sort();
+  
   return {
     categories: sortedDays,
     series: [{ name: "Queries", data: sortedDays.map((day) => counts[day]) }],
@@ -231,6 +245,17 @@ const chartOptions = computed(() => {
       },
       axisBorder: { show: false },
       axisTicks: { show: false },
+      crosshairs: {
+        show: true,
+        width: 1,
+        position: "back",
+        opacity: 0.3,
+        stroke: {
+          color: "var(--color-primary)",
+          width: 1,
+          dashArray: 3,
+        },
+      },
     },
     yaxis: {
       min: 0,
@@ -274,15 +299,14 @@ const chartOptions = computed(() => {
         let displayTime = "";
 
         if (currentMode === "daily") {
-          // Format hour range (e.g., "09:00 - 10:00")
+          // Format hour (e.g., "01:00 AM")
           const hourStr = category.split(":")[0] || "00";
           const hour = parseInt(hourStr);
-          const nextHour = (hour + 1) % 24;
-          displayTime = `${hourStr}:00 - ${nextHour
-            .toString()
-            .padStart(2, "0")}:00`;
+          const ampm = hour >= 12 ? 'PM' : 'AM';
+          const hour12 = hour % 12 || 12; // Convert to 12-hour format
+          displayTime = `${hour12}:00 ${ampm}`;
         } else {
-          // Format date (e.g., "Jan 15")
+          // Format date (e.g., "Aug 15")
           try {
             const date = new Date(category);
             displayTime = date.toLocaleDateString(undefined, {
@@ -295,10 +319,12 @@ const chartOptions = computed(() => {
         }
 
         return `
-          <div class="px-3 py-2 shadow-sm rounded-md">
+          <div class="px-3 py-2 shadow-sm rounded-md bg-white dark:bg-gray-800">
             <div class="font-semibold text-sm text-[var(--color-primary)]">${displayTime}</div>
-            <div class="mt-1.5">
-              <span class="text-sm text-black">queries: <span class="font-bold">${value}</span></span>
+            <div class="mt-1">
+              <span class="text-sm text-gray-900 dark:text-gray-100">
+                <span class="font-bold">${value}</span> ${value === 1 ? 'query' : 'queries'}
+              </span>
             </div>
           </div>
         `;
