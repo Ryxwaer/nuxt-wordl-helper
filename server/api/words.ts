@@ -1,4 +1,15 @@
 import { MongoClient } from 'mongodb'
+import geoip from 'geoip-country'
+
+interface ExtendedLookup extends geoip.Lookup {
+    name?: string;
+    native?: string;
+    continent?: string;
+    continent_name?: string;
+    capital?: string;
+    currency?: string[];
+    languages?: string[];
+}
 
 async function logQueryToDatabase(event: any, queryData: any) {
     try {
@@ -6,14 +17,17 @@ async function logQueryToDatabase(event: any, queryData: any) {
         const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
         const userAgent = getRequestHeader(event, 'user-agent')
 
-        // Get country information
+        // Get country information from cached IP lookup endpoint
         let country = 'Unknown'
         try {
-            const response = await fetch(`https://ipapi.co/${ip}/json/`)
-            const data = await response.json()
-            country = data.country_name || 'Unknown'
+            // Call the IP lookup endpoint with the IP as a query parameter
+            const response = await $fetch('/api/ipLookup', {
+                params: { ip }
+            })
+            country = response.country
         } catch (error) {
-            console.error('Error fetching country:', error)
+            console.error('Error fetching country from lookup endpoint:', error)
+            // If the endpoint fails, we'll use 'Unknown' as the country
         }
 
         // Connect to database and log
@@ -74,8 +88,8 @@ export default defineEventHandler(async (event) => {
                 }
             }
         },
-        { 
-            $sort: { 
+        {
+            $sort: {
                 rank: -1, // Primary sort by rank in descending order
                 distinctLettersCount: -1 // Secondary sort by distinct letters
             }
