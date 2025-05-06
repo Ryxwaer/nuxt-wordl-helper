@@ -20,5 +20,7 @@ export default defineAppConfig({
     // floating component
     enableFloatingComponent: false,
     appearChance: 1/5,
-  }
+  },
+
+  buildDate: new Date().toISOString(),
 })

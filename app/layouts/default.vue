@@ -51,6 +51,7 @@
             >Privacy Policy</NuxtLink
           >
         </p>
+        <p>Last Updated: {{ formattedDate }}</p>
       </div>
       
       <!-- Simple footer for other pages -->
@@ -68,6 +69,7 @@
             >Privacy Policy</NuxtLink
           >
         </p>
+        <p>Last Updated: {{ formattedDate }}</p>
       </div>
     </footer>
 
@@ -90,6 +92,32 @@ const appConfig = useAppConfig();
 
 // Get red packet configuration from app config
 const redPacketConfig = appConfig.redPacket;
+
+// Format the build date for display
+const formattedDate = computed(() => {
+  // Check if buildDate exists and is a valid string
+  const buildDateStr = typeof appConfig.buildDate === 'string' ? 
+    appConfig.buildDate : new Date().toISOString();
+    
+  // Parse the date with a fallback for invalid dates
+  const buildDate = new Date(buildDateStr);
+  
+  // Check if the date is valid
+  if (isNaN(buildDate.getTime())) {
+    return new Date().toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+  
+  // Format as "Month Day, Year" (e.g., "January 15, 2023")
+  return buildDate.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+});
 
 // Check if we're on the home page
 const isOnRoot = computed(() => route.path === "/");
