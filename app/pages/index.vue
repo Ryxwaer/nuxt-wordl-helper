@@ -2,13 +2,13 @@
   <!-- Main page container -->
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card -->
-    <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)]">
+    <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
       Wordle & Binance WODL Solver
     </h1>
 
-    <!-- Wordle Helper Card Container (remove mt-16) -->
+    <!-- Wordle Helper Card Container -->
     <div
-      class="w-full max-w-5xl min-h-200 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg"
+      class="w-full max-w-5xl min-h-200 p-8 rounded-3xl glass-card"
     >
       <div class="items-center flex flex-col">
         <div class="md:max-w-50 flex flex-col items-center">
@@ -17,7 +17,7 @@
       </div>
 
       <!-- Grid layout with column changes on mobile and desktop -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Mobile: ExcludedChars comes after IncludedChars, Desktop: ExcludedChars first -->
         <div class="order-2 md:order-1">
           <ExcludedChars />

@@ -19,28 +19,49 @@
         @keydown="handleArrowKey($event, i)"
         @focus="selectText"
         :ref="`inputs${i}`"
-        class="uppercase w-8 h-10 text-center text-lg bg-[var(--letter-correct)] font-bold text-[var(--color-letters)] rounded-lg motion-preset-shrink"
+        class="uppercase w-8 h-10 text-center text-lg bg-[var(--letter-correct)] font-bold text-[var(--color-letters)] rounded-lg motion-preset-shrink shadow-md shadow-[var(--letter-correct)]/30 transition-shadow duration-200 focus:shadow-lg focus:shadow-[var(--letter-correct)]/50"
       />
     </div>
   </div>
-  <!-- Range Slider for Word Size -->
-  <div class="relative w-full sm:w-64 h-8">
-    <!-- Background Track (non-functional visual track) -->
-    <div
-      class="absolute inset-x-0 top-1/2 transform -translate-y-1/2 w-full h-2 bg-gray-300 rounded-full z-0"
-    ></div>
+  <!-- Range Slider for Word Size with < > buttons -->
+  <div class="flex items-center gap-3 w-full sm:w-auto justify-center">
+    <!-- Decrease Button -->
+    <button
+      @click="decreaseWordSize"
+      :disabled="wordSize <= 3"
+      class="w-10 h-10 flex items-center justify-center rounded-lg border border-[var(--color-primary)]/30 text-[var(--color-primary)] font-bold text-xl transition-all duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 disabled:opacity-30 disabled:cursor-not-allowed"
+    >
+      &lt;
+    </button>
 
-    <!-- Functional Range Slider (this is the real interactive slider) -->
-    <input
-      type="range"
-      min="3"
-      max="10"
-      v-model="wordSize"
-      class="absolute slider w-full h-8 rounded-full appearance-none cursor-pointer focus:outline-none accent-gray-500 z-10"
-    />
+    <!-- Slider Container -->
+    <div class="relative w-40 sm:w-48 h-8">
+      <!-- Background Track (non-functional visual track) -->
+      <div
+        class="absolute inset-x-0 top-1/2 transform -translate-y-1/2 w-full h-2 bg-gray-300 dark:bg-gray-700 rounded-full z-0"
+      ></div>
+
+      <!-- Functional Range Slider (this is the real interactive slider) -->
+      <input
+        type="range"
+        min="3"
+        max="10"
+        v-model="wordSize"
+        class="absolute slider w-full h-8 rounded-full appearance-none cursor-pointer focus:outline-none accent-gray-500 z-10"
+      />
+    </div>
+
+    <!-- Increase Button -->
+    <button
+      @click="increaseWordSize"
+      :disabled="wordSize >= 10"
+      class="w-10 h-10 flex items-center justify-center rounded-lg border border-[var(--color-primary)]/30 text-[var(--color-primary)] font-bold text-xl transition-all duration-200 hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 disabled:opacity-30 disabled:cursor-not-allowed"
+    >
+      &gt;
+    </button>
   </div>
 
-  <p class="dark:text-white dark:font-bold">{{ wordSize }}</p>
+  <p class="dark:text-white dark:font-bold mt-1">{{ wordSize }} letters</p>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +73,18 @@ state.value.position = Array(wordSize.value).fill("");
 function selectText(event: any) {
   event.target.select();
 }
+
+const decreaseWordSize = () => {
+  if (wordSize.value > 3) {
+    wordSize.value--;
+  }
+};
+
+const increaseWordSize = () => {
+  if (wordSize.value < 10) {
+    wordSize.value++;
+  }
+};
 
 watch(wordSize, (newSize) => {
   if (newSize > state.value.position.length) {

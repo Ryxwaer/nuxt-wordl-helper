@@ -1,13 +1,13 @@
 <template>
-  <div class="container mx-auto py-8 max-w-5xl">
+  <div class="container mx-auto py-8 max-w-5xl px-4">
     <h1
-      class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)]"
+      class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]"
     >
       How to Use the Wordle Helper
     </h1>
 
     <section
-      class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg motion-safe:animate-fade-in-up"
+      class="mb-8 p-8 glass-card rounded-3xl motion-safe:animate-fade-in-up"
     >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         🎯 What is Wordle?
@@ -44,7 +44,7 @@
     </section>
 
     <section
-      class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg"
+      class="mb-8 p-8 glass-card rounded-3xl"
     >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         💡 Using the Helper: Step-by-Step
@@ -96,7 +96,7 @@
     </section>
 
     <section
-      class="mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg"
+      class="mb-8 p-8 glass-card rounded-3xl"
     >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         ✨ What This Helper Does For You
@@ -125,7 +125,7 @@
     >
       <NuxtLink
         to="/"
-        class="inline-block bg-yellow-500 hover:bg-yellow-400 text-[var(--color-letters)] font-bold py-2 px-6 rounded-lg transition duration-300"
+        class="inline-block bg-[#f0b90b] hover:bg-[#f8d33a] text-[var(--color-letters)] font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-[#f0b90b]/20 hover:shadow-[#f0b90b]/40 hover:scale-[1.02]"
       >
         Back to Helper
       </NuxtLink>

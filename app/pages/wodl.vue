@@ -2,11 +2,11 @@
   <!-- Main page container -->
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card -->
-    <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)]">
+    <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
       Binance WODL Solver
     </h1>
 
-    <div class="w-full max-w-5xl mb-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg">
+    <div class="w-full max-w-5xl mb-8 p-8 glass-card rounded-3xl">
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         What is Binance WODL?
       </h2>
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Wordle Helper Card Container (redirects to home) -->
-    <div class="w-full max-w-5xl min-h-[200px] p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg flex items-center justify-center">
+    <div class="w-full max-w-5xl min-h-[200px] p-8 glass-card rounded-3xl flex items-center justify-center">
       <div class="flex flex-col items-center justify-center">
         <h2 class="text-2xl font-semibold mb-6 text-gray-700 dark:text-gray-300">
           WODL Solver Tool
@@ -41,7 +41,7 @@
       </div>
     </div>
     
-    <div class="w-full max-w-5xl mt-8 p-6 bg-[var(--color-bg)] rounded-3xl shadow-lg">
+    <div class="w-full max-w-5xl mt-8 p-8 glass-card rounded-3xl">
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         How to Use My Binance WODL Solver
       </h2>
@@ -61,7 +61,7 @@
     >
       <NuxtLink
         to="/"
-        class="inline-block bg-yellow-500 hover:bg-yellow-400 text-[var(--color-letters)] font-bold py-2 px-6 rounded-lg transition duration-300"
+        class="inline-block bg-[#f0b90b] hover:bg-[#f8d33a] text-[var(--color-letters)] font-bold py-3 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-[#f0b90b]/20 hover:shadow-[#f0b90b]/40 hover:scale-[1.02]"
       >
         Back to Helper
       </NuxtLink>

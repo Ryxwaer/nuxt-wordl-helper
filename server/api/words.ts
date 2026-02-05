@@ -78,6 +78,9 @@ export default defineEventHandler(async (event) => {
     // Start logging process asynchronously
     logQueryToDatabase(event, { included, excluded, position })
 
+    // Only return words with rank > 0 (common/known words)
+    query.rank = { $gt: 0 }
+
     // Continue with the main query without waiting for logging
     const words = await collection.aggregate([
         { $match: query }, // Apply the query filters

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-64 min-h-16 md:h-48 border border-yellow-500 bg-[var(--color-form-bg)] text-[var(--color-primary)] rounded-lg p-2 grid grid-cols-6 gap-1 auto-rows-min relative"
+    class="w-64 min-h-16 md:h-48 glass-card-inner text-[var(--color-primary)] rounded-xl p-3 grid grid-cols-6 gap-1.5 auto-rows-min relative cursor-text transition-all duration-300 hover:border-[var(--color-primary)]/30"
     @click="focusInput"
   >
     <!-- Placeholder when empty -->

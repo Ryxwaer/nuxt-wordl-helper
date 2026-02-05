@@ -2,13 +2,13 @@
   <div class="flex flex-col items-center gap-4">
     <!-- Button -->
     <button
-      class="px-6 py-2 font-bold text-[var(--color-letters)] rounded-lg"
+      class="px-8 py-3 font-bold text-[var(--color-letters)] rounded-xl transition-all duration-300"
       @click="fetchWords"
       :disabled="error"
       :class="{
-        'bg-yellow-500 hover:bg-yellow-400 hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer':
+        'bg-[#f0b90b] hover:bg-[#e5b00a] hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer shadow-lg shadow-[#f0b90b]/20 hover:shadow-[#f0b90b]/30':
           !error,
-        'bg-gray-500 cursor-not-allowed': error,
+        'bg-gray-600 cursor-not-allowed opacity-60': error,
       }"
     >
       Calculate Words
@@ -16,17 +16,17 @@
 
     <!-- Selected Words Box -->
     <div
-      class="w-full overflow-y-auto border border-yellow-500 rounded-lg p-4 bg-[var(--color-form-bg)] font-bold dark:text-yellow-400 motion-preset-focus-md"
-      :class="{ 'opacity-10': selectedWords.length === 0 }"
+      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
+      :class="{ 'opacity-20': selectedWords.length === 0 }"
     >
       <ul class="space-y-1 list-decimal pl-9">
         <li
-          class="tracking-wide hover:translate-x-4 ease-in-out"
+          class="tracking-wide hover:translate-x-2 ease-in-out transition-transform duration-200"
           v-for="(word, index) in selectedWords"
           @click="removeFromSelectedWords(word.word)"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono bg-yellow-500/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-yellow-500/20 cursor-pointer motion-preset-focus-md"
+            class="capitalize text-lg tracking-wide font-mono bg-[var(--color-primary)]/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-[var(--color-primary)]/25 cursor-pointer motion-preset-focus-md border border-transparent hover:border-[var(--color-primary)]/20 transition-all duration-200"
             :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }"
           >
             {{ word.word }}
@@ -39,7 +39,7 @@
     <div
       :class="[
         showCopyMessage ? 'motion-preset-expand' : 'hidden',
-        'fixed top-4 z-50 text-center p-2 pl-8 pr-8 bg-gray-500 text-white rounded-lg shadow-lg motion-duration-200',
+        'fixed top-4 z-50 text-center p-3 px-8 bg-[var(--color-bg-solid)] text-[var(--color-primary)] rounded-xl shadow-2xl shadow-black/50 motion-duration-200 border border-[var(--color-primary)]/30 backdrop-blur-lg',
       ]"
     >
       Copied!
@@ -48,12 +48,12 @@
     <!-- Results Box -->
     <div
       v-if="showResultsBox"
-      class="w-full overflow-y-auto border border-yellow-500 rounded-lg p-4 bg-[var(--color-form-bg)] font-bold dark:text-yellow-400 motion-preset-focus-md"
+      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
     >
       <!-- Loading Dots -->
       <div
         v-if="showLoadingDots"
-        class="flex justify-center space-x-2 text-yellow-400 motion-preset-focus-md"
+        class="flex justify-center space-x-2 text-[var(--color-primary)] text-2xl motion-preset-focus-md"
       >
         <span class="motion-preset-oscillate motion-delay-0">.</span>
         <span class="motion-preset-oscillate motion-delay-150">.</span>
@@ -63,13 +63,13 @@
       <!-- Word List -->
       <ul v-if="words.length" class="space-y-1 list-decimal pl-9">
         <li
-          class="tracking-wide hover:translate-x-4 transition-transform duration-200 ease-in-out"
+          class="tracking-wide hover:translate-x-2 transition-transform duration-200 ease-in-out"
           v-for="(word, index) in words"
           :key="index"
           @click="selectWord(word.word)"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono bg-yellow-500/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-yellow-500/20 cursor-pointer motion-preset-focus-md"
+            class="capitalize text-lg tracking-wide font-mono bg-[var(--color-primary)]/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-[var(--color-primary)]/25 cursor-pointer motion-preset-focus-md border border-transparent hover:border-[var(--color-primary)]/20 transition-all duration-200"
             :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }"
             :style="{
               animationDelay: `${index <= 32 ? index * 30 : 1000}ms`,
