@@ -74,6 +74,14 @@
   }
 }
 
+/* Base background color for Safari mobile chrome detection */
+html {
+  background-color: white;
+}
+html.dark {
+  background-color: black;
+}
+
 /* Hide default scrollbar */
 .page-id-xx,
 html {
