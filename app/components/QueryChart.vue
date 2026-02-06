@@ -1,7 +1,7 @@
 <template>
   <div class="relative md:h-[280px] h-[220px]">
     <!-- Skeleton loading state -->
-    <div v-if="isLoading" class="absolute inset-0 p-2 flex flex-col">
+    <div v-if="props.loading" class="absolute inset-0 p-2 flex flex-col">
       <!-- Chart header skeleton -->
       <div class="flex justify-between items-center mb-2 md:mb-4">
         <USkeleton class="h-4 md:h-5 w-24 md:w-32" />
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <!-- Actual chart with pure CSS transition -->
+    <!-- Actual chart -->
     <div v-else class="transition-all duration-300 ease-in-out">
       <client-only>
         <ApexChart
@@ -40,7 +40,7 @@
           height="280"
           type="area"
           :options="chartOptions"
-          :series="chartData.series"
+          :series="chartSeries"
           :key="props.viewMode"
         />
       </client-only>
@@ -49,137 +49,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent, onMounted } from "vue";
-import type { PropType } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 
-// Use the simpler form of defineAsyncComponent and handle loading state in onMounted
 const ApexChart = defineAsyncComponent(() => import("vue3-apexcharts"));
 
-// Define the QueryLog interface
-interface QueryLog {
-  _id: string;
-  timestamp: string;
-  query: {
-    position: string[];
-    included: string[];
-    excluded: string[];
-  };
-  country: string;
-}
+const props = defineProps<{
+  categories: string[];
+  counts: number[];
+  loading: boolean;
+  viewMode: "daily" | "monthly";
+}>();
 
-const props = defineProps({
-  logs: {
-    type: Array as PropType<QueryLog[]>,
-    required: true,
-  },
-  viewMode: {
-    type: String,
-    default: "daily",
-    validator: (value: string) => ["daily", "monthly"].includes(value),
-  },
-});
+// ── Series ────────────────────────────────────────────
+const chartSeries = computed(() => [
+  { name: "Queries", data: props.counts },
+]);
 
-// Loading state
-const isLoading = ref(true);
-
-// Set loading state to false after component mounts
-onMounted(() => {
-  // Add a small timeout to ensure chart has time to load
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 100);
-});
-
-// Group logs by hour (for daily view)
-const dailyData = computed(() => {
-  // Get today's date in local timezone (midnight)
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
-  const counts: Record<string, number> = {};
-  
-  // Initialize all 24 hours with zero counts
-  for (let i = 0; i < 24; i++) {
-    const hour = i.toString().padStart(2, "0");
-    counts[`${hour}:00`] = 0;
-  }
-  
-  // Count logs from today grouped by hour
-  props.logs.forEach((log) => {
-    const logDate = new Date(log.timestamp);
-    
-    // Check if log is from today (using local timezone comparison)
-    if (logDate >= today && logDate < tomorrow) {
-      const hour = logDate.getHours().toString().padStart(2, "0");
-      const timeKey = `${hour}:00`;
-      counts[timeKey] = (counts[timeKey] || 0) + 1;
-    }
-  });
-  
-  const sortedTimes = Object.keys(counts).sort();
-  return {
-    categories: sortedTimes,
-    series: [
-      { name: "Queries", data: sortedTimes.map((time) => counts[time]) },
-    ],
-  };
-});
-
-// Group logs by day (for monthly view)
-const monthlyData = computed(() => {
-  const counts: Record<string, number> = {};
-  
-  // Calculate date boundaries in local time
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const thirtyDaysAgo = new Date(today);
-  thirtyDaysAgo.setDate(today.getDate() - 30);
-  
-  // Create array of dates for the last 30 days
-  const dateKeys: string[] = [];
-  for (let i = 0; i < 30; i++) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const dateKey = date.toISOString().slice(0, 10); // Use ISO format for keys
-    dateKeys.push(dateKey);
-    counts[dateKey] = 0;
-  }
-  
-  // Count logs from the last 30 days
-  props.logs.forEach((log) => {
-    const logDate = new Date(log.timestamp);
-    if (logDate >= thirtyDaysAgo) {
-      // Format date in YYYY-MM-DD to use as key
-      const dateStr = logDate.toISOString().slice(0, 10);
-      if (counts[dateStr] !== undefined) {
-        counts[dateStr] += 1;
-      }
-    }
-  });
-  
-  // Sort dates in ascending order
-  const sortedDays = dateKeys.sort();
-  
-  return {
-    categories: sortedDays,
-    series: [{ name: "Queries", data: sortedDays.map((day) => counts[day]) }],
-  };
-});
-
-// Current chart data based on active view
-const chartData = computed(() => {
-  return props.viewMode === "daily" ? dailyData.value : monthlyData.value;
-});
-
-// Chart options based on view mode
+// ── Options ───────────────────────────────────────────
 const chartOptions = computed(() => {
-  const currentMode = props.viewMode as "daily" | "monthly";
+  const mode = props.viewMode;
 
   return {
     chart: {
-      id: `queries-chart-${currentMode}`,
+      id: `queries-chart-${mode}`,
       toolbar: { show: false },
       zoom: { enabled: false },
       fontFamily: "inherit",
@@ -188,18 +80,12 @@ const chartOptions = computed(() => {
         enabled: true,
         easing: "easeinout",
         speed: 800,
-        animateGradually: {
-          enabled: true,
-          delay: 150,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 350,
-        },
+        animateGradually: { enabled: true, delay: 150 },
+        dynamicAnimation: { enabled: true, speed: 350 },
       },
     },
     title: {
-      text: currentMode === "daily" ? "Today's Queries" : "Last 30 Days",
+      text: mode === "daily" ? "Today's Queries" : "Last 30 Days",
       align: "left",
       style: {
         fontSize: "15px",
@@ -208,38 +94,26 @@ const chartOptions = computed(() => {
       },
     },
     xaxis: {
-      tooltip: {
-        enabled: false,
-      },
-      categories:
-        currentMode === "daily"
-          ? dailyData.value.categories
-          : monthlyData.value.categories,
+      tooltip: { enabled: false },
+      categories: props.categories,
       labels: {
         formatter: (value: string | undefined) => {
-          const safeValue = value || "";
-
-          if (currentMode === "daily") {
-            // Show only every 3 hours
-            const hour = parseInt(safeValue.split(":")[0] || "0");
-            return hour % 3 === 0 ? `${hour.toString().padStart(2, "0")}` : "";
-          } else {
-            // Show only every 5th day
-            try {
-              const date = new Date(safeValue);
-              const day = date.getDate();
-              return day === 1 || day % 5 === 0
-                ? `${day}/${date.getMonth() + 1}`
-                : "";
-            } catch {
-              return "";
-            }
+          const v = value || "";
+          if (mode === "daily") {
+            const hour = parseInt(v.split(":")[0] || "0");
+            return hour % 3 === 0 ? hour.toString().padStart(2, "0") : "";
+          }
+          try {
+            const d = new Date(v);
+            const day = d.getUTCDate();
+            return day === 1 || day % 5 === 0
+              ? `${day}/${d.getUTCMonth() + 1}`
+              : "";
+          } catch {
+            return "";
           }
         },
-        style: {
-          colors: "var(--color-secondary)",
-          fontSize: "11px",
-        },
+        style: { colors: "var(--color-secondary)", fontSize: "11px" },
         rotateAlways: false,
         hideOverlappingLabels: true,
       },
@@ -261,7 +135,7 @@ const chartOptions = computed(() => {
       min: 0,
       tickAmount: 4,
       labels: {
-        formatter: (value: number) => value.toFixed(0),
+        formatter: (v: number) => v.toFixed(0),
         style: { colors: "var(--color-secondary)" },
       },
     },
@@ -290,40 +164,32 @@ const chartOptions = computed(() => {
         seriesIndex: number;
         dataPointIndex: number;
       }) => {
-        const value = series?.[seriesIndex]?.[dataPointIndex] || 0;
-        const category =
-          currentMode === "daily"
-            ? dailyData.value.categories[dataPointIndex] || ""
-            : monthlyData.value.categories[dataPointIndex] || "";
+        const val = series?.[seriesIndex]?.[dataPointIndex] || 0;
+        const cat = props.categories[dataPointIndex] || "";
+        let label = "";
 
-        let displayTime = "";
-
-        if (currentMode === "daily") {
-          // Format hour (e.g., "01:00 AM")
-          const hourStr = category.split(":")[0] || "00";
-          const hour = parseInt(hourStr);
-          const ampm = hour >= 12 ? 'PM' : 'AM';
-          const hour12 = hour % 12 || 12; // Convert to 12-hour format
-          displayTime = `${hour12}:00 ${ampm}`;
+        if (mode === "daily") {
+          const hour = parseInt(cat.split(":")[0] || "0");
+          const ampm = hour >= 12 ? "PM" : "AM";
+          label = `${hour % 12 || 12}:00 ${ampm}`;
         } else {
-          // Format date (e.g., "Aug 15")
           try {
-            const date = new Date(category);
-            displayTime = date.toLocaleDateString(undefined, {
+            const d = new Date(cat + "T00:00:00Z");
+            label = d.toLocaleDateString(undefined, {
               month: "short",
               day: "numeric",
             });
           } catch {
-            displayTime = category;
+            label = cat;
           }
         }
 
         return `
           <div class="px-3 py-2 shadow-sm rounded-md bg-white dark:bg-gray-800">
-            <div class="font-semibold text-sm text-[var(--color-primary)]">${displayTime}</div>
+            <div class="font-semibold text-sm text-[var(--color-primary)]">${label}</div>
             <div class="mt-1">
               <span class="text-sm text-gray-900 dark:text-gray-100">
-                <span class="font-bold">${value}</span> ${value === 1 ? 'query' : 'queries'}
+                <span class="font-bold">${val}</span> ${val === 1 ? "query" : "queries"}
               </span>
             </div>
           </div>
@@ -348,10 +214,7 @@ const chartOptions = computed(() => {
         options: {
           chart: { height: 220 },
           xaxis: {
-            labels: {
-              rotate: -45,
-              style: { fontSize: "10px" },
-            },
+            labels: { rotate: -45, style: { fontSize: "10px" } },
           },
         },
       },

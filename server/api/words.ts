@@ -1,57 +1,53 @@
 import { MongoClient } from 'mongodb'
-import geoip from 'geoip-country'
 
-interface ExtendedLookup extends geoip.Lookup {
-    name?: string;
-    native?: string;
-    continent?: string;
-    continent_name?: string;
-    capital?: string;
-    currency?: string[];
-    languages?: string[];
+interface LogEntry {
+    ip: string
+    userAgent: string | undefined
+    queryData: { included: string[]; excluded: string[]; position: string[] }
 }
 
-async function logQueryToDatabase(event: any, queryData: any) {
-    try {
-        const config = useRuntimeConfig()
-        const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
-        const userAgent = getRequestHeader(event, 'user-agent')
+/**
+ * Fire-and-forget: inserts a log document without blocking the caller.
+ * Accepts pre-extracted request data so the event context is never
+ * accessed after the response has been sent.
+ */
+function logQueryToDatabase(entry: LogEntry) {
+    const { ip, userAgent, queryData } = entry
 
-        // Get country information from cached IP lookup endpoint
-        let country = 'Unknown'
-        try {
-            // Call the IP lookup endpoint with the IP as a query parameter
-            const response = await $fetch('/api/ipLookup', {
-                params: { ip }
+    // Entire chain is intentionally not awaited by the caller
+    resolveCountry(ip)
+        .then(async (country) => {
+            const config = useRuntimeConfig()
+            const client = new MongoClient(config.DB_URI)
+            await client.connect()
+
+            const db = client.db()
+            await db.collection('query_logs').insertOne({
+                timestamp: new Date(),
+                query: queryData,
+                ip,
+                country,
+                userAgent,
             })
-            country = response.country
-        } catch (error) {
-            console.error('Error fetching country from lookup endpoint:', error)
-            // If the endpoint fails, we'll use 'Unknown' as the country
-        }
 
-        // Connect to database and log
-        const client = new MongoClient(config.DB_URI)
-        await client.connect()
-        const db = client.db()
-        const logsCollection = db.collection('query_logs')
-
-        await logsCollection.insertOne({
-            timestamp: new Date(),
-            query: queryData,
-            ip,
-            country,
-            userAgent
+            await client.close()
         })
-
-        await client.close()
-    } catch (error) {
-        console.error('Error in logging process:', error)
-    }
+        .catch((error) => {
+            console.error('Error in logging process:', error)
+        })
 }
 
 export default defineEventHandler(async (event) => {
     const { included, excluded, position } = await readBody(event)
+
+    // Extract request metadata synchronously — event context is still valid here
+    const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
+    const userAgent = getRequestHeader(event, 'user-agent')
+
+    // Fire-and-forget: log asynchronously without blocking the response
+    logQueryToDatabase({ ip, userAgent, queryData: { included, excluded, position } })
+
+    // ── Main word query ──────────────────────────────────
     const config = useRuntimeConfig()
     const client = new MongoClient(config.DB_URI)
     await client.connect()
@@ -75,15 +71,10 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    // Start logging process asynchronously
-    logQueryToDatabase(event, { included, excluded, position })
-
-    // Only return words with rank > 0 (common/known words)
     query.rank = { $gt: 0 }
 
-    // Continue with the main query without waiting for logging
     const words = await collection.aggregate([
-        { $match: query }, // Apply the query filters
+        { $match: query },
         {
             $addFields: {
                 distinctLettersCount: {
@@ -93,11 +84,11 @@ export default defineEventHandler(async (event) => {
         },
         {
             $sort: {
-                rank: -1, // Primary sort by rank in descending order
-                distinctLettersCount: -1 // Secondary sort by distinct letters
+                rank: -1,
+                distinctLettersCount: -1
             }
         },
-        { $project: { word: 1, _id: 0 } } // Only return the word field
+        { $project: { word: 1, _id: 0 } }
     ]).toArray()
 
     await client.close()
