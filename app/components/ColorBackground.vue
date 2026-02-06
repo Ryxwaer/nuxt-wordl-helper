@@ -71,6 +71,35 @@ const { x: renderX, y: renderY, updateTarget } = useSpringPhysics(0.02, 0.28);
 const x = ref(0);
 const y = ref(0);
 
+// Get color mode from Nuxt UI's color-mode module
+const colorMode = useColorMode();
+
+// Theme colors matching the actual background colors
+const LIGHT_THEME_COLOR = '#f8f8f8'; // matches --color-bg-solid in light mode
+const DARK_THEME_COLOR = '#0a0a0a';  // matches dark mode background gradient
+
+// Computed theme color based on current color mode
+const currentThemeColor = computed(() => {
+  // Handle 'system' preference by checking actual preference
+  if (colorMode.value === 'dark') {
+    return DARK_THEME_COLOR;
+  } else if (colorMode.value === 'light') {
+    return LIGHT_THEME_COLOR;
+  }
+  // For 'system' mode, we rely on media queries below
+  return DARK_THEME_COLOR;
+});
+
+// Computed color-scheme value for Safari system UI
+const currentColorScheme = computed(() => {
+  if (colorMode.value === 'dark') {
+    return 'dark';
+  } else if (colorMode.value === 'light') {
+    return 'light';
+  }
+  return 'light dark'; // Support both when using system preference
+});
+
 onMounted(() => {
   if (import.meta.client) {
     window.addEventListener('mousemove', (e) => {
@@ -84,23 +113,31 @@ onMounted(() => {
   }
 });
 
-// Set theme-color meta tag based on system preferences only
+// Set theme-color and color-scheme meta tags for Safari mobile UI
+// Using reactive computed values to update when color mode changes
 useHead({
-  meta: [
+  meta: computed(() => [
+    // color-scheme tells Safari how to style system UI elements (scrollbars, inputs, etc.)
+    {
+      name: "color-scheme",
+      content: currentColorScheme.value,
+    },
+    // theme-color with media queries for system preference fallback
     {
       name: "theme-color",
       media: "(prefers-color-scheme: light)",
-      content: "#ffffff",
+      content: LIGHT_THEME_COLOR,
     },
     {
       name: "theme-color",
       media: "(prefers-color-scheme: dark)",
-      content: "#000000",
+      content: DARK_THEME_COLOR,
     },
+    // Default theme-color based on current mode (for when mode is explicitly set)
     {
       name: "theme-color",
-      content: "#000000",
+      content: currentThemeColor.value,
     }
-  ],
+  ]),
 });
 </script>

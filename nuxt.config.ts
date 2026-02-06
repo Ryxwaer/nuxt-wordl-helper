@@ -61,10 +61,15 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Free Binance WODL solver and Wordle helper I built to help players. Get answers for today\'s WODL puzzle instantly.' },
         { name: 'keywords', content: 'WODL, Binance WODL, WODL solver, Binance WODL solver, Wordle' },
-        { name: 'msapplication-TileColor', content: '#15181c' },
+        { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
         { name: 'msapplication-config', content: '/browserconfig.xml' },
-        { name: 'theme-color', content: '#15181c' }
+        // color-scheme for Safari system UI elements (fallback before JS loads)
+        { name: 'color-scheme', content: 'light dark' },
+        // theme-color with media queries for Safari mobile UI
+        { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f8f8f8' },
+        { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0a0a0a' },
+        { name: 'theme-color', content: '#0a0a0a' }
       ],
       htmlAttrs: {
         lang: 'en'
