@@ -39,14 +39,15 @@
     @apply px-4 py-2 rounded-xl border border-[var(--color-primary)]/30 text-[var(--color-primary)] transition-all duration-300;
     background: var(--color-bg);
     backdrop-filter: blur(12px);
-    box-shadow: 
+    box-shadow:
       0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
+
   .custom-button:hover {
     border-color: var(--color-primary);
-    box-shadow: 
+    box-shadow:
       0 10px 15px -3px rgba(0, 0, 0, 0.1),
       0 4px 6px -2px rgba(0, 0, 0, 0.05),
       0 0 20px var(--glow-primary),
@@ -59,12 +60,12 @@
     background: var(--color-bg);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(240, 185, 11, 0.1);
-    box-shadow: 
+    box-shadow:
       0 25px 50px -12px rgba(0, 0, 0, 0.4),
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 0 80px -20px var(--glow-primary);
   }
-  
+
   .glass-card-inner {
     background: var(--color-form-bg);
     backdrop-filter: blur(8px);
@@ -76,10 +77,13 @@
 /* Hide default scrollbar */
 .page-id-xx,
 html {
-  scrollbar-width: none; /* FF */
+  scrollbar-width: none;
+  /* FF */
 }
+
 ::-webkit-scrollbar {
-  width: 0px; /* Chrome & Edge */
+  width: 0px;
+  /* Chrome & Edge */
 }
 
 /* Smooth focus transitions for text inputs */

@@ -6,7 +6,7 @@
       @click="fetchWords"
       :disabled="error"
       :class="{
-        'bg-[#f0b90b] hover:bg-[#e5b00a] hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer shadow-lg shadow-[#f0b90b]/20 hover:shadow-[#f0b90b]/30':
+        'bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 hover:motion-preset-pulse-sm motion-ease-spring-smooth motion-duration-1000 cursor-pointer shadow-lg shadow-[var(--color-primary)]/20 hover:shadow-[var(--color-primary)]/30':
           !error,
         'bg-gray-600 cursor-not-allowed opacity-60': error,
       }"
@@ -48,7 +48,7 @@
     <!-- Results Box -->
     <div
       v-if="showResultsBox"
-      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
+      class="w-full max-h-[50vh] overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
     >
       <!-- Loading Dots -->
       <div

@@ -2,7 +2,7 @@ export default defineAppConfig({
   // https://ui3.nuxt.dev/getting-started/theme#design-system
   ui: {
     colors: {
-      primary: 'emerald',
+      primary: 'yellow',
       neutral: 'slate',
     },
     button: {
@@ -12,14 +12,14 @@ export default defineAppConfig({
       }
     }
   },
-  
+
   redPacket: {
     enableNavButton: false,
     code: "BP6OJOBZM7",
     claimLink: "https://s.binance.com/BEsVAbTg?utm_medium=web_share_copy",
     // floating component
     enableFloatingComponent: false,
-    appearChance: 1/5,
+    appearChance: 1 / 5,
   },
 
   buildDate: new Date().toISOString(),

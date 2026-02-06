@@ -6,9 +6,10 @@
       How to Use the Wordle Helper
     </h1>
 
-    <section
-      class="mb-8 p-8 glass-card rounded-3xl motion-safe:animate-fade-in-up"
-    >
+    <GlowBorder class="mb-8">
+      <section
+        class="p-8 glass-card rounded-3xl motion-safe:animate-fade-in-up text-left"
+      >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         🎯 What is Wordle?
       </h2>
@@ -41,11 +42,13 @@
       <p class="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
         This helper uses those clues to suggest possible answers!
       </p>
-    </section>
+      </section>
+    </GlowBorder>
 
-    <section
-      class="mb-8 p-8 glass-card rounded-3xl"
-    >
+    <GlowBorder class="mb-8">
+      <section
+        class="p-8 glass-card rounded-3xl text-left"
+      >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         💡 Using the Helper: Step-by-Step
       </h2>
@@ -93,11 +96,13 @@
         entered. The list is sorted to suggest words that might help you guess
         the answer faster!
       </p>
-    </section>
+      </section>
+    </GlowBorder>
 
-    <section
-      class="mb-8 p-8 glass-card rounded-3xl"
-    >
+    <GlowBorder class="mb-8">
+      <section
+        class="p-8 glass-card rounded-3xl text-left"
+      >
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         ✨ What This Helper Does For You
       </h2>
@@ -119,6 +124,7 @@
         <li>Simple and easy-to-use interface.</li>
       </ul>
     </section>
+    </GlowBorder>
 
     <div
       class="mt-8 text-center"

@@ -196,7 +196,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 5px solid #f0b90b;
+  border: 5px solid var(--color-primary);
   background: transparent;
   cursor: pointer;
 }
@@ -205,7 +205,7 @@ input[type="range"]::-moz-range-thumb {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 5px solid #f0b90b;
+  border: 5px solid var(--color-primary);
   background: transparent;
   cursor: pointer;
 }

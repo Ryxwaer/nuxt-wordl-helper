@@ -6,7 +6,7 @@
     <!-- Placeholder when empty -->
     <span
       v-if="tags.length === 0"
-      class="absolute left-2 top-2 dark:text-yellow-500 opacity-50 text-sm"
+      class="absolute left-2 top-2 dark:text-[var(--color-primary)] opacity-50 text-sm"
     >
       Type {{ type }} letters
     </span>
@@ -33,7 +33,7 @@
     <input
       ref="inputField"
       v-model="inputLetter"
-      class="w-8 h-8 text-lg text-yellow-400 bg-transparent outline-none text-center"
+      class="w-8 h-8 text-lg text-[var(--color-primary)] bg-transparent outline-none text-center"
       @input="tryAddLetter"
       @keydown="handleKeydown"
       placeholder=""

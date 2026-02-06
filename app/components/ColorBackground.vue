@@ -44,10 +44,46 @@
       <!-- Vignette effect -->
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]"></div>
     </div>
+
+    <!-- Mouse Glow Effect (Overlay on top of backgrounds) -->
+    <div
+      class="pointer-events-none absolute top-0 left-0 z-10 w-[500px] h-[500px] transition-opacity duration-300 mix-blend-screen"
+      :style="{
+        transform: `translate3d(${renderX}px, ${renderY}px, 0) translate(-50%, -50%)`,
+        willChange: 'transform'
+      }"
+    >
+      <div 
+        class="w-full h-full opacity-100 blur-[80px]"
+        style="
+            background: radial-gradient(circle at 60% 40%, var(--glow-primary), transparent 60%);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+        "
+      ></div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// Use shared physics with critical damping tuning
+const { x: renderX, y: renderY, updateTarget } = useSpringPhysics(0.02, 0.28);
+
+const x = ref(0);
+const y = ref(0);
+
+onMounted(() => {
+  if (import.meta.client) {
+    window.addEventListener('mousemove', (e) => {
+      // Just pass raw coordinates to the physics engine
+      // We don't need local x/y tracking here anymore really, 
+      // but let's keep it simple.
+      updateTarget(e.clientX, e.clientY);
+      x.value = e.clientX;
+      y.value = e.clientY;
+    });
+  }
+});
+
 // Set theme-color meta tag based on system preferences only
 useHead({
   meta: [
