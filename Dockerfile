@@ -28,4 +28,8 @@ ENV NODE_ENV=production
 
 COPY --from=build /src/.output /src/.output
 
+# geoip-country loads a .dat file via fs.readFileSync at runtime.
+# Nitro's file tracer only copies JS/JSON, so we copy the data file explicitly.
+COPY --from=build /src/node_modules/geoip-country/data/ /src/.output/server/node_modules/geoip-country/data/
+
 CMD [ "node", ".output/server/index.mjs" ]
