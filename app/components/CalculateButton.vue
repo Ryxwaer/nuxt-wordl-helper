@@ -24,10 +24,16 @@
           class="tracking-wide hover:translate-x-2 ease-in-out transition-transform duration-200"
           v-for="(word, index) in selectedWords"
           @click="removeFromSelectedWords(word.word)"
+          :class="{ 'opacity-35': !word.rank || word.rank < 1 }"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono bg-[var(--color-primary)]/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-[var(--color-primary)]/25 cursor-pointer motion-preset-focus-md border border-transparent hover:border-[var(--color-primary)]/20 transition-all duration-200"
-            :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }"
+            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer motion-preset-focus-md border border-transparent transition-all duration-200"
+            :class="[
+              words.length > 100 ? 'p-0' : 'p-1',
+              !word.rank || word.rank < 1
+                ? 'bg-base-300/30 hover:bg-base-300/50 hover:border-base-content/10'
+                : 'bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/25 hover:border-[var(--color-primary)]/20',
+            ]"
           >
             {{ word.word }}
           </div>
@@ -67,10 +73,16 @@
           v-for="(word, index) in words"
           :key="index"
           @click="selectWord(word.word)"
+          :class="{ 'opacity-35': !word.rank || word.rank < 1 }"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono bg-[var(--color-primary)]/10 rounded-lg pr-4 pl-4 ml-4 mr-4 hover:bg-[var(--color-primary)]/25 cursor-pointer motion-preset-focus-md border border-transparent hover:border-[var(--color-primary)]/20 transition-all duration-200"
-            :class="{ 'p-0': words.length > 100, 'p-1': words.length <= 100 }"
+            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer motion-preset-focus-md border border-transparent transition-all duration-200"
+            :class="[
+              words.length > 100 ? 'p-0' : 'p-1',
+              !word.rank || word.rank < 1
+                ? 'bg-base-300/30 hover:bg-base-300/50 hover:border-base-content/10'
+                : 'bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/25 hover:border-[var(--color-primary)]/20',
+            ]"
             :style="{
               animationDelay: `${index <= 32 ? index * 30 : 1000}ms`,
               animationFillMode: 'both',
@@ -94,8 +106,8 @@
 
 <script setup lang="ts">
 const { getData, state } = useLetters();
-const words = ref<{ word: string }[]>([]);
-const selectedWords = ref<{ word: string }[]>([]);
+const words = ref<{ word: string; rank: number }[]>([]);
+const selectedWords = ref<{ word: string; rank: number }[]>([]);
 const loading = ref(false);
 
 const showLoadingDots = computed(
@@ -120,7 +132,7 @@ const fetchWords = async () => {
   searched.value = true;
 
   try {
-    const res = await $fetch<{ words: { word: string }[] }>("/api/words", {
+    const res = await $fetch<{ words: { word: string; rank: number }[] }>("/api/words", {
       method: "POST",
       body: getData(),
     });

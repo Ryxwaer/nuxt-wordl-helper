@@ -71,24 +71,24 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    query.rank = { $gt: 0 }
-
     const words = await collection.aggregate([
         { $match: query },
         {
             $addFields: {
                 distinctLettersCount: {
                     $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
-                }
+                },
+                hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
             }
         },
         {
             $sort: {
+                hasRank: -1,
                 rank: -1,
                 distinctLettersCount: -1
             }
         },
-        { $project: { word: 1, _id: 0 } }
+        { $project: { word: 1, rank: 1, _id: 0 } }
     ]).toArray()
 
     await client.close()
