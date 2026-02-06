@@ -7,9 +7,9 @@
     </h1>
 
     <!-- Wordle Helper Card Container -->
-    <GlowBorder class="w-full max-w-5xl">
       <div
-        class="w-full min-h-200 p-8 rounded-3xl glass-card"
+        v-glow
+        class="w-full max-w-5xl min-h-200 p-8 rounded-3xl glass-card"
       >
         <div class="items-center flex flex-col">
           <div class="md:max-w-50 flex flex-col items-center">
@@ -38,7 +38,6 @@
           </div>
         </div>
       </div>
-    </GlowBorder>
   </div>
 </template>
 

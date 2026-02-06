@@ -6,7 +6,8 @@
       Query Logs
     </h1>
 
-    <div class="bg-[var(--color-bg)] rounded-3xl shadow-lg mb-8">
+    <!-- Chart card -->
+    <div v-glow class="bg-[var(--color-bg)] rounded-3xl shadow-lg mb-8">
       <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
           Queries Over Time
@@ -33,11 +34,12 @@
         </div>
       </div>
       <div class="px-6 py-5">
-        <QueryChart :logs="logs" :viewMode="viewMode" />
+        <QueryChart :logs="allLogs" :viewMode="viewMode" />
       </div>
     </div>
 
-    <div class="bg-[var(--color-bg)] rounded-3xl shadow-lg p-6">
+    <!-- Logs table card -->
+    <div v-glow class="bg-[var(--color-bg)] rounded-3xl shadow-lg p-6">
       <!-- Desktop View -->
       <div class="hidden md:block">
         <table class="min-w-full">
@@ -173,21 +175,63 @@
           </div>
         </div>
       </div>
+
+      <!-- Pagination Controls -->
+      <div
+        v-if="totalPages > 1"
+        class="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+      >
+        <button
+          :disabled="currentPage <= 1"
+          class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          @click="goToPage(currentPage - 1)"
+        >
+          ← Prev
+        </button>
+
+        <!-- Page numbers -->
+        <template v-for="p in visiblePages" :key="p">
+          <span v-if="p === '...'" class="px-2 text-gray-400">…</span>
+          <button
+            v-else
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-300"
+            :class="p === currentPage
+              ? 'bg-[var(--color-primary)] text-white shadow-sm'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'"
+            @click="goToPage(p as number)"
+          >
+            {{ p }}
+          </button>
+        </template>
+
+        <button
+          :disabled="currentPage >= totalPages"
+          class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          @click="goToPage(currentPage + 1)"
+        >
+          Next →
+        </button>
+      </div>
+
+      <!-- Summary -->
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
+        Showing {{ (currentPage - 1) * LOGS_PER_PAGE + 1 }}–{{ Math.min(currentPage * LOGS_PER_PAGE, totalLogs) }}
+        of {{ totalLogs }} logs
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import QueryChart from '~/components/QueryChart.vue'
+// ── Constants ──────────────────────────────────────────
+const LOGS_PER_PAGE = 25
 
-// View mode state - 'daily' or 'monthly'
+// ── View mode state ────────────────────────────────────
 const viewMode = ref('daily')
 
-// Toggle view with transition effect
 const toggleView = (mode: 'daily' | 'monthly') => {
-  if (viewMode.value === mode) return;
-  viewMode.value = mode;
+  if (viewMode.value === mode) return
+  viewMode.value = mode
 }
 
 useHead({
@@ -196,20 +240,85 @@ useHead({
   ]
 })
 
+// ── Types ──────────────────────────────────────────────
 interface QueryLog {
-  _id: string;
-  timestamp: string;
+  _id: string
+  timestamp: string
   query: {
-    position: string[];
-    included: string[];
-    excluded: string[];
-  };
-  country: string;
+    position: string[]
+    included: string[]
+    excluded: string[]
+  }
+  country: string
 }
 
-const { data: logsData } = await useFetch<{ logs: QueryLog[] }>('/api/logs')
-const logs = computed(() => logsData.value?.logs || [])
+interface LogsResponse {
+  logs: QueryLog[]
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
 
+// ── Pagination state ───────────────────────────────────
+const currentPage = ref(1)
+
+const { data: logsData, refresh } = await useFetch<LogsResponse>('/api/logs', {
+  query: computed(() => ({
+    page: currentPage.value,
+    limit: LOGS_PER_PAGE,
+  })),
+})
+
+const logs = computed(() => logsData.value?.logs || [])
+const totalPages = computed(() => logsData.value?.totalPages || 1)
+const totalLogs = computed(() => logsData.value?.total || 0)
+
+// We still need all logs for the chart — fetch once without pagination
+const { data: allLogsData } = await useFetch<LogsResponse>('/api/logs', {
+  query: { limit: 1000, page: 1 },
+  key: 'all-logs-chart',
+})
+const allLogs = computed(() => allLogsData.value?.logs || [])
+
+// ── Page navigation ────────────────────────────────────
+const goToPage = (page: number) => {
+  if (page < 1 || page > totalPages.value) return
+  currentPage.value = page
+  // Scroll to top of table
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// Build the visible page numbers with ellipsis
+const visiblePages = computed(() => {
+  const total = totalPages.value
+  const current = currentPage.value
+  const pages: (number | string)[] = []
+
+  if (total <= 7) {
+    for (let i = 1; i <= total; i++) pages.push(i)
+    return pages
+  }
+
+  // Always show first page
+  pages.push(1)
+
+  if (current > 3) pages.push('...')
+
+  // Pages around current
+  const start = Math.max(2, current - 1)
+  const end = Math.min(total - 1, current + 1)
+  for (let i = start; i <= end; i++) pages.push(i)
+
+  if (current < total - 2) pages.push('...')
+
+  // Always show last page
+  pages.push(total)
+
+  return pages
+})
+
+// ── Helpers ────────────────────────────────────────────
 const formatDate = (date: string) => {
   return new Date(date).toLocaleString(undefined, {
     year: 'numeric',

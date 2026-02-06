@@ -65,11 +65,10 @@
 </template>
 
 <script setup lang="ts">
+import { subscribeMouseMove } from '~/utils/globalMouse';
+
 // Use shared physics with critical damping tuning
 const { x: renderX, y: renderY, updateTarget } = useSpringPhysics(0.02, 0.28);
-
-const x = ref(0);
-const y = ref(0);
 
 // Get color mode from Nuxt UI's color-mode module
 const colorMode = useColorMode();
@@ -80,13 +79,11 @@ const DARK_THEME_COLOR = '#0a0a0a';  // matches dark mode background gradient
 
 // Computed theme color based on current color mode
 const currentThemeColor = computed(() => {
-  // Handle 'system' preference by checking actual preference
   if (colorMode.value === 'dark') {
     return DARK_THEME_COLOR;
   } else if (colorMode.value === 'light') {
     return LIGHT_THEME_COLOR;
   }
-  // For 'system' mode, we rely on media queries below
   return DARK_THEME_COLOR;
 });
 
@@ -97,20 +94,20 @@ const currentColorScheme = computed(() => {
   } else if (colorMode.value === 'light') {
     return 'light';
   }
-  return 'light dark'; // Support both when using system preference
+  return 'light dark';
 });
 
+// Subscribe to the shared global mouse (ONE listener for the whole app)
+let unsubMouse: (() => void) | null = null;
+
 onMounted(() => {
-  if (import.meta.client) {
-    window.addEventListener('mousemove', (e) => {
-      // Just pass raw coordinates to the physics engine
-      // We don't need local x/y tracking here anymore really, 
-      // but let's keep it simple.
-      updateTarget(e.clientX, e.clientY);
-      x.value = e.clientX;
-      y.value = e.clientY;
-    });
-  }
+  unsubMouse = subscribeMouseMove((mx, my) => {
+    updateTarget(mx, my);
+  });
+});
+
+onUnmounted(() => {
+  unsubMouse?.();
 });
 
 // Set theme-color and color-scheme meta tags for Safari mobile UI
