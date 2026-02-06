@@ -64,9 +64,9 @@ export default defineNuxtConfig({
         { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
         { name: 'msapplication-config', content: '/browserconfig.xml' },
-        // color-scheme for Safari system UI elements (fallback before JS loads)
+        // SSR fallbacks — keep in sync with --color-bg-solid in main.css
+        // At runtime, ColorBackground.vue overwrites these from CSS variables
         { name: 'color-scheme', content: 'light dark' },
-        // theme-color with media queries for Safari mobile UI
         { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f8f8f8' },
         { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#0a0a0a' },
         { name: 'theme-color', content: '#0a0a0a' }
