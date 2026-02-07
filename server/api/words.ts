@@ -3,7 +3,13 @@ import { MongoClient } from 'mongodb'
 interface LogEntry {
     ip: string
     userAgent: string | undefined
+    isMobile: boolean
     queryData: { included: string[]; excluded: string[]; position: string[] }
+}
+
+/** Detect mobile devices from the User-Agent string. */
+function isMobileUA(ua: string | undefined): boolean {
+    return /Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua || '')
 }
 
 /**
@@ -12,7 +18,7 @@ interface LogEntry {
  * accessed after the response has been sent.
  */
 function logQueryToDatabase(entry: LogEntry) {
-    const { ip, userAgent, queryData } = entry
+    const { ip, userAgent, isMobile, queryData } = entry
 
     // Entire chain is intentionally not awaited by the caller
     resolveCountry(ip)
@@ -28,6 +34,7 @@ function logQueryToDatabase(entry: LogEntry) {
             ip,
             country,
                 userAgent,
+                isMobile,
         })
 
         await client.close()
@@ -45,7 +52,8 @@ export default defineEventHandler(async (event) => {
     const userAgent = getRequestHeader(event, 'user-agent')
 
     // Fire-and-forget: log asynchronously without blocking the response
-    logQueryToDatabase({ ip, userAgent, queryData: { included, excluded, position } })
+    const isMobile = isMobileUA(userAgent)
+    logQueryToDatabase({ ip, userAgent, isMobile, queryData: { included, excluded, position } })
 
     // ── Main word query ──────────────────────────────────
     const config = useRuntimeConfig()

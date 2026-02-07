@@ -136,18 +136,25 @@ const glowDirective: ObjectDirective<HTMLElement, GlowOptions | undefined> = {
     const overlay = createOverlay()
     el.appendChild(overlay)
 
+    // Start off-screen so the radial-gradient mask hides the overlay entirely
+    // until the mouse actually moves near this element.
+    const OFF = -9999
+
     const state: GlowState = {
       overlay,
       el,
-      x: 0,
-      y: 0,
-      targetX: 0,
-      targetY: 0,
+      x: OFF,
+      y: OFF,
+      targetX: OFF,
+      targetY: OFF,
       velocityX: 0,
       velocityY: 0,
       ...opts,
       unsubMouse: null,
     }
+
+    // Apply initial off-screen mask so nothing is visible on mount
+    applyMask(state)
 
     // Subscribe to the shared global mouse (ONE listener for the whole app)
     state.unsubMouse = subscribeMouseMove((mx, my) => {

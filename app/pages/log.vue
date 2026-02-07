@@ -56,6 +56,7 @@
           </div>
           <USkeleton class="h-4 w-16" />
           <USkeleton class="h-4 w-16" />
+          <USkeleton class="h-4 w-4 rounded-sm" />
         </div>
       </div>
 
@@ -70,6 +71,7 @@
               <th class="px-4 py-2 text-left">Position</th>
               <th class="px-4 py-2 text-left">Included</th>
               <th class="px-4 py-2 text-left">Excluded</th>
+              <th class="px-4 py-2 w-10"></th>
             </tr>
           </thead>
           <tbody>
@@ -132,6 +134,21 @@
                   </div>
                 </div>
               </td>
+
+              <!-- Device indicator -->
+              <td class="px-4 py-2 text-gray-400 dark:text-gray-500" :title="log.isMobile ? 'Mobile' : 'Desktop'">
+                <!-- Mobile: phone icon -->
+                <svg v-if="log.isMobile" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                </svg>
+                <!-- Desktop: monitor icon -->
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -144,13 +161,24 @@
           :key="log._id"
           class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4"
         >
-          <!-- Timestamp and Country -->
+          <!-- Timestamp, Country & Device -->
           <div class="flex justify-between items-center mb-3">
             <div class="text-sm text-gray-500 dark:text-gray-400">
               {{ formatDate(log.timestamp) }}
             </div>
-            <div class="text-sm font-medium">
-              {{ log.country }}
+            <div class="flex items-center gap-1.5 text-sm font-medium">
+              <span class="text-gray-400 dark:text-gray-500">
+                <svg v-if="log.isMobile" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                  <line x1="12" y1="18" x2="12.01" y2="18" />
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+              </span>
+              <span>{{ log.country }}</span>
             </div>
           </div>
 
@@ -238,6 +266,11 @@
         Showing {{ (currentPage - 1) * LOGS_PER_PAGE + 1 }}–{{ Math.min(currentPage * LOGS_PER_PAGE, totalLogs) }}
         of {{ totalLogs }} logs
       </div>
+
+      <!-- Date range for current page -->
+      <div v-if="logs.length" class="text-center text-xs text-gray-400 dark:text-gray-500 mt-1">
+        {{ formatDateFull(logs[logs.length - 1].timestamp) }} — {{ formatDateFull(logs[0].timestamp) }}
+      </div>
       </template>
     </div>
   </div>
@@ -263,6 +296,7 @@ interface QueryLog {
     excluded: string[]
   }
   country: string
+  isMobile: boolean
 }
 
 interface LogsResponse {
@@ -369,11 +403,18 @@ const visiblePages = computed(() => {
 // ── Helpers ────────────────────────────────────────────
 const formatDate = (date: string) => {
   return new Date(date).toLocaleString(undefined, {
-    year: 'numeric',
     month: 'short',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+  })
+}
+
+const formatDateFull = (date: string) => {
+  return new Date(date).toLocaleString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   })
 }
 </script>
