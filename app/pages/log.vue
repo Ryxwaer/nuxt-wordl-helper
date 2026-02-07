@@ -13,20 +13,20 @@
           Queries Over Time
         </h3>
         <div class="flex space-x-2">
-          <button
-            @click="toggleView('daily')"
+          <button 
+            @click="toggleView('daily')" 
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-300"
-            :class="viewMode === 'daily'
-              ? 'bg-[var(--color-primary)] text-white shadow-sm transform scale-105'
+            :class="viewMode === 'daily' 
+              ? 'bg-[var(--color-primary)] text-white shadow-sm transform scale-105' 
               : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'"
           >
             Daily
           </button>
-          <button
-            @click="toggleView('monthly')"
+          <button 
+            @click="toggleView('monthly')" 
             class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-300"
-            :class="viewMode === 'monthly'
-              ? 'bg-[var(--color-primary)] text-white shadow-sm transform scale-105'
+            :class="viewMode === 'monthly' 
+              ? 'bg-[var(--color-primary)] text-white shadow-sm transform scale-105' 
               : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'"
           >
             Monthly
@@ -60,184 +60,184 @@
       </div>
 
       <template v-else>
-        <!-- Desktop View -->
-        <div class="hidden md:block">
-          <table class="min-w-full">
-            <thead>
-              <tr class="border-b border-gray-200 dark:border-gray-700">
-                <th class="px-4 py-2 text-left">Time</th>
-                <th class="px-4 py-2 text-left">Country</th>
-                <th class="px-4 py-2 text-left">Position</th>
-                <th class="px-4 py-2 text-left">Included</th>
-                <th class="px-4 py-2 text-left">Excluded</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="log in logs"
-                :key="log._id"
-                class="border-b border-gray-200 dark:border-gray-700"
+      <!-- Desktop View -->
+      <div class="hidden md:block">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th class="px-4 py-2 text-left">Time</th>
+              <th class="px-4 py-2 text-left">Country</th>
+              <th class="px-4 py-2 text-left">Position</th>
+              <th class="px-4 py-2 text-left">Included</th>
+              <th class="px-4 py-2 text-left">Excluded</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="log in logs"
+              :key="log._id"
+              class="border-b border-gray-200 dark:border-gray-700"
+            >
+              <!-- Timestamp -->
+              <td
+                class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap"
               >
-                <!-- Timestamp -->
-                <td
-                  class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap"
-                >
-                  {{ formatDate(log.timestamp) }}
-                </td>
-
-                <!-- Country -->
-                <td class="px-4 py-2 text-sm">
-                  {{ log.country }}
-                </td>
-
-                <!-- Position Letters -->
-                <td class="px-4 py-2">
-                  <div class="flex gap-2 uppercase">
-                    <div
-                      v-for="(letter, index) in log.query.position"
-                      :key="index"
-                      class="w-8 h-8 flex items-center justify-center text-lg font-bold rounded-lg"
-                      :class="{
-                        'bg-[var(--letter-correct)] text-white': letter,
-                        'bg-gray-200 dark:bg-gray-700': !letter,
-                      }"
-                    >
-                      {{ letter || " " }}
-                    </div>
-                  </div>
-                </td>
-
-                <!-- Included Letters -->
-                <td class="px-4 py-2">
-                  <div class="flex flex-wrap gap-2 uppercase">
-                    <div
-                      v-for="letter in log.query.included"
-                      :key="letter"
-                      class="px-2 py-1 bg-[var(--letter-include)] text-white rounded-lg text-sm font-bold"
-                    >
-                      {{ letter }}
-                    </div>
-                  </div>
-                </td>
-
-                <!-- Excluded Letters -->
-                <td class="px-4 py-2">
-                  <div class="flex flex-wrap gap-2 uppercase">
-                    <div
-                      v-for="letter in log.query.excluded"
-                      :key="letter"
-                      class="px-2 py-1 bg-[var(--letter-exclude)] text-white rounded-lg text-sm font-bold"
-                    >
-                      {{ letter }}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile View -->
-        <div class="md:hidden space-y-4">
-          <div
-            v-for="log in logs"
-            :key="log._id"
-            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4"
-          >
-            <!-- Timestamp and Country -->
-            <div class="flex justify-between items-center mb-3">
-              <div class="text-sm text-gray-500 dark:text-gray-400">
                 {{ formatDate(log.timestamp) }}
-              </div>
-              <div class="text-sm font-medium">
+              </td>
+
+              <!-- Country -->
+              <td class="px-4 py-2 text-sm">
                 {{ log.country }}
+              </td>
+
+              <!-- Position Letters -->
+              <td class="px-4 py-2">
+                <div class="flex gap-2 uppercase">
+                  <div
+                    v-for="(letter, index) in log.query.position"
+                    :key="index"
+                    class="w-8 h-8 flex items-center justify-center text-lg font-bold rounded-lg"
+                    :class="{
+                      'bg-[var(--letter-correct)] text-white': letter,
+                      'bg-gray-200 dark:bg-gray-700': !letter,
+                    }"
+                  >
+                    {{ letter || " " }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- Included Letters -->
+              <td class="px-4 py-2">
+                <div class="flex flex-wrap gap-2 uppercase">
+                  <div
+                    v-for="letter in log.query.included"
+                    :key="letter"
+                    class="px-2 py-1 bg-[var(--letter-include)] text-white rounded-lg text-sm font-bold"
+                  >
+                    {{ letter }}
+                  </div>
+                </div>
+              </td>
+
+              <!-- Excluded Letters -->
+              <td class="px-4 py-2">
+                <div class="flex flex-wrap gap-2 uppercase">
+                  <div
+                    v-for="letter in log.query.excluded"
+                    :key="letter"
+                    class="px-2 py-1 bg-[var(--letter-exclude)] text-white rounded-lg text-sm font-bold"
+                  >
+                    {{ letter }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile View -->
+      <div class="md:hidden space-y-4">
+        <div
+          v-for="log in logs"
+          :key="log._id"
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4"
+        >
+          <!-- Timestamp and Country -->
+          <div class="flex justify-between items-center mb-3">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
+              {{ formatDate(log.timestamp) }}
+            </div>
+            <div class="text-sm font-medium">
+              {{ log.country }}
+            </div>
+          </div>
+
+          <!-- Query Display -->
+          <div class="space-y-3">
+            <!-- Position Letters -->
+            <div class="flex gap-2">
+              <div
+                v-for="(letter, index) in log.query.position"
+                :key="index"
+                class="w-10 h-10 flex items-center justify-center text-xl font-bold rounded-lg"
+                :class="{
+                  'bg-[var(--letter-correct)] text-white': letter,
+                  'bg-gray-200 dark:bg-gray-700': !letter,
+                }"
+              >
+                {{ letter || " " }}
               </div>
             </div>
 
-            <!-- Query Display -->
-            <div class="space-y-3">
-              <!-- Position Letters -->
-              <div class="flex gap-2">
-                <div
-                  v-for="(letter, index) in log.query.position"
-                  :key="index"
-                  class="w-10 h-10 flex items-center justify-center text-xl font-bold rounded-lg"
-                  :class="{
-                    'bg-[var(--letter-correct)] text-white': letter,
-                    'bg-gray-200 dark:bg-gray-700': !letter,
-                  }"
-                >
-                  {{ letter || " " }}
-                </div>
+            <!-- Included Letters -->
+            <div v-if="log.query.included.length" class="flex flex-wrap gap-2">
+              <div
+                v-for="letter in log.query.included"
+                :key="letter"
+                class="px-2 py-1 bg-[var(--letter-include)] text-white rounded-lg text-sm font-bold"
+              >
+                {{ letter }}
               </div>
+            </div>
 
-              <!-- Included Letters -->
-              <div v-if="log.query.included.length" class="flex flex-wrap gap-2">
-                <div
-                  v-for="letter in log.query.included"
-                  :key="letter"
-                  class="px-2 py-1 bg-[var(--letter-include)] text-white rounded-lg text-sm font-bold"
-                >
-                  {{ letter }}
-                </div>
-              </div>
-
-              <!-- Excluded Letters -->
-              <div v-if="log.query.excluded.length" class="flex flex-wrap gap-2">
-                <div
-                  v-for="letter in log.query.excluded"
-                  :key="letter"
-                  class="px-2 py-1 bg-[var(--letter-exclude)] text-white rounded-lg text-sm font-bold"
-                >
-                  {{ letter }}
-                </div>
+            <!-- Excluded Letters -->
+            <div v-if="log.query.excluded.length" class="flex flex-wrap gap-2">
+              <div
+                v-for="letter in log.query.excluded"
+                :key="letter"
+                class="px-2 py-1 bg-[var(--letter-exclude)] text-white rounded-lg text-sm font-bold"
+              >
+                {{ letter }}
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Pagination Controls -->
-        <div
-          v-if="totalPages > 1"
-          class="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+      <!-- Pagination Controls -->
+      <div
+        v-if="totalPages > 1"
+        class="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700"
+      >
+        <button
+          :disabled="currentPage <= 1"
+          class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          @click="goToPage(currentPage - 1)"
         >
+          ← Prev
+        </button>
+
+        <!-- Page numbers -->
+        <template v-for="p in visiblePages" :key="p">
+          <span v-if="p === '...'" class="px-2 text-gray-400">…</span>
           <button
-            :disabled="currentPage <= 1"
-            class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
-            @click="goToPage(currentPage - 1)"
+            v-else
+            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-300"
+            :class="p === currentPage
+              ? 'bg-[var(--color-primary)] text-white shadow-sm'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'"
+            @click="goToPage(p as number)"
           >
-            ← Prev
+            {{ p }}
           </button>
+        </template>
 
-          <!-- Page numbers -->
-          <template v-for="p in visiblePages" :key="p">
-            <span v-if="p === '...'" class="px-2 text-gray-400">…</span>
-            <button
-              v-else
-              class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-300"
-              :class="p === currentPage
-                ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'"
-              @click="goToPage(p as number)"
-            >
-              {{ p }}
-            </button>
-          </template>
+        <button
+          :disabled="currentPage >= totalPages"
+          class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+          @click="goToPage(currentPage + 1)"
+        >
+          Next →
+        </button>
+      </div>
 
-          <button
-            :disabled="currentPage >= totalPages"
-            class="custom-button px-3 py-1.5 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
-            @click="goToPage(currentPage + 1)"
-          >
-            Next →
-          </button>
-        </div>
-
-        <!-- Summary -->
-        <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
-          Showing {{ (currentPage - 1) * LOGS_PER_PAGE + 1 }}–{{ Math.min(currentPage * LOGS_PER_PAGE, totalLogs) }}
-          of {{ totalLogs }} logs
-        </div>
+      <!-- Summary -->
+      <div class="text-center text-sm text-gray-500 dark:text-gray-400 mt-3">
+        Showing {{ (currentPage - 1) * LOGS_PER_PAGE + 1 }}–{{ Math.min(currentPage * LOGS_PER_PAGE, totalLogs) }}
+        of {{ totalLogs }} logs
+      </div>
       </template>
     </div>
   </div>

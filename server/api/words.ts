@@ -17,23 +17,23 @@ function logQueryToDatabase(entry: LogEntry) {
     // Entire chain is intentionally not awaited by the caller
     resolveCountry(ip)
         .then(async (country) => {
-            const config = useRuntimeConfig()
-            const client = new MongoClient(config.DB_URI)
-            await client.connect()
+        const config = useRuntimeConfig()
+        const client = new MongoClient(config.DB_URI)
+        await client.connect()
 
-            const db = client.db()
+        const db = client.db()
             await db.collection('query_logs').insertOne({
-                timestamp: new Date(),
-                query: queryData,
-                ip,
-                country,
+            timestamp: new Date(),
+            query: queryData,
+            ip,
+            country,
                 userAgent,
-            })
+        })
 
-            await client.close()
+        await client.close()
         })
         .catch((error) => {
-            console.error('Error in logging process:', error)
+        console.error('Error in logging process:', error)
         })
 }
 

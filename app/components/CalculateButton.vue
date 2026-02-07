@@ -16,29 +16,33 @@
 
     <!-- Selected Words Box -->
     <div
-      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
+      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
       :class="{ 'opacity-20': selectedWords.length === 0 }"
     >
-      <ul class="space-y-1 list-decimal pl-9">
+      <TransitionGroup
+        tag="ul"
+        name="word-list"
+        class="space-y-1 list-decimal pl-9 relative"
+      >
         <li
-          class="tracking-wide hover:translate-x-2 ease-in-out transition-transform duration-200"
-          v-for="(word, index) in selectedWords"
+          v-for="word in selectedWords"
+          :key="word.word"
+          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out will-change-transform"
           @click="removeFromSelectedWords(word.word)"
-          :class="{ 'opacity-35': !word.rank || word.rank < 1 }"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer motion-preset-focus-md border border-transparent transition-all duration-200"
+            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer border border-transparent transition-[background-color,border-color] duration-200 ease-out"
             :class="[
               words.length > 100 ? 'p-0' : 'p-1',
               !word.rank || word.rank < 1
-                ? 'bg-base-300/30 hover:bg-base-300/50 hover:border-base-content/10'
+                ? 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 hover:border-gray-500/30'
                 : 'bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/25 hover:border-[var(--color-primary)]/20',
             ]"
           >
             {{ word.word }}
           </div>
         </li>
-      </ul>
+      </TransitionGroup>
     </div>
 
     <!-- Copy Notification -->
@@ -54,7 +58,7 @@
     <!-- Results Box -->
     <div
       v-if="showResultsBox"
-      class="w-full max-h-[50vh] overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)] motion-preset-focus-md"
+      class="w-full max-h-[50vh] overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
     >
       <!-- Loading Dots -->
       <div
@@ -67,36 +71,39 @@
       </div>
 
       <!-- Word List -->
-      <ul v-if="words.length" class="space-y-1 list-decimal pl-9">
+      <TransitionGroup
+        v-if="words.length"
+        tag="ul"
+        name="word-list"
+        class="space-y-1 list-decimal pl-9 relative"
+        @before-enter="onBeforeEnter"
+        @enter="onEnter"
+      >
         <li
-          class="tracking-wide hover:translate-x-2 transition-transform duration-200 ease-in-out"
           v-for="(word, index) in words"
-          :key="index"
+          :key="word.word"
+          :data-index="index"
+          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out will-change-transform"
           @click="selectWord(word.word)"
-          :class="{ 'opacity-35': !word.rank || word.rank < 1 }"
         >
           <div
-            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer motion-preset-focus-md border border-transparent transition-all duration-200"
+            class="capitalize text-lg tracking-wide font-mono rounded-lg pr-4 pl-4 ml-4 mr-4 cursor-pointer border border-transparent transition-[background-color,border-color] duration-200 ease-out"
             :class="[
               words.length > 100 ? 'p-0' : 'p-1',
               !word.rank || word.rank < 1
-                ? 'bg-base-300/30 hover:bg-base-300/50 hover:border-base-content/10'
+                ? 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30 hover:border-gray-500/30'
                 : 'bg-[var(--color-primary)]/10 hover:bg-[var(--color-primary)]/25 hover:border-[var(--color-primary)]/20',
             ]"
-            :style="{
-              animationDelay: `${index <= 32 ? index * 30 : 1000}ms`,
-              animationFillMode: 'both',
-            }"
           >
             {{ word.word }}
           </div>
         </li>
-      </ul>
+      </TransitionGroup>
 
       <!-- Empty State -->
       <p
         v-else-if="!loading && searched"
-        class="text-center font-thin motion-preset-focus-md"
+        class="text-center font-thin"
       >
         No matched words
       </p>
@@ -125,6 +132,33 @@ const error = computed(
 
 const showCopyMessage = ref(false);
 const searched = ref(false);
+
+// Staggered enter animation hooks for TransitionGroup
+const onBeforeEnter = (el: Element) => {
+  const htmlEl = el as HTMLElement;
+  htmlEl.style.opacity = '0';
+  htmlEl.style.transform = 'translateY(8px)';
+};
+
+const onEnter = (el: Element, done: () => void) => {
+  const htmlEl = el as HTMLElement;
+  const index = Number(htmlEl.dataset.index) || 0;
+  const delay = index <= 32 ? index * 25 : 800;
+
+  requestAnimationFrame(() => {
+    htmlEl.style.transition = `opacity 0.3s ease-out ${delay}ms, transform 0.3s ease-out ${delay}ms`;
+    htmlEl.style.opacity = '1';
+    htmlEl.style.transform = 'translateY(0)';
+  });
+
+  // Clean up inline styles after animation
+  setTimeout(() => {
+    htmlEl.style.transition = '';
+    htmlEl.style.opacity = '';
+    htmlEl.style.transform = '';
+    done();
+  }, delay + 350);
+};
 
 const fetchWords = async () => {
   words.value = [];
@@ -168,3 +202,22 @@ const selectWord = async (word: string) => {
   }
 };
 </script>
+
+<style scoped>
+/* TransitionGroup: leave & move animations */
+.word-list-leave-active {
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  position: absolute;
+  width: 100%;
+}
+
+.word-list-leave-to {
+  opacity: 0;
+  transform: translateX(16px);
+}
+
+/* Smooth repositioning when items are added/removed */
+.word-list-move {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+</style>

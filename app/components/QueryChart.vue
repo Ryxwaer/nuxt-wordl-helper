@@ -59,7 +59,7 @@ const props = defineProps<{
   loading: boolean;
   viewMode: "daily" | "monthly";
 }>();
-
+  
 // ── Series ────────────────────────────────────────────
 const chartSeries = computed(() => [
   { name: "Queries", data: props.counts },
@@ -103,14 +103,14 @@ const chartOptions = computed(() => {
             const hour = parseInt(v.split(":")[0] || "0");
             return hour % 3 === 0 ? hour.toString().padStart(2, "0") : "";
           }
-          try {
+            try {
             const d = new Date(v);
             const day = d.getUTCDate();
-            return day === 1 || day % 5 === 0
+              return day === 1 || day % 5 === 0
               ? `${day}/${d.getUTCMonth() + 1}`
-              : "";
-          } catch {
-            return "";
+                : "";
+            } catch {
+              return "";
           }
         },
         style: { colors: "var(--color-secondary)", fontSize: "11px" },
