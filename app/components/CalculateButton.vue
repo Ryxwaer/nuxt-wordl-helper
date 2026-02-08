@@ -16,18 +16,22 @@
 
     <!-- Selected Words Box -->
     <div
-      class="w-full overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
+      ref="selectedContainer"
+      v-glow
+      class="w-full overflow-hidden glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
       :class="{ 'opacity-20': selectedWords.length === 0 }"
     >
       <TransitionGroup
         tag="ul"
-        name="word-list"
-        class="space-y-1 list-decimal pl-9 relative"
+        :css="false"
+        class="space-y-1 list-decimal pl-9"
+        @enter="onSelectedEnter"
+        @leave="onSelectedLeave"
       >
         <li
           v-for="word in selectedWords"
           :key="word.word"
-          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out will-change-transform"
+          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out"
           @click="removeFromSelectedWords(word.word)"
         >
           <div
@@ -56,10 +60,32 @@
     </div>
 
     <!-- Results Box -->
-    <div
-      v-if="showResultsBox"
-      class="w-full max-h-[50vh] overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
-    >
+    <div v-if="showResultsBox" v-glow class="relative w-full rounded-xl">
+      <!-- Back-to-top chevron -->
+      <Transition
+        enter-active-class="transition-[opacity,transform] duration-250 ease-out"
+        leave-active-class="transition-[opacity,transform] duration-250 ease-out"
+        enter-from-class="opacity-0 -translate-y-1.5"
+        leave-to-class="opacity-0 -translate-y-1.5"
+      >
+        <button
+          v-if="showBackToTop"
+          class="absolute top-px left-1/2 -translate-x-1/2 z-10 flex items-center justify-center w-16 h-8 rounded-b-xl cursor-pointer text-[var(--color-primary)] bg-[var(--color-form-bg)] backdrop-blur-md border border-[rgba(240,185,11,0.15)] border-t-0 opacity-70 hover:opacity-100 hover:shadow-[0_4px_12px_rgba(240,185,11,0.15)] transition-[opacity,box-shadow] duration-200 ease-out"
+          @click="scrollToTop"
+          aria-label="Scroll to top"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 15 12 9 18 15" />
+          </svg>
+        </button>
+      </Transition>
+
+      <div
+        ref="resultsContainer"
+        class="w-full max-h-[50vh] overflow-y-auto glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
+        :class="{ 'fade-bottom': canScrollDown }"
+        @scroll="checkScrollState"
+      >
       <!-- Loading Dots -->
       <div
         v-if="showLoadingDots"
@@ -71,19 +97,18 @@
       </div>
 
       <!-- Word List -->
-      <TransitionGroup
+      <ul
         v-if="words.length"
-        tag="ul"
-        name="word-list"
-        class="space-y-1 list-decimal pl-9 relative"
-        @before-enter="onBeforeEnter"
-        @enter="onEnter"
+        ref="wordListEl"
+        class="space-y-1 list-decimal pl-9"
       >
         <li
-          v-for="(word, index) in words"
+          v-for="word in words"
+          v-show="!hiddenWords.has(word.word)"
           :key="word.word"
-          :data-index="index"
-          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out will-change-transform"
+          :data-word="word.word"
+          :data-gray="(!word.rank || word.rank < 1) ? '' : undefined"
+          class="tracking-wide hover:translate-x-1.5 transition-transform duration-300 ease-out"
           @click="selectWord(word.word)"
         >
           <div
@@ -98,7 +123,7 @@
             {{ word.word }}
           </div>
         </li>
-      </TransitionGroup>
+      </ul>
 
       <!-- Empty State -->
       <p
@@ -107,6 +132,7 @@
       >
         No matched words
       </p>
+      </div>
     </div>
   </div>
 </template>
@@ -133,35 +159,79 @@ const error = computed(
 const showCopyMessage = ref(false);
 const searched = ref(false);
 
-// Staggered enter animation hooks for TransitionGroup
-const onBeforeEnter = (el: Element) => {
-  const htmlEl = el as HTMLElement;
-  htmlEl.style.opacity = '0';
-  htmlEl.style.transform = 'translateY(8px)';
+// Scroll fade detection — show bottom fade only when more content exists below
+const resultsContainer = useTemplateRef<HTMLElement>('resultsContainer');
+const canScrollDown = ref(false);
+const showBackToTop = ref(false);
+
+const checkScrollState = () => {
+  const el = resultsContainer.value;
+  if (!el) {
+    canScrollDown.value = false;
+    showBackToTop.value = false;
+    return;
+  }
+  canScrollDown.value = el.scrollHeight - el.scrollTop - el.clientHeight > 20;
+
+  // Show chevron when scrolled past the first gray (unranked) word
+  const firstGray = el.querySelector('[data-gray]') as HTMLElement | null;
+  if (firstGray && el.scrollTop > 20) {
+    const containerRect = el.getBoundingClientRect();
+    const grayRect = firstGray.getBoundingClientRect();
+    showBackToTop.value = grayRect.top < containerRect.bottom;
+  } else {
+    showBackToTop.value = false;
+  }
 };
 
-const onEnter = (el: Element, done: () => void) => {
-  const htmlEl = el as HTMLElement;
-  const index = Number(htmlEl.dataset.index) || 0;
-  const delay = index <= 32 ? index * 25 : 800;
+const scrollToTop = () => {
+  resultsContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
-  requestAnimationFrame(() => {
-    htmlEl.style.transition = `opacity 0.3s ease-out ${delay}ms, transform 0.3s ease-out ${delay}ms`;
-    htmlEl.style.opacity = '1';
-    htmlEl.style.transform = 'translateY(0)';
+// Selected words container ref — used to lock height during overflow swap
+const selectedContainer = useTemplateRef<HTMLElement>('selectedContainer');
+
+// Hidden words tracking — toggle visibility instead of mutating the words array
+const hiddenWords = ref(new Set<string>());
+const wordListEl = useTemplateRef<HTMLElement>('wordListEl');
+
+// Re-check when words list changes
+watch(() => words.value.length, () => {
+  nextTick(checkScrollState);
+});
+
+// Staggered enter animation applied directly to DOM after fetch
+const applyStaggerAnimation = () => {
+  const el = wordListEl.value;
+  if (!el) return;
+
+  // Only animate visible items (skip v-show hidden ones)
+  const items = Array.from(el.children).filter(
+    (child) => (child as HTMLElement).offsetParent !== null
+  ) as HTMLElement[];
+  items.forEach((li, i) => {
+    li.style.opacity = '0';
+    li.style.transform = 'translateY(8px)';
+
+    const delay = i <= 32 ? i * 25 : 800;
+
+    requestAnimationFrame(() => {
+      li.style.transition = `opacity 0.3s ease-out ${delay}ms, transform 0.3s ease-out ${delay}ms`;
+      li.style.opacity = '1';
+      li.style.transform = 'translateY(0)';
+    });
+
+    setTimeout(() => {
+      li.style.transition = '';
+      li.style.opacity = '';
+      li.style.transform = '';
+    }, delay + 350);
   });
-
-  // Clean up inline styles after animation
-  setTimeout(() => {
-    htmlEl.style.transition = '';
-    htmlEl.style.opacity = '';
-    htmlEl.style.transform = '';
-    done();
-  }, delay + 350);
 };
 
 const fetchWords = async () => {
   words.value = [];
+  hiddenWords.value = new Set();
   loading.value = true;
   searched.value = true;
 
@@ -170,9 +240,14 @@ const fetchWords = async () => {
       method: "POST",
       body: getData(),
     });
-    words.value = res.words.filter(
-      (w) => !selectedWords.value.some((sw) => sw.word === w.word)
-    );
+    words.value = res.words;
+
+    // Hide words that are already selected (keep them in DOM so they can reappear)
+    for (const sw of selectedWords.value) {
+      hiddenWords.value.add(sw.word);
+    }
+
+    nextTick(applyStaggerAnimation);
   } catch (error) {
     console.error("Failed to fetch words:", error);
   } finally {
@@ -180,44 +255,185 @@ const fetchWords = async () => {
   }
 };
 
+// Animation config
+const ANIM = { ms: 300, css: '0.3s ease-out' };
+
+// Reusable: collapse a <li> (fade out + shrink to 0), calls onDone when finished
+const collapseEl = (el: HTMLElement, onDone?: () => void) => {
+  const h = el.offsetHeight;
+  el.style.overflow = 'hidden';
+  el.style.height = `${h}px`;
+  el.style.pointerEvents = 'none';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.style.transition = `opacity ${ANIM.css}, height ${ANIM.css}, margin-top ${ANIM.css}`;
+    el.style.opacity = '0';
+    el.style.height = '0';
+    el.style.marginTop = '0';
+  }));
+
+  setTimeout(() => {
+    el.style.overflow = '';
+    el.style.height = '';
+    el.style.opacity = '';
+    el.style.transition = '';
+    el.style.marginTop = '';
+    el.style.pointerEvents = '';
+    onDone?.();
+  }, ANIM.ms + 50);
+};
+
+// Reusable: expand a hidden word back into the results list at its original position
+const expandWordInResults = (word: string) => {
+  hiddenWords.value.delete(word);
+
+  nextTick(() => {
+    const li = wordListEl.value?.querySelector(
+      `[data-word="${CSS.escape(word)}"]`
+    ) as HTMLElement | null;
+    if (!li) return;
+
+    li.style.overflow = 'hidden';
+    li.style.height = '0';
+    li.style.opacity = '0';
+    li.style.marginTop = '0';
+
+    const targetH = li.scrollHeight;
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      li.style.transition = `opacity ${ANIM.css}, height ${ANIM.css}, margin-top ${ANIM.css}`;
+      li.style.height = `${targetH}px`;
+      li.style.opacity = '1';
+      li.style.marginTop = '';
+    }));
+
+    setTimeout(() => {
+      li.style.overflow = '';
+      li.style.height = '';
+      li.style.opacity = '';
+      li.style.transition = '';
+      li.style.marginTop = '';
+    }, ANIM.ms + 50);
+  });
+};
+
+// Selected words list: JS transition hooks
+const onSelectedEnter = (el: Element, done: () => void) => {
+  const htmlEl = el as HTMLElement;
+
+  htmlEl.style.overflow = 'hidden';
+  htmlEl.style.height = '0';
+  htmlEl.style.opacity = '0';
+  htmlEl.style.marginTop = '0';
+
+  const targetH = htmlEl.scrollHeight;
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    htmlEl.style.transition = `opacity ${ANIM.css}, height ${ANIM.css}, margin-top ${ANIM.css}`;
+    htmlEl.style.height = `${targetH}px`;
+    htmlEl.style.opacity = '1';
+    htmlEl.style.marginTop = '';
+  }));
+
+  setTimeout(() => {
+    htmlEl.style.overflow = '';
+    htmlEl.style.height = '';
+    htmlEl.style.opacity = '';
+    htmlEl.style.transition = '';
+    done();
+  }, ANIM.ms + 50);
+};
+
+const onSelectedLeave = (el: Element, done: () => void) => {
+  const htmlEl = el as HTMLElement;
+  const h = htmlEl.offsetHeight;
+
+  const isFirst = !htmlEl.previousElementSibling;
+  const nextEl = isFirst ? (htmlEl.nextElementSibling as HTMLElement | null) : null;
+
+  htmlEl.style.overflow = 'hidden';
+  htmlEl.style.height = `${h}px`;
+
+  if (nextEl) {
+    nextEl.style.transition = `margin-top ${ANIM.css}`;
+  }
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    htmlEl.style.transition = `opacity ${ANIM.css}, height ${ANIM.css}, margin-top ${ANIM.css}`;
+    htmlEl.style.opacity = '0';
+    htmlEl.style.height = '0';
+    htmlEl.style.marginTop = '0';
+    if (nextEl) nextEl.style.marginTop = '0';
+  }));
+
+  setTimeout(() => {
+    done();
+    if (nextEl) {
+      nextEl.style.transition = '';
+      nextEl.style.marginTop = '';
+    }
+  }, ANIM.ms + 50);
+};
+
+// Click word in selected list → remove from top, expand back in bottom list
 const removeFromSelectedWords = (word: string) => {
-  const wordObj = selectedWords.value.find((w) => w.word === word);
-  if (wordObj) {
-    selectedWords.value = selectedWords.value.filter((w) => w.word !== word);
-    words.value.push(wordObj);
+  const idx = selectedWords.value.findIndex((w) => w.word === word);
+  if (idx !== -1) {
+    selectedWords.value.splice(idx, 1);
+
+    const container = selectedContainer.value;
+    if (container) container.style.height = '';
+
+    expandWordInResults(word);
   }
 };
 
-const selectWord = async (word: string) => {
+// Click word in results list → collapse in bottom, add to top (FIFO overflow)
+const selectWord = (word: string) => {
+  if (selectedWords.value.some((w) => w.word === word)) return;
+  if (hiddenWords.value.has(word)) return;
+
   const wordObj = words.value.find((w) => w.word === word);
-  if (wordObj) {
-    words.value = words.value.filter((w) => w.word !== word);
-    selectedWords.value.push(wordObj);
+  if (!wordObj) return;
+
+  // Capture overflow word before mutating
+  let overflowWord: string | undefined;
+  if (selectedWords.value.length >= 6) {
+    overflowWord = selectedWords.value[0]?.word;
   }
+
+  // Collapse clicked word in results list
+  const li = wordListEl.value?.querySelector(
+    `[data-word="${CSS.escape(word)}"]`
+  ) as HTMLElement | null;
+
+  if (li) {
+    collapseEl(li, () => { hiddenWords.value.add(word); });
+  } else {
+    hiddenWords.value.add(word);
+  }
+
+  // Overflow: expand bumped word simultaneously (not after collapse finishes)
+  if (overflowWord) expandWordInResults(overflowWord);
+
+  // Lock container height at 6 words so overflow swaps can't jump
+  const container = selectedContainer.value;
+  if (selectedWords.value.length >= 6 && container) {
+    container.style.height = `${container.offsetHeight}px`;
+  }
+
+  selectedWords.value.push(wordObj);
+
   if (selectedWords.value.length > 6) {
-    const removedWord = selectedWords.value.shift();
-    if (removedWord) {
-      words.value.push(removedWord);
-    }
+    selectedWords.value.shift();
   }
 };
 </script>
 
 <style scoped>
-/* TransitionGroup: leave & move animations */
-.word-list-leave-active {
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
-  position: absolute;
-  width: 100%;
-}
-
-.word-list-leave-to {
-  opacity: 0;
-  transform: translateX(16px);
-}
-
-/* Smooth repositioning when items are added/removed */
-.word-list-move {
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* mask-image needs vendor prefix for Safari — can't be expressed in Tailwind */
+.fade-bottom {
+  mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
 }
 </style>
