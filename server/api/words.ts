@@ -20,6 +20,9 @@ function isMobileUA(ua: string | undefined): boolean {
 function logQueryToDatabase(entry: LogEntry) {
     const { ip, userAgent, isMobile, queryData } = entry
 
+    // Skip local dev requests
+    if (ip === '127.0.0.1' || ip === '::1' || ip === 'Unknown') return
+
     // Entire chain is intentionally not awaited by the caller
     resolveCountry(ip)
         .then(async (country) => {
