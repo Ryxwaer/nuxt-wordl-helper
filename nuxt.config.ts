@@ -30,6 +30,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     DB_URI: process.env.DB_URI, // accessible server-side only
+    THEME_API: process.env.THEME_API || 'https://wotd-theme.ryxwaer.com/api/theme',
   },
 
   app: {

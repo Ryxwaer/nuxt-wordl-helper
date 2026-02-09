@@ -38,10 +38,22 @@
           </div>
         </div>
       </div>
+
+    <!-- Today's WODL Theme — small hint below the solver -->
+    <div v-if="theme" class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+      <NuxtLink to="/wodl" class="inline-flex items-center gap-1.5 hover:text-[var(--color-primary)] transition-colors duration-200">
+        <span>Today's WODL Theme:</span>
+        <span class="font-semibold text-[var(--color-primary)]">{{ theme }}</span>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+// Fetch current WODL theme (SSR — rendered into HTML for SEO)
+const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
+const theme = computed(() => themeData.value?.theme ?? null)
+
 useSeoMeta({
   title: "Free Binance WODL Solver & Wordle Helper | Instant Word Game Answers",
   description:

@@ -26,6 +26,19 @@
       </p>
     </div>
 
+    <!-- Today's WODL Theme -->
+    <div v-if="theme" v-glow class="w-full max-w-5xl mb-8 p-6 glass-card rounded-3xl text-center">
+      <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-300">
+        Today's Binance WODL Theme
+      </h2>
+      <p class="text-3xl font-bold text-[var(--color-primary)] drop-shadow-[0_0_15px_var(--glow-primary)]">
+        {{ theme }}
+      </p>
+      <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
+        Words related to this theme are already highlighted in the solver results!
+      </p>
+    </div>
+
     <!-- Wordle Helper Card Container (redirects to home) -->
     <div v-glow class="w-full max-w-5xl min-h-[200px] p-8 glass-card rounded-3xl flex items-center justify-center">
       <div class="flex flex-col items-center justify-center">
@@ -82,12 +95,28 @@
 </template>
 
 <script setup lang="ts">
+// Fetch current WODL theme (SSR — rendered into HTML for SEO)
+const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
+const theme = computed(() => themeData.value?.theme ?? null)
+
+// Dynamic SEO meta — includes theme when available
+const seoTitle = computed(() =>
+  theme.value
+    ? `Today's WODL Theme: ${theme.value} | Free Binance WODL Solver`
+    : "Today's Binance WODL Answer | Free Daily WODL Solver Tool"
+)
+const seoDescription = computed(() =>
+  theme.value
+    ? `Today's Binance WODL theme is "${theme.value}". Get the daily WODL answer instantly — enter your green, yellow, and gray clues to solve the puzzle in seconds.`
+    : "Get today's Binance WODL answer instantly with this free solver. Enter your green, yellow, and gray clues to find the daily WODL solution in seconds."
+)
+
 useSeoMeta({
-  title: "Today's Binance WODL Answer | Free Daily WODL Solver Tool",
-  description: "Get today's Binance WODL answer instantly with this free solver. Enter your green, yellow, and gray clues to find the daily WODL solution in seconds.",
-  ogTitle: "Today's Binance WODL Answer | Free Daily WODL Solver",
-  ogDescription: "Solve today's Binance WODL puzzle in seconds. Free tool — enter your clues and get instant answers for the daily WODL challenge.",
-  keywords: "WODL, Binance WODL, WODL solver, WODL answer today, binance wodl answer today, daily WODL answer, Binance word game, WODL solution, crypto WODL, WODL crypto game, wodl 5 letter words, how to play binance wodl",
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+  keywords: "WODL, Binance WODL, WODL solver, WODL answer today, binance wodl answer today, daily WODL answer, WODL theme today, Binance word game, WODL solution, crypto WODL, WODL crypto game, wodl 5 letter words, how to play binance wodl",
 });
 
 // Add canonical URL and JSON-LD structured data for better SEO
