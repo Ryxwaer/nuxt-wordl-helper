@@ -6,7 +6,7 @@
       Binance WODL Solver
     </h1>
 
-    <div class="w-full max-w-5xl mb-8 p-8 glass-card rounded-3xl">
+    <div v-glow class="w-full max-w-5xl mb-8 p-8 glass-card rounded-3xl">
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         What is Binance WODL?
       </h2>
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Wordle Helper Card Container (redirects to home) -->
-    <div class="w-full max-w-5xl min-h-[200px] p-8 glass-card rounded-3xl flex items-center justify-center">
+    <div v-glow class="w-full max-w-5xl min-h-[200px] p-8 glass-card rounded-3xl flex items-center justify-center">
       <div class="flex flex-col items-center justify-center">
         <h2 class="text-2xl font-semibold mb-6 text-gray-700 dark:text-gray-300">
           WODL Solver Tool
@@ -41,16 +41,28 @@
       </div>
     </div>
     
-    <div class="w-full max-w-5xl mt-8 p-8 glass-card rounded-3xl">
+    <div v-glow class="w-full max-w-5xl mt-8 p-8 glass-card rounded-3xl">
       <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
         How to Use My Binance WODL Solver
       </h2>
-      <ol class="list-decimal list-inside space-y-3 text-gray-600 dark:text-gray-400 ml-4">
-        <li>Enter your <strong>green</strong> letters in the exact position boxes</li>
-        <li>Add <strong>yellow</strong> letters to the "Included Letters" section</li>
-        <li>Mark <strong>gray</strong> letters in the "Excluded Letters" section</li>
-        <li>Hit "Calculate Words" to see all possible WODL answers</li>
-      </ol>
+      <ul class="space-y-3 text-gray-600 dark:text-gray-400 ml-4">
+        <li class="flex items-start gap-2">
+          <span class="inline-block w-5 h-5 mt-0.5 rounded shrink-0" style="background-color: var(--letter-correct)"></span>
+          <span>Enter your <strong style="color: var(--letter-correct)">green</strong> letters in the exact position boxes</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="inline-block w-5 h-5 mt-0.5 rounded shrink-0" style="background-color: var(--letter-include)"></span>
+          <span>Add <strong style="color: var(--letter-include)">yellow</strong> letters to the "Included Letters" section</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="inline-block w-5 h-5 mt-0.5 rounded shrink-0" style="background-color: var(--letter-exclude)"></span>
+          <span>Mark <strong style="color: var(--letter-exclude)">gray</strong> letters in the "Excluded Letters" section</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="inline-block w-5 h-5 mt-0.5 rounded shrink-0 bg-[var(--color-primary)]"></span>
+          <span>Hit <strong>"Calculate Words"</strong> to see all possible WODL answers</span>
+        </li>
+      </ul>
       <p class="mt-6 text-gray-600 dark:text-gray-400">
         The more clues you enter from your guesses, the more accurate the solver becomes! I created this as a personal project to help fellow WODL players.
       </p>
@@ -71,15 +83,18 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "Binance WODL Solver | Get Today's WODL Answer",
-  description: "Free Binance WODL solver tool I created to help players. Find today's WODL answer instantly with this personal project. Enter your clues and get possible solutions.",
-  ogTitle: "Binance WODL Solver | Daily WODL Answers",
-  ogDescription: "Solve today's Binance WODL puzzle easily with my free solver tool. Get instant answers based on your guesses.",
-  keywords: "WODL, Binance WODL, WODL solver, WODL answer today, Binance word game, WODL solution, crypto WODL, WODL crypto game, daily WODL answer",
+  title: "Today's Binance WODL Answer | Free Daily WODL Solver Tool",
+  description: "Get today's Binance WODL answer instantly with this free solver. Enter your green, yellow, and gray clues to find the daily WODL solution in seconds.",
+  ogTitle: "Today's Binance WODL Answer | Free Daily WODL Solver",
+  ogDescription: "Solve today's Binance WODL puzzle in seconds. Free tool — enter your clues and get instant answers for the daily WODL challenge.",
+  keywords: "WODL, Binance WODL, WODL solver, WODL answer today, binance wodl answer today, daily WODL answer, Binance word game, WODL solution, crypto WODL, WODL crypto game, wodl 5 letter words, how to play binance wodl",
 });
 
-// Add JSON-LD structured data for better SEO
+// Add canonical URL and JSON-LD structured data for better SEO
 useHead({
+  link: [
+    { rel: 'canonical', href: 'https://wordl.ryxwaer.com/wodl' }
+  ],
   script: [
     {
       type: 'application/ld+json',
@@ -88,7 +103,7 @@ useHead({
         "@type": "WebApplication",
         "name": "Binance WODL Solver",
         "url": "https://wordl.ryxwaer.com/wodl",
-        "description": "A free tool I created to help solve Binance WODL puzzles by suggesting possible answers based on your clues.",
+        "description": "A free tool to help solve Binance WODL puzzles by suggesting possible answers based on your clues. Get today's WODL answer instantly.",
         "applicationCategory": "Game, Utility",
         "operatingSystem": "Any",
         "offers": {

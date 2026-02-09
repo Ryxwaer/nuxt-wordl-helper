@@ -39,16 +39,21 @@
           possibilities quickly. Simply enter correct letters, included letters, and excluded letters to get
           accurate word suggestions sorted by frequency.
         </p>
-        <p class="mt-6 text-sm text-gray-500 dark:text-gray-500">
+        <!-- Internal navigation links for SEO -->
+        <nav class="flex justify-center gap-4 mt-4 mb-3 text-sm">
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Solver</NuxtLink>
+          <span class="text-gray-400">·</span>
+          <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
+          <span class="text-gray-400">·</span>
+          <NuxtLink to="/policy" class="text-blue-500 hover:underline">Privacy Policy</NuxtLink>
+        </nav>
+        <p class="mt-4 text-sm text-gray-500 dark:text-gray-500">
           Made with ❤️ by
           <a
             href="https://github.com/Ryxwaer"
             target="_blank"
             class="text-blue-500 hover:underline"
             >Ryxwaer</a
-          > |
-          <NuxtLink to="/policy" class="text-blue-500 hover:underline"
-            >Privacy Policy</NuxtLink
           >
         </p>
         <p>Last Updated: {{ formattedDate }}</p>
@@ -57,16 +62,23 @@
       <!-- Simple footer for other pages -->
       <div v-else class="text-gray-500 dark:text-gray-400">
         <p>This app helps you solve any Wordle challenges!</p>
-        <p>
+        <!-- Internal navigation links for SEO -->
+        <nav class="flex justify-center gap-4 mt-3 mb-3 text-sm">
+          <NuxtLink to="/" class="text-blue-500 hover:underline">Solver</NuxtLink>
+          <span class="text-gray-400">·</span>
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Solver</NuxtLink>
+          <span class="text-gray-400">·</span>
+          <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
+          <span class="text-gray-400">·</span>
+          <NuxtLink to="/policy" class="text-blue-500 hover:underline">Privacy Policy</NuxtLink>
+        </nav>
+        <p class="text-sm text-gray-500 dark:text-gray-500">
           Made with ❤️ by
           <a
             href="https://github.com/Ryxwaer"
             target="_blank"
             class="text-blue-500 hover:underline"
             >Ryxwaer</a
-          > |
-          <NuxtLink to="/policy" class="text-blue-500 hover:underline"
-            >Privacy Policy</NuxtLink
           >
         </p>
         <p>Last Updated: {{ formattedDate }}</p>

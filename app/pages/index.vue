@@ -43,20 +43,21 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "Binance WODL Solver & Wordle Helper | Free Word Game Tool",
+  title: "Free Binance WODL Solver & Wordle Helper | Instant Word Game Answers",
   description:
-    "Free Binance WODL solver and Wordle helper I created. Get instant solutions for today's WODL puzzle. Find possible answers for Binance and NYT word games.",
-  ogTitle: "Binance WODL Solver & Wordle Helper | Find Answers Fast",
+    "Free Binance WODL solver and Wordle helper — get today's WODL answer instantly! Enter your clues and find possible solutions for 5, 6, or 7-letter word puzzles.",
+  ogTitle: "Free Binance WODL Solver & Wordle Helper | Instant Answers",
   ogDescription:
-    "Solve Binance WODL puzzles easily with my free tool. A personal project to help with Binance word game and Wordle with instant word suggestions.",
-  // Maybe add an og:image pointing to a relevant screenshot or logo in your public/ directory
-  // ogImage: '/images/wordle-helper-promo.png',
+    "Solve today's Binance WODL puzzle and Wordle instantly with my free tool. Enter your clues to get word suggestions in seconds.",
   keywords:
-    "WODL, Binance WODL, Binance WODL solver, WODL solver, WODL answer, Binance word game, wordle, wordle helper, wordle solver, wodl helper, wodl answers, crypto word game, word puzzle, find words, word game answers",
+    "WODL, Binance WODL, Binance WODL solver, WODL solver, WODL answer, WODL answer today, binance wodl answer today, wodl 5 letter words, how to play binance wodl, Binance word game, wordle, wordle helper, wordle solver, wodl helper, wodl answers, crypto word game, word puzzle, find words, word game answers",
 });
 
-// Add JSON-LD structured data for better SEO
+// Add canonical URL and JSON-LD structured data for better SEO
 useHead({
+  link: [
+    { rel: 'canonical', href: 'https://wordl.ryxwaer.com/' }
+  ],
   script: [
     {
       type: 'application/ld+json',
@@ -65,7 +66,7 @@ useHead({
         "@type": "WebApplication",
         "name": "Binance WODL Solver",
         "url": "https://wordl.ryxwaer.com/",
-        "description": "A free tool I created to help solve Binance WODL and Wordle puzzles by suggesting possible answers based on your clues.",
+        "description": "A free tool to help solve Binance WODL and Wordle puzzles by suggesting possible answers based on your clues.",
         "applicationCategory": "Game, Utility",
         "operatingSystem": "Any",
         "offers": {
