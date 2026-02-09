@@ -212,8 +212,11 @@ useSeoMeta({
     "Binance Red Packet, crypto red envelope, Binance gift, send crypto gift, share cryptocurrency, Binance Red Packet code, crypto gift guide",
 });
 
-// Add JSON-LD structured data for better SEO
+// Add canonical URL and JSON-LD structured data for better SEO
 useHead({
+  link: [
+    { rel: 'canonical', href: 'https://wordl.ryxwaer.com/red-packet' }
+  ],
   script: [
     {
       type: "application/ld+json",

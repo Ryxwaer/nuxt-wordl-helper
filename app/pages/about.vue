@@ -137,15 +137,57 @@
 </template>
 
 <script setup lang="ts">
+useSeoMeta({
+  title: "How to Use Wordle Helper & Binance WODL Solver | Step-by-Step Guide",
+  description:
+    "Learn how to use this free Wordle helper and Binance WODL solver. Step-by-step guide to entering green, yellow, and gray clues to find word answers instantly.",
+  ogTitle: "How to Use Wordle Helper & WODL Solver | Guide",
+  ogDescription:
+    "Step-by-step guide to solving Wordle and Binance WODL puzzles with this free tool. Enter clues, get answers instantly.",
+  keywords:
+    "how to use wordle helper, wordle solver guide, WODL solver instructions, binance wodl help, wordle tips, word game solver tutorial",
+});
+
+// Add canonical URL and FAQPage schema for rich snippets
 useHead({
-  title: "How to Use - Nuxt Wordle Helper",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Learn how to use the Nuxt Wordle Helper to get suggestions for Wordle based on your green, yellow, and grey letter clues.",
-    },
+  link: [
+    { rel: 'canonical', href: 'https://wordl.ryxwaer.com/about' }
   ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Wordle?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Wordle is a popular game where you try to guess a secret 5-letter word in six tries. After each guess, the game gives you feedback with colors: Green means the letter is correct and in the right spot, Yellow means the letter is in the word but in the wrong spot, and Grey means the letter is not in the word at all."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I use the Wordle Helper?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Enter your green letters into the main 5 input boxes exactly where they appear. Add yellow letters to the 'Present Letters' section. Click grey letters on the interactive keyboard to mark them as excluded. The list of possible words will update automatically as you add more clues."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does the Wordle Helper do?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Wordle Helper narrows down possibilities from a large word list based on your clues. It shows possible answers, suggests the best words to guess next, and lets you quickly mark excluded letters using the keyboard. It works for Wordle, Binance WODL, and other word puzzle games."
+            }
+          }
+        ]
+      })
+    }
+  ]
 });
 </script>
 
