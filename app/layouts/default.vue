@@ -102,6 +102,36 @@
 const route = useRoute();
 const appConfig = useAppConfig();
 
+// Breadcrumb schema for better Google search structure
+const SITE_URL = 'https://wordl.ryxwaer.com'
+const breadcrumbItems = computed(() => {
+  const items = [{ name: 'Home', url: SITE_URL + '/' }]
+  const path = route.path
+  if (path === '/wodl') items.push({ name: 'WODL Solver', url: SITE_URL + '/wodl' })
+  else if (path === '/about') items.push({ name: 'How to Use', url: SITE_URL + '/about' })
+  else if (path === '/red-packet') items.push({ name: 'Red Packet', url: SITE_URL + '/red-packet' })
+  else if (path === '/policy') items.push({ name: 'Privacy Policy', url: SITE_URL + '/policy' })
+  return items
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: computed(() => JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbItems.value.map((item, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": item.name,
+          "item": item.url
+        }))
+      }))
+    }
+  ]
+})
+
 // Get red packet configuration from app config
 const redPacketConfig = appConfig.redPacket;
 

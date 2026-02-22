@@ -9,7 +9,7 @@
     <!-- Wordle Helper Card Container -->
       <div
         v-glow
-        class="w-full max-w-5xl min-h-200 p-8 rounded-3xl glass-card"
+        class="w-full max-w-5xl min-h-160 p-8 rounded-3xl glass-card"
       >
         <div class="items-center flex flex-col">
           <div class="md:max-w-50 flex flex-col items-center">
@@ -39,13 +39,13 @@
         </div>
       </div>
 
-    <!-- Today's WODL Theme — small hint below the solver -->
-    <div v-if="theme" class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-      <NuxtLink to="/wodl" class="inline-flex items-center gap-1.5 hover:text-[var(--color-primary)] transition-colors duration-200">
-        <span>Today's WODL Theme:</span>
-        <span class="font-semibold text-[var(--color-primary)]">{{ theme }}</span>
-      </NuxtLink>
-    </div>
+    <!-- Today's WODL Theme — H2 for SEO (people search by theme name) -->
+    <NuxtLink v-if="theme" to="/wodl" class="mt-6 group text-center block hover:no-underline">
+      <h2 class="text-lg font-semibold text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200">
+        Today's WODL Theme:
+        <span class="text-[var(--color-primary)]">{{ theme }}</span>
+      </h2>
+    </NuxtLink>
   </div>
 </template>
 
