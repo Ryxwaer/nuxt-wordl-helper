@@ -13,8 +13,8 @@ WORKDIR /src
 # Build
 FROM base as build
 
-COPY --link package.json ./
-RUN npm install
+COPY --link package.json package-lock.json ./
+RUN npm ci
 
 COPY --link . .
 
