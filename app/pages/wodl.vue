@@ -11,7 +11,7 @@
         What is Binance WODL?
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Binance WODL is a daily word game on the Binance platform inspired by Wordle. Players have six attempts to guess a 5-letter word and can earn crypto rewards for correct guesses.
+        Binance WODL is a daily word game on the Binance platform inspired by Wordle. Players have six attempts to guess a crypto-related word and can earn rewards for correct guesses. Each week features a new theme with words ranging from 3 to 8 letters.
       </p>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
         Like Wordle, WODL gives feedback with different colored tiles:
@@ -22,7 +22,7 @@
         <li><span class="font-bold" style="color: var(--letter-exclude)">Gray</span> tiles indicate letters not in the word</li>
       </ul>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-        I created this WODL solver to help find answers quickly. Enter what you know below and get instant suggestions!
+        I created this WODL solver to help find answers quickly. Enter what you know and get instant suggestions!
       </p>
     </div>
 
@@ -35,8 +35,34 @@
         {{ theme }}
       </p>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-500">
-        Words related to this theme are already highlighted in the solver results!
+        Theme words are highlighted first in the solver results.
       </p>
+    </div>
+
+    <!-- Theme Word Pool -->
+    <div v-if="hasThemeWords" v-glow class="w-full max-w-5xl mb-8 p-6 glass-card rounded-3xl">
+      <h2 class="text-xl font-semibold mb-4 text-gray-700 dark:text-gray-300 text-center">
+        This Week's WODL Word Pool
+      </h2>
+      <p class="text-sm text-gray-500 dark:text-gray-500 text-center mb-4">
+        Binance assigns different words per account — try any word matching your letter count.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div v-for="len in sortedLengths" :key="len" class="text-center">
+          <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-1">
+            {{ len }}-letter words
+          </p>
+          <div class="flex flex-wrap justify-center gap-1.5">
+            <span
+              v-for="word in themeWords[len]"
+              :key="word"
+              class="inline-block px-2 py-0.5 rounded text-sm font-mono bg-[var(--color-primary)]/15 text-[var(--color-primary)]"
+            >
+              {{ word }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Wordle Helper Card Container (redirects to home) -->
@@ -99,16 +125,24 @@
 const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
 const theme = computed(() => themeData.value?.theme ?? null)
 
-// Dynamic SEO meta — includes theme when available
+// Fetch this week's theme word pool (SSR)
+const { data: themeWordsData } = await useFetch<{ words: Record<number, string[]> }>('/api/theme-words')
+const themeWords = computed(() => themeWordsData.value?.words ?? {})
+const sortedLengths = computed(() =>
+  Object.keys(themeWords.value).map(Number).sort((a, b) => a - b)
+)
+const hasThemeWords = computed(() => sortedLengths.value.length > 0)
+
+// Dynamic SEO meta — front-loads "WODL Solver" before Google's ~60 char truncation
 const seoTitle = computed(() =>
   theme.value
-    ? `Today's WODL Theme: ${theme.value} | Free Binance WODL Solver`
-    : "Today's Binance WODL Answer | Free Daily WODL Solver Tool"
+    ? `WODL Solver — Today's Theme: ${theme.value} | Free Binance WODL Helper`
+    : "WODL Solver — Today's Binance WODL Answer | Free Daily Tool"
 )
 const seoDescription = computed(() =>
   theme.value
-    ? `Today's Binance WODL theme is "${theme.value}". Get the daily WODL answer instantly — enter your green, yellow, and gray clues to solve the puzzle in seconds.`
-    : "Get today's Binance WODL answer instantly with this free solver. Enter your green, yellow, and gray clues to find the daily WODL solution in seconds."
+    ? `Solve today's Binance WODL instantly — theme: "${theme.value}". Enter green, yellow & gray clues to get the answer. Free, fast, no login needed.`
+    : "Solve today's Binance WODL puzzle in seconds. Enter your green, yellow & gray clues and get the answer instantly. Free tool, no login required."
 )
 
 useSeoMeta({

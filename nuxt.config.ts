@@ -7,7 +7,16 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts', ['@piwikpro/nuxt-piwik-pro', {
     containerId: "48a0f7d5-b139-4e3d-94f8-62e23b7f1b6d",
     containerUrl: "https://ryxwaer.containers.piwik.pro",
-  }]],
+  }], '@nuxtjs/sitemap'],
+
+  sitemap: {
+    urls: [
+      { loc: '/', changefreq: 'daily', priority: 1.0 },
+      { loc: '/wodl', changefreq: 'daily', priority: 0.9 },
+      { loc: '/about', changefreq: 'monthly', priority: 0.7 },
+    ],
+    exclude: ['/log', '/policy', '/red-packet', '/debug'],
+  },
   scripts: {
     registry: {
       googleAdsense: {
@@ -35,7 +44,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Binance WODL Solver & Wordle Helper',
+      title: 'WODL Solver — Free Binance WODL & Wordle Helper',
       link: [
         { rel: 'apple-touch-icon', sizes: '57x57', href: '/favicon-57x57.png' },
         { rel: 'apple-touch-icon', sizes: '60x60', href: '/favicon-60x60.png' },
@@ -70,7 +79,7 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: 'Binance WODL Solver & Wordle Helper | Free Word Game Tool' },
         { name: 'twitter:description', content: 'Free Binance WODL solver and Wordle helper. Get instant solutions for today\'s WODL puzzle and find answers for word games.' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Free Binance WODL solver and Wordle helper I built to help players. Get answers for today\'s WODL puzzle instantly.' },
+        { name: 'description', content: 'Solve today\'s Binance WODL puzzle in seconds — enter your clues and get instant answers for 3-8 letter words. Free, no login required.' },
         { name: 'keywords', content: 'WODL, Binance WODL, WODL solver, Binance WODL solver, Wordle, WODL answer today, wodl 5 letter words, how to play binance wodl' },
         { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },

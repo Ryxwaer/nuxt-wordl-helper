@@ -1,7 +1,7 @@
 {
-  "name": "My App",
-  "description": "My App description",
-  "short_name": "My App",
+  "name": "Binance WODL Solver & Wordle Helper",
+  "description": "Free tool to solve Binance WODL puzzles and Wordle. Enter your clues and get instant word suggestions.",
+  "short_name": "WODL Solver",
   "icons": [
     {
       "src": "/favicon-72x72.png",

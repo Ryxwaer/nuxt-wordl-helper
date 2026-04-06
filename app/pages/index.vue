@@ -55,12 +55,12 @@ const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme
 const theme = computed(() => themeData.value?.theme ?? null)
 
 useSeoMeta({
-  title: "Free Binance WODL Solver & Wordle Helper | Instant Word Game Answers",
+  title: "WODL Solver — Free Binance WODL & Wordle Helper 2026",
   description:
-    "Free Binance WODL solver and Wordle helper — get today's WODL answer instantly! Enter your clues and find possible solutions for 5, 6, or 7-letter word puzzles.",
-  ogTitle: "Free Binance WODL Solver & Wordle Helper | Instant Answers",
+    "Solve today's Binance WODL puzzle in seconds — enter green, yellow & gray clues and get instant answers for 3-8 letter words. Free, no login required.",
+  ogTitle: "WODL Solver — Free Binance WODL & Wordle Helper",
   ogDescription:
-    "Solve today's Binance WODL puzzle and Wordle instantly with my free tool. Enter your clues to get word suggestions in seconds.",
+    "Solve today's Binance WODL puzzle and Wordle instantly. Enter your clues, get word suggestions in seconds. Free tool, no login needed.",
   keywords:
     "WODL, Binance WODL, Binance WODL solver, WODL solver, WODL answer, WODL answer today, binance wodl answer today, wodl 5 letter words, how to play binance wodl, Binance word game, wordle, wordle helper, wordle solver, wodl helper, wodl answers, crypto word game, word puzzle, find words, word game answers",
 });

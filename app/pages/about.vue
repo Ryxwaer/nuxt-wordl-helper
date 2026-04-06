@@ -138,12 +138,12 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "How to Use Wordle Helper & Binance WODL Solver | Step-by-Step Guide",
+  title: "How to Use the WODL Solver — Wordle & Binance WODL Guide",
   description:
-    "Learn how to use this free Wordle helper and Binance WODL solver. Step-by-step guide to entering green, yellow, and gray clues to find word answers instantly.",
-  ogTitle: "How to Use Wordle Helper & WODL Solver | Guide",
+    "Step-by-step guide: enter green, yellow & gray clues to solve Wordle or Binance WODL in seconds. Learn how the free solver works — no login needed.",
+  ogTitle: "How to Use the WODL Solver — Step-by-Step Guide",
   ogDescription:
-    "Step-by-step guide to solving Wordle and Binance WODL puzzles with this free tool. Enter clues, get answers instantly.",
+    "Learn how to solve Wordle and Binance WODL puzzles with this free tool. Enter clues, get answers instantly.",
   keywords:
     "how to use wordle helper, wordle solver guide, WODL solver instructions, binance wodl help, wordle tips, word game solver tutorial",
 });
