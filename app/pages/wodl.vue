@@ -11,10 +11,16 @@
         What is Binance WODL?
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Binance WODL is a daily word game on the Binance platform inspired by Wordle. Players have six attempts to guess a crypto-related word and can earn rewards for correct guesses. Each week features a new theme with words ranging from 3 to 8 letters.
+        Binance <strong>WODL</strong> — officially called <strong>WOTD</strong>
+        (<em>Word of the Day</em>) by Binance — is a free daily word game
+        inside the Binance app, inspired by Wordle. Players get six attempts
+        to guess a crypto-related word and earn small rewards for correct
+        guesses. Each week features a new theme with words ranging from 3 to
+        8 letters. The community widely calls it "WODL", which is why this
+        solver uses that name throughout.
       </p>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Like Wordle, WODL gives feedback with different colored tiles:
+        Like Wordle, WODL / WOTD gives feedback with different colored tiles:
       </p>
       <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-6 ml-4">
         <li><span class="font-bold" style="color: var(--letter-correct)">Green</span> tiles indicate correct letters in the right position</li>
@@ -165,7 +171,11 @@ useSeoMeta({
   ogDescription: seoDescription,
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  keywords: "binance wodl, binance wodl solver, binance wodl answer today, wodl answer, wodl theme today, wodl crypto game, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, how to play binance wodl",
+  // Mixed WODL/WOTD keywords. Binance officially names the game WOTD
+  // (Word of the Day), but GSC shows ~all real impressions come from
+  // "wodl" queries. We list both so we capture WODL today AND any latent
+  // WOTD demand as Binance pushes the official name.
+  keywords: "binance wodl, binance wodl solver, binance wodl answer today, wodl answer, wodl theme today, wodl crypto game, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, how to play binance wodl, binance wotd, binance word of the day, wotd solver, word of the day solver, binance wotd answer",
 });
 
 // Canonical + structured data. This page declares both the WebApplication
@@ -183,8 +193,17 @@ useHead({
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Binance WODL Solver",
+        // alternateNames bridge WODL (community/search term) with WOTD
+        // (Binance's official name) so the entity matches both query
+        // families in Google's knowledge graph.
+        "alternateName": [
+          "Binance WOTD Solver",
+          "Binance Word of the Day Solver",
+          "WODL Solver",
+          "WOTD Solver"
+        ],
         "url": "https://wordl.ryxwaer.com/wodl",
-        "description": "Free Binance WODL solver. Suggests possible answers based on your green, yellow and gray letter clues, and lists the current weekly theme's word pool (3–8 letters).",
+        "description": "Free Binance WODL solver — also known as Binance WOTD or Word of the Day. Suggests possible answers based on your green, yellow and gray letter clues, and lists the current weekly theme's word pool (3–8 letters).",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript. Works in any modern browser.",
@@ -233,6 +252,55 @@ useHead({
           }
         ]
       })
+    },
+    {
+      type: 'application/ld+json',
+      // FAQ schema dedicated to bridging the WODL ↔ WOTD naming gap.
+      // Binance officially calls the game WOTD (Word of the Day) but
+      // search-volume in GSC is overwhelmingly on "wodl". Surfacing this
+      // explicitly (a) signals topical authority to Google's E-E-A-T,
+      // and (b) makes us eligible for rich snippets on the small but
+      // growing "what is wotd" / "wodl vs wotd" query family.
+      innerHTML: computed(() => JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is WODL the same as WOTD?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes — they are the same Binance game. Binance officially calls it WOTD (Word of the Day), but the player community widely refers to it as WODL (a Wordle-style nickname). Both names point to the same daily, theme-based crypto word puzzle inside the Binance app, and this solver works for either name."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is this week's Binance WODL / WOTD theme?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": theme.value
+                ? `This week's Binance WODL (WOTD) theme is "${theme.value}". The full word pool for 3, 4, 5, 6, 7 and 8 letter words is shown above; theme words are ranked first in the solver results.`
+                : "Binance publishes a new WODL / WOTD theme each week alongside a pool of crypto-related words from 3 to 8 letters. The current theme appears at the top of this page, and theme words are ranked first in the solver."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How many letters do Binance WODL words have?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Binance WODL (WOTD) word lengths vary by week and by player account. Typical lengths range from 3 to 8 letters, all drawn from the announced weekly theme. This solver supports every length in that range."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does the WODL solver give me today's answer directly?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Binance assigns different words to different accounts from the weekly theme pool, so there isn't a single 'today's answer' that applies to everyone. The solver shows every word in this week's pool that matches your clues, with theme words ranked first — type your green, yellow and gray letters and the candidates appear instantly."
+            }
+          }
+        ]
+      }))
     }
   ]
 })

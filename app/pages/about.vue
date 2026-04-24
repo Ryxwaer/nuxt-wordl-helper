@@ -40,7 +40,10 @@
         </li>
       </ul>
       <p class="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-        This helper uses those clues to suggest possible answers!
+        This helper uses those clues to suggest possible answers — for
+        classic Wordle, and for Binance's daily crypto puzzle (commonly
+        called <strong>WODL</strong>, officially named <strong>WOTD</strong>
+        — Word of the Day — by Binance).
       </p>
       </section>
 
@@ -147,7 +150,7 @@ useSeoMeta({
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
   keywords:
-    "how to use wordle helper, wordle solver guide, wordle tips, WODL solver instructions, binance wodl help, word game solver tutorial",
+    "how to use wordle helper, wordle solver guide, wordle tips, WODL solver instructions, binance wodl help, binance wotd help, word of the day guide, word game solver tutorial",
 });
 
 // Add canonical URL and FAQPage schema for rich snippets
@@ -183,7 +186,7 @@ useHead({
             "name": "What does the Wordle Helper do?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The Wordle Helper narrows down possibilities from a large word list based on your clues. It shows possible answers, suggests the best words to guess next, and lets you quickly mark excluded letters using the keyboard. It works for Wordle, Binance WODL, and other word puzzle games."
+              "text": "The Wordle Helper narrows down possibilities from a large word list based on your clues. It shows possible answers, suggests the best words to guess next, and lets you quickly mark excluded letters using the keyboard. It works for Wordle, Binance WODL (officially WOTD / Word of the Day), and other word puzzle games."
             }
           }
         ]

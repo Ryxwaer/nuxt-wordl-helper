@@ -62,12 +62,14 @@
         What is Binance WODL?
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Binance <strong>WODL</strong> (Word of the Day) is a free daily word
-        puzzle inside the Binance app, inspired by Wordle. Each week Binance
+        Binance <strong>WODL</strong> — officially called
+        <strong>WOTD</strong> (<em>Word of the Day</em>) by Binance, but
+        widely known as WODL in the community — is a free daily word puzzle
+        inside the Binance app, inspired by Wordle. Each week Binance
         publishes a new <strong>theme</strong> and a pool of crypto-related
         words from 3 to 8 letters. You guess words from that pool using
-        green, yellow and gray feedback tiles, and correct answers earn small
-        crypto rewards.
+        green, yellow and gray feedback tiles, and correct answers earn
+        small crypto rewards.
       </p>
       <p v-if="theme" class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
         <strong>This week's WODL theme is
@@ -116,9 +118,12 @@ useSeoMeta({
     "Enter your clues, get instant answers. Free WODL Solver and Wordle Helper — 3 to 8 letter words, no login required.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  // Ordered by actual GSC-observed query volume for this URL.
+  // Ordered by actual GSC-observed query volume for this URL. WOTD /
+  // "word of the day" variants appended after the WODL terms — Binance's
+  // official name has near-zero search volume today but is the term the
+  // company itself promotes, so we keep both query families covered.
   keywords:
-    "wodl solver, wodl, binance wodl solver, wodl answer today, wordle helper, wordle solver, word finder, binance wodl, wordle answer helper, 5 letter word finder, word puzzle solver, crypto word game",
+    "wodl solver, wodl, binance wodl solver, wodl answer today, wordle helper, wordle solver, word finder, binance wodl, wordle answer helper, 5 letter word finder, word puzzle solver, crypto word game, binance wotd, binance word of the day, wotd solver, word of the day solver",
 });
 
 // Canonical + JSON-LD — homepage is positioned as the general Wordle helper.
@@ -140,9 +145,17 @@ useHead({
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Wordle Helper & Solver",
-        "alternateName": "Binance WODL Solver",
+        // alternateName covers both the community-search term (WODL) and
+        // Binance's official product name (WOTD / Word of the Day). Helps
+        // Google's knowledge graph link the entity across both query
+        // families even though we keep "WODL" as the primary brand.
+        "alternateName": [
+          "Binance WODL Solver",
+          "Binance WOTD Solver",
+          "Word of the Day Solver"
+        ],
         "url": "https://wordl.ryxwaer.com/",
-        "description": "A free tool that suggests possible Wordle and Binance WODL answers based on your green, yellow and gray letter clues.",
+        "description": "A free tool that suggests possible Wordle and Binance WODL (also known as WOTD or Word of the Day) answers based on your green, yellow and gray letter clues.",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript. Works in any modern browser.",
@@ -164,20 +177,20 @@ useHead({
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "What is Binance WODL?",
+            "name": "What is Binance WODL (and is it the same as WOTD)?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Binance WODL (Word of the Day) is a free daily word puzzle in the Binance app, inspired by Wordle. Each week Binance publishes a new theme and a pool of crypto-related words from 3 to 8 letters. Players guess words from the pool using green, yellow and gray feedback tiles, and correct answers earn small crypto rewards."
+              "text": "Binance WODL and Binance WOTD are the same game — Binance officially calls it WOTD (Word of the Day), while the player community widely calls it WODL. It's a free daily word puzzle inside the Binance app, inspired by Wordle. Each week Binance publishes a new theme and a pool of crypto-related words from 3 to 8 letters. Players guess words from the pool using green, yellow and gray feedback tiles, and correct answers earn small crypto rewards."
             }
           },
           {
             "@type": "Question",
-            "name": "What is this week's Binance WODL theme?",
+            "name": "What is this week's Binance WODL / WOTD theme?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": theme.value
-                ? `This week's Binance WODL theme is "${theme.value}". The full word pool for 3, 4, 5, 6, 7 and 8 letter words is available on the WODL Solver page, with theme words ranked first in the solver results.`
-                : "Binance publishes a new WODL theme each week alongside a pool of crypto-related words from 3 to 8 letters. Visit the WODL Solver page on this site to see the current theme and full word pool."
+                ? `This week's Binance WODL (WOTD) theme is "${theme.value}". The full word pool for 3, 4, 5, 6, 7 and 8 letter words is available on the WODL Solver page, with theme words ranked first in the solver results.`
+                : "Binance publishes a new WODL / WOTD theme each week alongside a pool of crypto-related words from 3 to 8 letters. Visit the WODL Solver page on this site to see the current theme and full word pool."
             }
           },
           {

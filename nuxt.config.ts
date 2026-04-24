@@ -81,7 +81,7 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { property: 'og:title', content: 'WODL Solver & Wordle Helper — Today\'s Answer & Word Finder' },
-        { property: 'og:description', content: 'Enter green, yellow & gray clues and get instant word answers. Works for Wordle and Binance WODL (3–8 letters). Free, no login.' },
+        { property: 'og:description', content: 'Enter green, yellow & gray clues and get instant word answers. Works for Wordle and Binance WODL / WOTD — Word of the Day (3–8 letters). Free, no login.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'Wordle Helper' },
         { property: 'og:url', content: 'https://wordl.ryxwaer.com/' },
@@ -97,8 +97,11 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://wordl.ryxwaer.com/og-image.jpg' },
         { name: 'twitter:image:alt', content: 'Wordle Helper and Binance WODL Solver — letter tiles spelling WORDL' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Free Wordle helper and Binance WODL solver — enter green, yellow & gray clues and get instant answers for 3–8 letter words. No login required.' },
-        { name: 'keywords', content: 'wordle helper, wordle solver, word finder, WODL solver, Binance WODL, Binance WODL solver, WODL answer today, wodl 5 letter words, crypto word game, word puzzle solver' },
+        { name: 'description', content: 'Free Wordle helper and Binance WODL solver (also known as Binance WOTD / Word of the Day) — enter green, yellow & gray clues and get instant answers for 3–8 letter words. No login required.' },
+        // Keep WODL terms first (~all real GSC search volume) but include
+        // WOTD / Word of the Day variants — Binance's official name — to
+        // capture latent demand and signal entity equivalence to Google.
+        { name: 'keywords', content: 'wordle helper, wordle solver, word finder, WODL solver, Binance WODL, Binance WODL solver, WODL answer today, wodl 5 letter words, crypto word game, word puzzle solver, Binance WOTD, Binance Word of the Day, WOTD solver, Word of the Day solver' },
         { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
         { name: 'msapplication-config', content: '/browserconfig.xml' },
