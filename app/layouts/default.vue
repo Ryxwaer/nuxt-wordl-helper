@@ -28,20 +28,21 @@
     >
       <!-- Extended footer for home page only -->
       <div v-if="isOnRoot" class="max-w-3xl mx-auto text-gray-600 dark:text-gray-400">
-        <h2 class="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">My Binance WODL Solver</h2>
+        <h2 class="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">Wordle Helper & Word Finder</h2>
         <p class="mb-3">
-          Looking for help with the Binance WODL Challenge? My tool provides a simple and efficient solution
-          to help you solve daily WODL puzzles and earn crypto rewards. Input the letters you know, and get
-          instant suggestions for possible words that match your clues.
+          This free Wordle helper suggests possible answers based on the clues you already have. Type in your
+          green, yellow and gray letters and the tool instantly narrows a large word list down to the words
+          that still fit — for Wordle, Wordle-style games, and any 3 to 8 letter puzzle.
         </p>
         <p class="mb-3">
-          Whether you're working with 5-letter, 6-letter, or 7-letter words, my WODL solver helps you narrow down
-          possibilities quickly. Simply enter correct letters, included letters, and excluded letters to get
-          accurate word suggestions sorted by frequency.
+          Playing Binance's daily crypto puzzle? Head over to the dedicated
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
+          page to see this week's theme and pull up the full theme word pool for 3, 4, 5, 6, 7 and 8 letter
+          words — the solver will rank theme words first so you find today's answer faster.
         </p>
         <!-- Internal navigation links for SEO -->
         <nav class="flex justify-center gap-4 mt-4 mb-3 text-sm">
-          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Solver</NuxtLink>
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
           <span class="text-gray-400">·</span>
           <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
           <span class="text-gray-400">·</span>
@@ -62,11 +63,13 @@
       <!-- Simple footer for other pages -->
       <div v-else class="text-gray-500 dark:text-gray-400">
         <p>This app helps you solve any Wordle challenges!</p>
-        <!-- Internal navigation links for SEO -->
+        <!-- Internal navigation links for SEO — distinct anchors per page to
+             keep /  (generic Wordle helper) and /wodl (Binance WODL) from
+             competing for the same keyword. -->
         <nav class="flex justify-center gap-4 mt-3 mb-3 text-sm">
-          <NuxtLink to="/" class="text-blue-500 hover:underline">Solver</NuxtLink>
+          <NuxtLink to="/" class="text-blue-500 hover:underline">Wordle Helper</NuxtLink>
           <span class="text-gray-400">·</span>
-          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Solver</NuxtLink>
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
           <span class="text-gray-400">·</span>
           <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
           <span class="text-gray-400">·</span>

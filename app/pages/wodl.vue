@@ -133,16 +133,29 @@ const sortedLengths = computed(() =>
 )
 const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 
-// Dynamic SEO meta — front-loads "WODL Solver" before Google's ~60 char truncation
-const seoTitle = computed(() =>
-  theme.value
-    ? `WODL Solver — Today's Theme: ${theme.value} | Free Binance WODL Helper`
-    : "WODL Solver — Today's Binance WODL Answer | Free Daily Tool"
-)
+// Dynamic SEO meta — this page is the authoritative "Binance WODL" landing
+// page. Front-load the brand + "Binance WODL" within Google's ~60 char limit.
+//
+// Title length budgeting: Google truncates SERP titles around 60 characters.
+// The fixed parts of the verbose template ("Binance WODL Solver — \"\" Theme
+// Words & Answers") are 46 chars, leaving 14 for the theme. Real Binance
+// themes regularly exceed that (e.g. "Pre-IPO Assets" 14, "Web3 Infrastructure"
+// 19). When the theme would push us past 60 chars we drop to a shorter
+// template that always fits.
+const SEO_TITLE_MAX = 60
+const seoTitle = computed(() => {
+  const t = theme.value
+  if (!t) return "Binance WODL Solver — Today's Answer & Weekly Theme Words"
+  const verbose = `Binance WODL Solver — "${t}" Theme Words & Answers`
+  if (verbose.length <= SEO_TITLE_MAX) return verbose
+  const compact = `Binance WODL Solver — ${t} Theme & Answers`
+  if (compact.length <= SEO_TITLE_MAX) return compact
+  return "Binance WODL Solver — This Week's Theme & Answers"
+})
 const seoDescription = computed(() =>
   theme.value
-    ? `Solve today's Binance WODL instantly — theme: "${theme.value}". Enter green, yellow & gray clues to get the answer. Free, fast, no login needed.`
-    : "Solve today's Binance WODL puzzle in seconds. Enter your green, yellow & gray clues and get the answer instantly. Free tool, no login required."
+    ? `This week's Binance WODL theme is "${theme.value}". Free solver — enter green, yellow & gray clues and get today's WODL answer in seconds. No login.`
+    : "Free Binance WODL solver — enter your green, yellow & gray clues and get today's WODL answer in seconds. See this week's theme word pool (3–8 letters)."
 )
 
 useSeoMeta({
@@ -150,10 +163,15 @@ useSeoMeta({
   description: seoDescription,
   ogTitle: seoTitle,
   ogDescription: seoDescription,
-  keywords: "WODL, Binance WODL, WODL solver, WODL answer today, binance wodl answer today, daily WODL answer, WODL theme today, Binance word game, WODL solution, crypto WODL, WODL crypto game, wodl 5 letter words, how to play binance wodl",
+  ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
+  twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
+  keywords: "binance wodl, binance wodl solver, binance wodl answer today, wodl answer, wodl theme today, wodl crypto game, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, how to play binance wodl",
 });
 
-// Add canonical URL and JSON-LD structured data for better SEO
+// Canonical + structured data. This page declares both the WebApplication
+// (the solver) AND a HowTo — HowTo schema is frequently promoted into rich
+// SERP results for "how to ..." queries, which directly attacks the 0% CTR
+// problem flagged in the weekly audit.
 useHead({
   link: [
     { rel: 'canonical', href: 'https://wordl.ryxwaer.com/wodl' }
@@ -166,14 +184,54 @@ useHead({
         "@type": "WebApplication",
         "name": "Binance WODL Solver",
         "url": "https://wordl.ryxwaer.com/wodl",
-        "description": "A free tool to help solve Binance WODL puzzles by suggesting possible answers based on your clues. Get today's WODL answer instantly.",
-        "applicationCategory": "Game, Utility",
+        "description": "Free Binance WODL solver. Suggests possible answers based on your green, yellow and gray letter clues, and lists the current weekly theme's word pool (3–8 letters).",
+        "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript. Works in any modern browser.",
         "offers": {
           "@type": "Offer",
           "price": "0",
           "priceCurrency": "USD"
         }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to solve today's Binance WODL",
+        "description": "Find today's Binance WODL answer by entering the color-coded clues from your in-app guesses.",
+        "totalTime": "PT30S",
+        "tool": [
+          { "@type": "HowToTool", "name": "Binance WODL Solver" }
+        ],
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Enter your green letters",
+            "text": "Type each green (correct-position) letter into the input box matching its position in the word."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Add yellow letters",
+            "text": "Add any yellow (in the word, wrong position) letters to the Included Letters field."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Mark gray letters",
+            "text": "Click gray (not in the word) letters on the keyboard to mark them as excluded."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Calculate possible words",
+            "text": "The solver instantly returns all valid answers matching your clues, with this week's theme words ranked first."
+          }
+        ]
       })
     }
   ]
