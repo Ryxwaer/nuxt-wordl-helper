@@ -121,13 +121,6 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       ignore: ['/debug']
-    },
-    // Strip the `x-powered-by: Nuxt` header flagged as a minor info leak in
-    // the weekly SEO audit. `routeRules` is applied at response time by
-    // Nitro/h3, which is strictly more reliable than a request-time
-    // middleware (which would run before the header is set).
-    routeRules: {
-      '/**': { headers: { 'x-powered-by': '' } }
     }
   }
 })
