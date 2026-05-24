@@ -10,10 +10,18 @@ export default defineNuxtConfig({
   }], '@nuxtjs/sitemap'],
 
   sitemap: {
+    // Generate at runtime, not at prerender time. The sitemap.list() API
+    // showed `indexed: 0 / submitted: 3` with 2 warnings on 2026-05-24
+    // because the sitemap was being baked at build time — `lastmod` then
+    // stayed frozen at the deploy timestamp for weeks (e.g. all three
+    // URLs were stuck at 2026-04-24 long after fresh deploys), and Google
+    // flags lastmod-not-updating-despite-changefreq=daily as a warning.
+    //
+    // With cacheMaxAgeSeconds and the route excluded from Nitro prerender,
+    // the urls() function runs per-request (cached for 10 minutes) so
+    // `lastmod` is always within a 10-minute window of "now".
+    cacheMaxAgeSeconds: 600,
     urls: () => {
-      // Use the build time as lastmod. `/` and `/wodl` change per-request
-      // (theme pool) so we always advertise "today" as the last modification
-      // to encourage more frequent recrawls.
       const now = new Date().toISOString()
       return [
         { loc: '/', changefreq: 'daily', priority: 1.0, lastmod: now },
@@ -97,7 +105,7 @@ export default defineNuxtConfig({
         { name: 'twitter:image', content: 'https://wordl.ryxwaer.com/og-image.jpg' },
         { name: 'twitter:image:alt', content: 'Wordle Helper and Binance WODL Solver — letter tiles spelling WORDL' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Free Wordle helper and Binance WODL solver (also known as Binance WOTD / Word of the Day) — enter green, yellow & gray clues and get instant answers for 3–8 letter words. No login required.' },
+        { name: 'description', content: 'Free Wordle helper & Binance WODL solver (a.k.a. WOTD / Word of the Day). Enter green, yellow & gray clues to get instant 3–8 letter answers.' },
         // Keep WODL terms first (~all real GSC search volume) but include
         // WOTD / Word of the Day variants — Binance's official name — to
         // capture latent demand and signal entity equivalence to Google.
@@ -120,7 +128,10 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      ignore: ['/debug']
+      // Excluding /sitemap.xml from prerender lets @nuxtjs/sitemap serve
+      // it at request time (with a 600s SWR cache, see `sitemap` config
+      // above) so `<lastmod>` reflects "now" instead of the build time.
+      ignore: ['/debug', '/sitemap.xml']
     }
   }
 })

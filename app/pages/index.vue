@@ -39,62 +39,17 @@
         </div>
       </div>
 
-    <!-- Today's WODL Theme — H2 for SEO (people search by theme name) -->
+    <!-- Today's WODL Theme — link to the dedicated /wodl page where the
+         current theme + word pool are surfaced with full context. The
+         homepage stays a calculator: only the tool, the H1 and this small
+         contextual link. Background context lives on /wodl, /about and
+         the layout footer (default.vue). See report/2025-05-24.md §6. -->
     <NuxtLink v-if="theme" to="/wodl" class="mt-6 group text-center block hover:no-underline">
       <h2 class="text-lg font-semibold text-gray-500 dark:text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors duration-200">
         Today's WODL Theme:
         <span class="text-[var(--color-primary)]">{{ theme }}</span>
       </h2>
     </NuxtLink>
-
-    <!--
-      Informational SSR content block. Targets the "wodl" raw query
-      (297 impressions, 0 clicks at position 7.4 per the 2026-04-24 audit).
-      The #1 competitor (miguelroquefernandes.com/wodl-solver) has zero
-      "What is WODL" content — so substantive, theme-aware copy here is a
-      direct content-quality lever Google's Helpful Content System rewards.
-    -->
-    <section
-      v-glow
-      class="w-full max-w-5xl mt-10 p-8 rounded-3xl glass-card text-left"
-    >
-      <h2 class="text-2xl font-semibold mb-4 text-gray-700 dark:text-gray-300">
-        What is Binance WODL?
-      </h2>
-      <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Binance <strong>WODL</strong> — officially called
-        <strong>WOTD</strong> (<em>Word of the Day</em>) by Binance, but
-        widely known as WODL in the community — is a free daily word puzzle
-        inside the Binance app, inspired by Wordle. Each week Binance
-        publishes a new <strong>theme</strong> and a pool of crypto-related
-        words from 3 to 8 letters. You guess words from that pool using
-        green, yellow and gray feedback tiles, and correct answers earn
-        small crypto rewards.
-      </p>
-      <p v-if="theme" class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        <strong>This week's WODL theme is
-          <span class="text-[var(--color-primary)]">{{ theme }}</span>.</strong>
-        See the full word pool for every length on the
-        <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
-        page — theme words are ranked first in the solver results above so
-        you can find the answer faster.
-      </p>
-      <p v-else class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        See the full weekly theme word pool on the
-        <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
-        page — theme words are ranked first in the solver results above.
-      </p>
-      <h3 class="text-lg font-semibold mt-6 mb-2 text-gray-700 dark:text-gray-300">
-        How this WODL solver works
-      </h3>
-      <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-        Type any green letters into the position boxes, add yellow letters to
-        "Included Letters", and click gray letters on the keyboard to exclude
-        them. The solver instantly narrows the word list down to candidates
-        that match every clue and ranks this week's theme words at the top.
-        Works for both Binance WODL and classic Wordle, no login required.
-      </p>
-    </section>
   </div>
 </template>
 
@@ -103,37 +58,39 @@
 const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
 const theme = computed(() => themeData.value?.theme ?? null)
 
-// Title / description rewritten 2026-04-18 in response to weekly SEO audit:
-// GSC shows this page accumulates the bulk of WODL-query impressions
-// ("wodl solver" 192, "wodl" 134, "binance wodl solver" 14), yet the prior
-// title never said "WODL" — which credibly explains the 0% CTR. Front-load
-// "WODL Solver" while keeping "Wordle Helper" so generic-Wordle queries
-// still match. Kept under ~60 chars for SERP display.
+// Title is intentionally WODL-first — GSC shows this page accumulates the
+// bulk of WODL-query impressions ("wodl solver", "wodl", "binance wodl
+// solver"). Kept under ~60 chars for SERP display.
+//
+// Description trimmed to ~140 chars in 2026-05-24 to fit Google's mobile
+// SERP truncation budget without ellipsis (was 172 chars).
 useSeoMeta({
   title: "WODL Solver & Wordle Helper — Today's Answer & Word Finder",
   description:
-    "Free WODL Solver & Wordle Helper. Enter green, yellow & gray clues and get instant answers for 3–8 letter words. Solves Binance WODL and classic Wordle. No login.",
+    "Free WODL Solver & Wordle Helper. Enter green, yellow & gray clues to get answers for 3–8 letter Binance WODL and Wordle puzzles. No login.",
   ogTitle: "WODL Solver & Wordle Helper — Today's Answer & Word Finder",
   ogDescription:
     "Enter your clues, get instant answers. Free WODL Solver and Wordle Helper — 3 to 8 letter words, no login required.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  // Ordered by actual GSC-observed query volume for this URL. WOTD /
-  // "word of the day" variants appended after the WODL terms — Binance's
-  // official name has near-zero search volume today but is the term the
-  // company itself promotes, so we keep both query families covered.
+  // Ordered by actual GSC-observed query volume. WOTD / "word of the day"
+  // variants appended after WODL terms — Binance's official name has very
+  // little organic volume today but the parallel branding paid off in
+  // GSC ("binance wotd solver" reaching 14.3% CTR after the May 3 deploy).
   keywords:
     "wodl solver, wodl, binance wodl solver, wodl answer today, wordle helper, wordle solver, word finder, binance wodl, wordle answer helper, 5 letter word finder, word puzzle solver, crypto word game, binance wotd, binance word of the day, wotd solver, word of the day solver",
 });
 
-// Canonical + JSON-LD — homepage is positioned as the general Wordle helper.
-// /wodl is the authoritative Binance WODL landing page.
+// Canonical + WebApplication schema only.
 //
-// FAQPage schema is added because (a) the #1 competitor for "wodl solver"
-// ships zero structured data, leaving rich-snippet real estate uncontested,
-// and (b) the 2026-04-24 audit shows the raw "wodl" query gets 297
-// impressions / 0 clicks — Q&A snippets directly improve CTR for
-// informational intent.
+// We removed the FAQPage schema in 2026-05-24 alongside the on-page
+// "What is Binance WODL?" content section: per Google's structured data
+// guidelines, FAQPage schema requires the Q&As to be visible to the user
+// on the source page. Schema without backing content is a policy
+// violation and risks rich-result loss / manual penalty.
+//
+// The /wodl page (which has its own visible "What is Binance WODL?" H2)
+// retains its FAQPage schema, including the WODL ↔ WOTD bridge Q&A.
 useHead({
   link: [
     { rel: 'canonical', href: 'https://wordl.ryxwaer.com/' }
@@ -165,60 +122,6 @@ useHead({
           "priceCurrency": "USD"
         }
       })
-    },
-    {
-      type: 'application/ld+json',
-      // Computed so Google sees the live theme answer in the schema, not a
-      // stale build-time value. Falls back to a generic answer when the
-      // theme API is down so the schema is always valid.
-      innerHTML: computed(() => JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is Binance WODL (and is it the same as WOTD)?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Binance WODL and Binance WOTD are the same game — Binance officially calls it WOTD (Word of the Day), while the player community widely calls it WODL. It's a free daily word puzzle inside the Binance app, inspired by Wordle. Each week Binance publishes a new theme and a pool of crypto-related words from 3 to 8 letters. Players guess words from the pool using green, yellow and gray feedback tiles, and correct answers earn small crypto rewards."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is this week's Binance WODL / WOTD theme?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": theme.value
-                ? `This week's Binance WODL (WOTD) theme is "${theme.value}". The full word pool for 3, 4, 5, 6, 7 and 8 letter words is available on the WODL Solver page, with theme words ranked first in the solver results.`
-                : "Binance publishes a new WODL / WOTD theme each week alongside a pool of crypto-related words from 3 to 8 letters. Visit the WODL Solver page on this site to see the current theme and full word pool."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do I use the Wordle / WODL solver?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Type any green (correct-position) letters into the matching position boxes. Add yellow (in the word, wrong position) letters to the Included Letters field. Click gray (not in the word) letters on the keyboard to mark them as excluded. The solver instantly returns every word that matches your clues, with this week's WODL theme words ranked first."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is the WODL solver free?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. The WODL Solver and Wordle Helper are completely free. No account, login or app install is required — open the page and enter your clues."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Does this solver work for classic Wordle as well?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Yes. The same solver supports classic Wordle (5-letter words) and Binance WODL (3 to 8 letter words). Pick the word length you need, enter your green, yellow and gray clues, and the solver lists every matching answer."
-            }
-          }
-        ]
-      }))
     }
   ]
 })

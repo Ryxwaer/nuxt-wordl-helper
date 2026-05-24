@@ -14,6 +14,15 @@ dist/
 .env
 .env.* # if you have different env files for different environments
 
+# Secrets / credentials (never commit)
+# Catches GSC service-account JSON at skills/secret.json plus any other
+# credential JSON dropped under skills/. Keep credential files outside this
+# pattern by giving them a non-secret name AND not storing them in skills/.
+skills/secret.json
+skills/*-credentials.json
+skills/*.key.json
+**/service-account*.json
+
 # Log files
 logs/
 
