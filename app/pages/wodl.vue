@@ -12,15 +12,16 @@
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
         Binance <strong>WODL</strong> — officially called <strong>WOTD</strong>
-        (<em>Word of the Day</em>) by Binance — is a free daily word game
-        inside the Binance app, inspired by Wordle. Players get six attempts
-        to guess a crypto-related word and earn small rewards for correct
-        guesses. Each week features a new theme with words ranging from 3 to
-        8 letters. The community widely calls it "WODL", which is why this
-        solver uses that name throughout.
+        (<em>Word of the Day</em>) by Binance — is a free daily crypto word
+        puzzle inside the Binance app. Each puzzle gives you six attempts to
+        guess a crypto-related word (Binance allows up to two puzzles per
+        day), and players who solve the puzzle on five days within a weekly
+        theme qualify to share that week's prize pool. Each theme features
+        new words ranging from 3 to 8 letters. The community widely calls
+        the game "WODL", which is why this solver uses that name throughout.
       </p>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Like Wordle, WODL / WOTD gives feedback with different colored tiles:
+        WODL / WOTD gives feedback after each guess with different colored tiles:
       </p>
       <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-6 ml-4">
         <li><span class="font-bold" style="color: var(--letter-correct)">Green</span> tiles indicate correct letters in the right position</li>
@@ -71,7 +72,7 @@
       </div>
     </div>
 
-    <!-- Wordle Helper Card Container (redirects to home) -->
+    <!-- WODL Solver entry card (links to homepage solver) -->
     <div v-glow class="w-full max-w-5xl min-h-[200px] p-8 glass-card rounded-3xl flex items-center justify-center">
       <div class="flex flex-col items-center justify-center">
         <h2 class="text-2xl font-semibold mb-6 text-gray-700 dark:text-gray-300">
@@ -139,43 +140,38 @@ const sortedLengths = computed(() =>
 )
 const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 
-// Dynamic SEO meta — this page is the authoritative "Binance WODL" landing
-// page. Front-load the brand + "Binance WODL" within Google's ~60 char limit.
+// SERP-facing meta is intentionally STATIC.
 //
-// Title length budgeting: Google truncates SERP titles around 60 characters.
-// The fixed parts of the verbose template ("Binance WODL Solver — \"\" Theme
-// Words & Answers") are 46 chars, leaving 14 for the theme. Real Binance
-// themes regularly exceed that (e.g. "Pre-IPO Assets" 14, "Web3 Infrastructure"
-// 19). When the theme would push us past 60 chars we drop to a shorter
-// template that always fits.
-const SEO_TITLE_MAX = 60
-const seoTitle = computed(() => {
-  const t = theme.value
-  if (!t) return "Binance WODL Solver — Today's Answer & Weekly Theme Words"
-  const verbose = `Binance WODL Solver — "${t}" Theme Words & Answers`
-  if (verbose.length <= SEO_TITLE_MAX) return verbose
-  const compact = `Binance WODL Solver — ${t} Theme & Answers`
-  if (compact.length <= SEO_TITLE_MAX) return compact
-  return "Binance WODL Solver — This Week's Theme & Answers"
-})
-const seoDescription = computed(() =>
-  theme.value
-    ? `This week's Binance WODL theme is "${theme.value}". Free solver — enter green, yellow & gray clues and get today's WODL answer in seconds. No login.`
-    : "Free Binance WODL solver — enter your green, yellow & gray clues and get today's WODL answer in seconds. See this week's theme word pool (3–8 letters)."
-)
-
+// Earlier we used a dynamic title baking the live theme name into the
+// title tag (e.g. `Binance WODL Solver — "Pre-IPO Assets" Theme Words…`)
+// as a freshness signal. That backfired on slow-crawl engines: Brave's
+// SERP showed the "Pre-IPO Assets" snippet for 2+ weeks after the theme
+// rolled, because Brave's crawler hadn't re-indexed yet. Slow re-crawl
+// is structural, so any theme-in-title pattern will be stale somewhere.
+//
+// New strategy: keep title + meta description fully static, but let the
+// page BODY remain dynamic — the "Today's Binance WODL Theme: …" H2,
+// the "This Week's WODL Word Pool" grid, and the FAQ schema all still
+// inject the live theme. Body freshness is what Google's freshness
+// algorithms actually score; the SERP snippet is independent.
+//
+// Title differentiation: this page leads with "Theme Words & Pool"
+// (the unique content vs. the homepage `/`, which leads with "Solver —
+// Today's Answer"). Both static, both within Google's ~60 char SERP
+// budget, both packing WODL + WOTD synonyms in one line.
 useSeoMeta({
-  title: seoTitle,
-  description: seoDescription,
-  ogTitle: seoTitle,
-  ogDescription: seoDescription,
+  title: "Binance WODL Theme Words & Pool — WOTD Solver",
+  description:
+    "Free Binance WODL / WOTD solver with this week's theme word pool (3–8 letters). Enter your green, yellow & gray clues to find today's answer.",
+  ogTitle: "Binance WODL Theme Words & Pool — WOTD Solver",
+  ogDescription:
+    "See this week's Binance WODL / WOTD theme word pool (3–8 letters) and use the free solver to find today's answer from your color clues.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  // Mixed WODL/WOTD keywords. Binance officially names the game WOTD
-  // (Word of the Day), but GSC shows ~all real impressions come from
-  // "wodl" queries. We list both so we capture WODL today AND any latent
-  // WOTD demand as Binance pushes the official name.
-  keywords: "binance wodl, binance wodl solver, binance wodl answer today, wodl answer, wodl theme today, wodl crypto game, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, how to play binance wodl, binance wotd, binance word of the day, wotd solver, word of the day solver, binance wotd answer",
+  // Binance WODL / WOTD only. We deliberately don't target generic
+  // Wordle queries — the solver biases toward this week's Binance crypto
+  // theme words, so a Wordle player would get a worse experience.
+  keywords: "binance wodl, binance wodl solver, binance wotd, binance wotd solver, binance wodl theme, wodl theme today, wodl word pool, wodl 3 letter words, wodl 4 letter words, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, wodl 8 letter words, binance word of the day, wotd solver, word of the day solver",
 });
 
 // Canonical + structured data. This page declares both the WebApplication
@@ -289,6 +285,14 @@ useHead({
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Binance WODL (WOTD) word lengths vary by week and by player account. Typical lengths range from 3 to 8 letters, all drawn from the announced weekly theme. This solver supports every length in that range."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I win Binance WODL rewards?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "To earn rewards in Binance WODL (WOTD), you need to correctly solve the daily puzzle on five days during a weekly theme. Players who reach five wins share that week's prize pool, which Binance announces in advance and pays out through the Binance Reward Hub — typically as Binance Points vouchers, BNB, or USDT vouchers depending on the theme. Each puzzle gives you up to six attempts to find the correct word, and Binance allows up to two puzzles per day."
             }
           },
           {

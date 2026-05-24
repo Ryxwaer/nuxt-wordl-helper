@@ -3,10 +3,10 @@
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card -->
     <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
-      Wordle & Binance WODL Solver
+      Binance WODL Solver
     </h1>
 
-    <!-- Wordle Helper Card Container -->
+    <!-- WODL Solver Card Container -->
       <div
         v-glow
         class="w-full max-w-5xl min-h-160 p-8 rounded-3xl glass-card"
@@ -58,27 +58,32 @@
 const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
 const theme = computed(() => themeData.value?.theme ?? null)
 
-// Title is intentionally WODL-first — GSC shows this page accumulates the
-// bulk of WODL-query impressions ("wodl solver", "wodl", "binance wodl
-// solver"). Kept under ~60 chars for SERP display.
+// SERP-facing meta is fully static (no theme.value reads here, no dynamic
+// title computed). Earlier sessions experimented with dynamic theme-name
+// titles for "freshness", but slow-crawl engines (Brave, Bing) cache the
+// title from one crawl window and serve a stale theme name for weeks.
+// Body content (the live WODL theme card on /wodl) keeps Google's
+// freshness signals; SERP titles stay correct year-round.
 //
-// Description trimmed to ~140 chars in 2026-05-24 to fit Google's mobile
-// SERP truncation budget without ellipsis (was 172 chars).
+// Naming: the app targets Binance WODL specifically — NOT generic Wordle.
+// The solver biases results toward this week's Binance crypto theme
+// words, so a Wordle player landing here would get a worse experience.
+// Both "WODL" (community/search term) and "WOTD" / "Word of the Day"
+// (Binance's official name) appear so we capture both query families.
 useSeoMeta({
-  title: "WODL Solver & Wordle Helper — Today's Answer & Word Finder",
+  title: "Binance WODL Solver — Today's Word of the Day Answer",
   description:
-    "Free WODL Solver & Wordle Helper. Enter green, yellow & gray clues to get answers for 3–8 letter Binance WODL and Wordle puzzles. No login.",
-  ogTitle: "WODL Solver & Wordle Helper — Today's Answer & Word Finder",
+    "Free Binance WODL solver — also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.",
+  ogTitle: "Binance WODL Solver — Today's Word of the Day Answer",
   ogDescription:
-    "Enter your clues, get instant answers. Free WODL Solver and Wordle Helper — 3 to 8 letter words, no login required.",
+    "Enter your green, yellow & gray clues, get today's Binance WODL / WOTD answer in seconds. Free, no login. 3–8 letter words.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  // Ordered by actual GSC-observed query volume. WOTD / "word of the day"
-  // variants appended after WODL terms — Binance's official name has very
-  // little organic volume today but the parallel branding paid off in
-  // GSC ("binance wotd solver" reaching 14.3% CTR after the May 3 deploy).
+  // Binance-WODL-specific keywords only. Generic Wordle keywords removed
+  // 2026-05-24: the solver's theme-aware ranking would actively hurt a
+  // Wordle player's experience, so we shouldn't compete for that traffic.
   keywords:
-    "wodl solver, wodl, binance wodl solver, wodl answer today, wordle helper, wordle solver, word finder, binance wodl, wordle answer helper, 5 letter word finder, word puzzle solver, crypto word game, binance wotd, binance word of the day, wotd solver, word of the day solver",
+    "binance wodl, binance wodl solver, binance wotd, binance wotd solver, wodl solver, wotd solver, binance word of the day, word of the day solver, wodl answer today, wodl theme today, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, crypto word game, binance crypto word puzzle",
 });
 
 // Canonical + WebApplication schema only.
@@ -101,18 +106,20 @@ useHead({
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "Wordle Helper & Solver",
-        // alternateName covers both the community-search term (WODL) and
-        // Binance's official product name (WOTD / Word of the Day). Helps
-        // Google's knowledge graph link the entity across both query
-        // families even though we keep "WODL" as the primary brand.
+        "name": "Binance WODL Solver",
+        // alternateName covers Binance's official product name (WOTD /
+        // Word of the Day) so Google's knowledge graph links the entity
+        // across both query families. We deliberately do NOT list
+        // "Wordle Helper" here — the solver is theme-biased toward this
+        // week's Binance crypto words and is not built for generic Wordle.
         "alternateName": [
-          "Binance WODL Solver",
           "Binance WOTD Solver",
-          "Word of the Day Solver"
+          "Binance Word of the Day Solver",
+          "WODL Solver",
+          "WOTD Solver"
         ],
         "url": "https://wordl.ryxwaer.com/",
-        "description": "A free tool that suggests possible Wordle and Binance WODL (also known as WOTD or Word of the Day) answers based on your green, yellow and gray letter clues.",
+        "description": "A free Binance WODL / WOTD (Word of the Day) solver that suggests possible answers from this week's Binance theme word pool based on your green, yellow and gray letter clues.",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript. Works in any modern browser.",

@@ -13,7 +13,7 @@
         Our Commitment to Privacy
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        At Wordle Helper, we are committed to protecting your privacy. This policy explains what information we collect, how we use it, and how we protect it.
+        At Binance WODL Solver, we are committed to protecting your privacy. This policy explains what information we collect, how we use it, and how we protect it.
       </p>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
         <strong>In short: We don't collect or store any of your personal data.</strong>
@@ -34,7 +34,7 @@
         <li>We <strong>do not</strong> track your usage patterns or behaviors.</li>
       </ul>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-        When you use our Wordle Helper, all data processing happens directly in your browser. The letters you input (correct positions, included letters, and excluded letters) are only used to query our word database for possible solutions. These inputs are not stored or saved anywhere after your session ends.
+        When you use our Binance WODL Solver, all data processing happens directly in your browser. The letters you input (correct positions, included letters, and excluded letters) are only used to query our word database for possible solutions. These inputs are not stored or saved anywhere after your session ends.
       </p>
     </section>
 
@@ -90,11 +90,11 @@
 
 <script setup lang="ts">
 useHead({
-  title: "Privacy Policy - Wordle Helper",
+  title: "Privacy Policy — Binance WODL Solver",
   meta: [
     {
       name: "description",
-      content: "Privacy Policy for Wordle Helper - We don't store your data or use cookies.",
+      content: "Privacy Policy for the Binance WODL Solver — we don't store your data or use cookies.",
     },
     {
       name: "robots",

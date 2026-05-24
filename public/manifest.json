@@ -1,6 +1,6 @@
 {
-  "name": "Binance WODL Solver & Wordle Helper",
-  "description": "Free tool to solve Binance WODL puzzles and Wordle. Enter your clues and get instant word suggestions.",
+  "name": "Binance WODL Solver",
+  "description": "Free Binance WODL / WOTD (Word of the Day) solver. Enter your green, yellow & gray clues and get instant 3–8 letter answers from this week's theme.",
   "short_name": "WODL Solver",
   "icons": [
     {

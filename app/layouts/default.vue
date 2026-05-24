@@ -28,21 +28,21 @@
     >
       <!-- Extended footer for home page only -->
       <div v-if="isOnRoot" class="max-w-3xl mx-auto text-gray-600 dark:text-gray-400">
-        <h2 class="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">Wordle Helper & Word Finder</h2>
+        <h2 class="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">Binance WODL Solver</h2>
         <p class="mb-3">
-          This free Wordle helper suggests possible answers based on the clues you already have. Type in your
-          green, yellow and gray letters and the tool instantly narrows a large word list down to the words
-          that still fit — for Wordle, Wordle-style games, and any 3 to 8 letter puzzle.
+          This free Binance WODL solver — also known as <strong>WOTD</strong> (Word of the Day) — suggests
+          possible answers based on the clues you already have. Type in your green, yellow and gray letters
+          and the tool instantly narrows this week's WODL theme word pool (3 to 8 letters) down to the words
+          that still fit, with Binance's official theme words ranked first.
         </p>
         <p class="mb-3">
-          Playing Binance's daily crypto puzzle? Head over to the dedicated
-          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
-          page to see this week's theme and pull up the full theme word pool for 3, 4, 5, 6, 7 and 8 letter
-          words — the solver will rank theme words first so you find today's answer faster.
+          Want to see this week's full theme and word pool? Head over to the dedicated
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Theme Words page</NuxtLink>
+          where you can browse the complete 3, 4, 5, 6, 7 and 8 letter pool before you start guessing.
         </p>
         <!-- Internal navigation links for SEO -->
         <nav class="flex justify-center gap-4 mt-4 mb-3 text-sm">
-          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Theme Words</NuxtLink>
           <span class="text-gray-400">·</span>
           <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
           <span class="text-gray-400">·</span>
@@ -62,14 +62,14 @@
       
       <!-- Simple footer for other pages -->
       <div v-else class="text-gray-500 dark:text-gray-400">
-        <p>This app helps you solve any Wordle challenges!</p>
-        <!-- Internal navigation links for SEO — distinct anchors per page to
-             keep /  (generic Wordle helper) and /wodl (Binance WODL) from
-             competing for the same keyword. -->
+        <p>This app helps you solve Binance WODL (Word of the Day) puzzles.</p>
+        <!-- Internal navigation links for SEO — distinct anchors per page so
+             /  (the solver tool) and /wodl (theme word pool) don't compete
+             for the same keyword. -->
         <nav class="flex justify-center gap-4 mt-3 mb-3 text-sm">
-          <NuxtLink to="/" class="text-blue-500 hover:underline">Wordle Helper</NuxtLink>
+          <NuxtLink to="/" class="text-blue-500 hover:underline">WODL Solver</NuxtLink>
           <span class="text-gray-400">·</span>
-          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">Binance WODL Solver</NuxtLink>
+          <NuxtLink to="/wodl" class="text-blue-500 hover:underline">WODL Theme Words</NuxtLink>
           <span class="text-gray-400">·</span>
           <NuxtLink to="/about" class="text-blue-500 hover:underline">How to Use</NuxtLink>
           <span class="text-gray-400">·</span>
@@ -110,7 +110,7 @@ const SITE_URL = 'https://wordl.ryxwaer.com'
 const breadcrumbItems = computed(() => {
   const items = [{ name: 'Home', url: SITE_URL + '/' }]
   const path = route.path
-  if (path === '/wodl') items.push({ name: 'WODL Solver', url: SITE_URL + '/wodl' })
+  if (path === '/wodl') items.push({ name: 'WODL Theme Words', url: SITE_URL + '/wodl' })
   else if (path === '/about') items.push({ name: 'How to Use', url: SITE_URL + '/about' })
   else if (path === '/red-packet') items.push({ name: 'Red Packet', url: SITE_URL + '/red-packet' })
   else if (path === '/policy') items.push({ name: 'Privacy Policy', url: SITE_URL + '/policy' })
