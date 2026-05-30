@@ -138,29 +138,31 @@ useHead({
 // Get red packet configuration from app config
 const redPacketConfig = appConfig.redPacket;
 
-// Format the build date for display
+// "Last Updated" date. The home and /wodl pages render the live current-week
+// word pool (rank=1 from the DB) on every request, so their freshness date is
+// the render time — not the build date, which would otherwise freeze at the
+// last deploy and signal staleness while the content is actually current.
+// Static informational pages keep the build date. Computed once on the server
+// and reused on the client (useState) to avoid hydration mismatches.
+const LIVE_DATA_ROUTES = ['/', '/wodl'];
+const renderDateIso = useState('renderDateIso', () => new Date().toISOString());
+
 const formattedDate = computed(() => {
-  // Check if buildDate exists and is a valid string
-  const buildDateStr = typeof appConfig.buildDate === 'string' ? 
-    appConfig.buildDate : new Date().toISOString();
-    
-  // Parse the date with a fallback for invalid dates
-  const buildDate = new Date(buildDateStr);
-  
-  // Check if the date is valid
-  if (isNaN(buildDate.getTime())) {
-    return new Date().toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-  
-  // Format as "Month Day, Year" (e.g., "January 15, 2023")
-  return buildDate.toLocaleDateString(undefined, {
+  const isLivePage = LIVE_DATA_ROUTES.includes(route.path);
+  const sourceIso = isLivePage
+    ? renderDateIso.value
+    : (typeof appConfig.buildDate === 'string' ? appConfig.buildDate : renderDateIso.value);
+
+  const parsed = new Date(sourceIso);
+  const safeDate = isNaN(parsed.getTime()) ? new Date() : parsed;
+
+  // Fixed locale + timeZone so the server and client render the identical
+  // string (otherwise day-boundary/locale differences cause hydration warnings).
+  return safeDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'UTC'
   });
 });
 

@@ -1,9 +1,10 @@
 <template>
   <!-- Main page container -->
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
-    <!-- H1 heading outside the card -->
+    <!-- H1 heading outside the card. The live theme is injected as body
+         freshness (the SERP title stays static — see useSeoMeta note below). -->
     <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
-      Binance WODL Solver
+      Binance WODL Solver<template v-if="theme"> — {{ theme }} Theme</template>
     </h1>
 
     <div v-glow class="w-full max-w-5xl mb-8 p-8 glass-card rounded-3xl">
@@ -31,6 +32,33 @@
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
         I created this WODL solver to help find answers quickly. Enter what you know and get instant suggestions!
       </p>
+
+      <!-- Prominent, skim-proof CTA: catches users who won't read the page. -->
+      <div class="mt-8 flex justify-center">
+        <NuxtLink
+          to="/"
+          aria-label="Open the automated WODL solver"
+          class="group flex flex-col items-center rounded-2xl border border-[var(--color-primary)]/25 px-10 py-5 text-center transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--color-primary)]/60 hover:shadow-[0_0_30px_var(--glow-primary)]"
+        >
+          <span class="text-2xl md:text-3xl font-extrabold uppercase tracking-wide text-[var(--color-primary)]">
+            Get Your Answer
+          </span>
+          <span class="mt-1.5 inline-flex items-center gap-1.5 text-sm font-medium tracking-wide text-gray-500 dark:text-gray-400 transition-colors group-hover:text-gray-700 dark:group-hover:text-gray-300">
+            Open the automated solver
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </span>
+        </NuxtLink>
+      </div>
     </div>
 
     <!-- Today's WODL Theme -->
@@ -140,30 +168,33 @@ const sortedLengths = computed(() =>
 )
 const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 
-// SERP-facing meta is intentionally STATIC.
+// SERP title is DYNAMIC on this page — and only this page; the homepage
+// solver keeps a static title. It bakes the live weekly theme into the
+// <title>, matching how the competitor answer pages rank for theme-specific
+// "binance word of the day [theme]" queries.
 //
-// Earlier we used a dynamic title baking the live theme name into the
-// title tag (e.g. `Binance WODL Solver — "Pre-IPO Assets" Theme Words…`)
-// as a freshness signal. That backfired on slow-crawl engines: Brave's
-// SERP showed the "Pre-IPO Assets" snippet for 2+ weeks after the theme
-// rolled, because Brave's crawler hadn't re-indexed yet. Slow re-crawl
-// is structural, so any theme-in-title pattern will be stale somewhere.
+// Known tradeoff: slow-crawl engines (e.g. Brave) can show the previous
+// theme in the snippet for a while after the weekly rotation, since they
+// re-index late. We accept it — Google re-crawls /wodl within ~a day
+// (verified via URL Inspection), the theme rotates only weekly, and the
+// competitors clearly get away with theme/date-in-title, so the freshness
+// upside outweighs the occasional stale snippet on minor engines.
 //
-// New strategy: keep title + meta description fully static, but let the
-// page BODY remain dynamic — the "Today's Binance WODL Theme: …" H2,
-// the "This Week's WODL Word Pool" grid, and the FAQ schema all still
-// inject the live theme. Body freshness is what Google's freshness
-// algorithms actually score; the SERP snippet is independent.
-//
-// Title differentiation: this page leads with "Theme Words & Pool"
-// (the unique content vs. the homepage `/`, which leads with "Solver —
-// Today's Answer"). Both static, both within Google's ~60 char SERP
-// budget, both packing WODL + WOTD synonyms in one line.
+// The page BODY also stays dynamic (the "Today's Binance WODL Theme" H2,
+// the word-pool grid, and the FAQ schema all inject the live theme), and
+// the homepage `/` deliberately keeps a static "Solver" title so the two
+// pages stay differentiated.
+const pageTitle = computed(() =>
+  theme.value
+    ? `Binance WODL Solver — ${theme.value} Theme & Answers`
+    : "Binance WODL Theme Words & Pool — WOTD Solver"
+);
+
 useSeoMeta({
-  title: "Binance WODL Theme Words & Pool — WOTD Solver",
+  title: () => pageTitle.value,
   description:
     "Free Binance WODL / WOTD solver with this week's theme word pool (3–8 letters). Enter your green, yellow & gray clues to find today's answer.",
-  ogTitle: "Binance WODL Theme Words & Pool — WOTD Solver",
+  ogTitle: () => pageTitle.value,
   ogDescription:
     "See this week's Binance WODL / WOTD theme word pool (3–8 letters) and use the free solver to find today's answer from your color clues.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
