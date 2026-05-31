@@ -18,8 +18,8 @@
     <div
       ref="selectedContainer"
       v-glow
-      class="w-full overflow-hidden glass-card-inner rounded-xl p-4 font-bold dark:text-[var(--color-primary)]"
-      :class="{ 'opacity-20': selectedWords.length === 0 }"
+      class="w-full overflow-hidden glass-card-inner rounded-xl px-4 font-bold dark:text-[var(--color-primary)] transition-[padding] duration-300 ease-out"
+      :class="selectedWords.length === 0 ? 'py-1 opacity-20' : 'py-4'"
     >
       <TransitionGroup
         tag="ul"
