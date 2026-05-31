@@ -229,14 +229,8 @@ const applyStaggerAnimation = () => {
   });
 };
 
-// Time to wait after the first results arrive before deciding whether to nudge.
-// Covers the list render + staggered fade-in so the words are visibly "shown"
-// and the user has had a real chance to settle their scroll position.
-const NUDGE_DELAY_MS = 100;
-
-// On mobile, nudge the page down so the H1 leaves the viewport entirely —
-// making it obvious that results appeared underneath the card. Reads the live
-// scroll position when called, so it only jumps if the user is at the top then.
+// Scroll the H1 off the top to reveal the results area. Mobile only, and only
+// when already at the top of the page.
 const nudgePastHeading = () => {
   if (typeof window === 'undefined') return;
   if (window.matchMedia('(min-width: 768px)').matches) return;
@@ -250,13 +244,14 @@ const nudgePastHeading = () => {
 };
 
 const fetchWords = async () => {
-  // Was there a result list before this run? (Captured pre-clear; the only
-  // value we read at click time — everything else is decided on words-received.)
-  const hadPreviousResults = words.value.length > 0;
+  const isFirstCalculation = words.value.length === 0;
   words.value = [];
   hiddenWords.value = new Set();
   loading.value = true;
   searched.value = true;
+
+  // nextTick so the loading state paints before we reveal the results area.
+  if (isFirstCalculation) nextTick(nudgePastHeading);
 
   try {
     const res = await $fetch<{ words: { word: string; rank: number }[] }>("/api/words", {
@@ -264,15 +259,6 @@ const fetchWords = async () => {
       body: getData(),
     });
     words.value = res.words;
-
-    // Decide the nudge only on the first result set. The fetch resolves almost
-    // instantly, so the perceived "loading" is really the list render + staggered
-    // fade-in. We defer the decision until the words are actually visible, then
-    // read the *live* scroll position — so the user's final position wins:
-    // scrolled down by then → no jump; ended up at the top → jump.
-    if (!hadPreviousResults && res.words.length > 0) {
-      setTimeout(nudgePastHeading, NUDGE_DELAY_MS);
-    }
 
     // Hide words that are already selected (keep them in DOM so they can reappear)
     for (const sw of selectedWords.value) {
