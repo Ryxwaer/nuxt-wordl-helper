@@ -3,7 +3,7 @@
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card -->
     <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
-      Binance WODL Solver
+      <span class="hidden sm:inline">Binance </span>WODL Solver
     </h1>
 
     <!-- WODL Solver Card Container -->
