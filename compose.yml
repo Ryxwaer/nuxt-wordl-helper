@@ -9,6 +9,8 @@ services:
     pull_policy: build
     environment:
       - DB_URI
+      # Weekly WODL theme source (defaults to the public endpoint if unset).
+      - THEME_API=${THEME_API:-https://wotd-theme.ryxwaer.com/api/theme}
     networks:
       - nginx-proxy-manager_default
     restart: unless-stopped
