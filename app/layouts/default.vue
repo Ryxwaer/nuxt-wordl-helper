@@ -28,9 +28,8 @@
     >
       <!-- Extended footer for home page only -->
       <div v-if="isOnRoot" class="max-w-3xl mx-auto text-gray-600 dark:text-gray-400">
-        <h2 class="text-lg font-medium mb-2 text-gray-700 dark:text-gray-300">Binance WODL Solver</h2>
         <p class="mb-3">
-          This free Binance WODL solver — also known as <strong>WOTD</strong> (Word of the Day) — suggests
+          This free Binance WODL solver - also known as <strong>WOTD</strong> (Word of the Day) — suggests
           possible answers based on the clues you already have. Type in your green, yellow and gray letters
           and the tool instantly narrows this week's WODL theme word pool (3 to 8 letters) down to the words
           that still fit, with Binance's official theme words ranked first.
