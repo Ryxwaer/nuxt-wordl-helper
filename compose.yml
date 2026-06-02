@@ -4,13 +4,13 @@ services:
       context: .
       args:
         - NODE_ENV=production
-        - DB_URI=${DB_URI}
     image: vue-wordl:latest
     pull_policy: build
+    # Set DB_URI and THEME_API in Portainer (plain names). Compose maps them to
+    # the NUXT_-prefixed names Nuxt reads to override runtimeConfig at runtime.
     environment:
-      - DB_URI
-      # Weekly WODL theme source (defaults to the public endpoint if unset).
-      - THEME_API=${THEME_API:-https://wotd-theme.ryxwaer.com/api/theme}
+      - NUXT_DB_URI=${DB_URI}
+      - NUXT_THEME_API=${THEME_API}
     networks:
       - nginx-proxy-manager_default
     restart: unless-stopped

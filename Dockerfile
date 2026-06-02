@@ -2,10 +2,6 @@ ARG NODE_VERSION=22
 
 FROM node:${NODE_VERSION}-slim as base
 
-# Set environment variables
-ARG DB_URI
-ENV DB_URI=${DB_URI}
-
 ARG PORT=80
 
 WORKDIR /src

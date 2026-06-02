@@ -6,12 +6,11 @@ services:
       context: .
       args:
         - NODE_ENV=production
-        - DB_URI=${DB_URI}
     image: vue-wordl:latest
     pull_policy: build
     environment:
-      - DB_URI=${DB_URI}
-      - THEME_API=${THEME_API:-https://wotd-theme.ryxwaer.com/api/theme}
+      - NUXT_DB_URI=${DB_URI}
+      - NUXT_THEME_API=${THEME_API:-https://wotd-theme.ryxwaer.com/api/theme}
     networks:
       - nginx-proxy-manager_default
     ports:
