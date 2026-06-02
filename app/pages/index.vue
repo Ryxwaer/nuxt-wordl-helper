@@ -39,7 +39,7 @@
         </div>
       </div>
 
-    <!-- Today's WODL Theme — link to the dedicated /wodl page where the
+    <!-- Today's WODL Theme - link to the dedicated /wodl page where the
          current theme + word pool are surfaced with full context. The
          homepage stays a calculator: only the tool, the H1 and this small
          contextual link. Background context lives on /wodl, /about and
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-// Fetch current WODL theme (SSR — rendered into HTML for SEO)
+// Fetch current WODL theme (SSR - rendered into HTML for SEO)
 const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
 const theme = computed(() => themeData.value?.theme ?? null)
 
@@ -65,16 +65,16 @@ const theme = computed(() => themeData.value?.theme ?? null)
 // Body content (the live WODL theme card on /wodl) keeps Google's
 // freshness signals; SERP titles stay correct year-round.
 //
-// Naming: the app targets Binance WODL specifically — NOT generic Wordle.
+// Naming: the app targets Binance WODL specifically - NOT generic Wordle.
 // The solver biases results toward this week's Binance crypto theme
 // words, so a Wordle player landing here would get a worse experience.
 // Both "WODL" (community/search term) and "WOTD" / "Word of the Day"
 // (Binance's official name) appear so we capture both query families.
 useSeoMeta({
-  title: "Binance WODL Solver — Today's Word of the Day Answer",
+  title: "Binance WODL Solver - Today's Word of the Day Answer",
   description:
-    "Free Binance WODL solver — also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.",
-  ogTitle: "Binance WODL Solver — Today's Word of the Day Answer",
+    "Free Binance WODL solver - also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.",
+  ogTitle: "Binance WODL Solver - Today's Word of the Day Answer",
   ogDescription:
     "Enter your green, yellow & gray clues, get today's Binance WODL / WOTD answer in seconds. Free, no login. 3–8 letter words.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
@@ -110,7 +110,7 @@ useHead({
         // alternateName covers Binance's official product name (WOTD /
         // Word of the Day) so Google's knowledge graph links the entity
         // across both query families. We deliberately do NOT list
-        // "Wordle Helper" here — the solver is theme-biased toward this
+        // "Wordle Helper" here - the solver is theme-biased toward this
         // week's Binance crypto words and is not built for generic Wordle.
         "alternateName": [
           "Binance WOTD Solver",

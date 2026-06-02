@@ -32,7 +32,7 @@ export function initGlobalMouse() {
   window.addEventListener('mousemove', onMouseMove, { passive: true })
 }
 
-/** Tear down — called on app unmount if needed. */
+/** Tear down - called on app unmount if needed. */
 export function destroyGlobalMouse() {
   if (!INITIALIZED) return
   window.removeEventListener('mousemove', onMouseMove)

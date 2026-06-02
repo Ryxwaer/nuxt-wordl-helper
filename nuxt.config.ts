@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   sitemap: {
     // Generate at runtime, not at prerender time. The sitemap.list() API
     // showed `indexed: 0 / submitted: 3` with 2 warnings on 2026-05-24
-    // because the sitemap was being baked at build time — `lastmod` then
+    // because the sitemap was being baked at build time - `lastmod` then
     // stayed frozen at the deploy timestamp for weeks (e.g. all three
     // URLs were stuck at 2026-04-24 long after fresh deploys), and Google
     // flags lastmod-not-updating-despite-changefreq=daily as a warning.
@@ -59,7 +59,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       // Static, theme-agnostic title. Earlier sessions used a dynamic
-      // theme-name-in-title pattern ("…— \"Pre-IPO Assets\" Theme Words…")
+      // theme-name-in-title pattern ("…- \"Pre-IPO Assets\" Theme Words…")
       // for a freshness signal, but slow-crawl engines (Brave, Bing) end
       // up serving multi-week-stale SERP snippets ("Pre-IPO Assets" still
       // showing in Brave 2+ weeks after the theme changed). Body content
@@ -71,7 +71,7 @@ export default defineNuxtConfig({
       // official name. Including both maximises query coverage AND
       // outflanks the current #1 competitor (miguelroquefernandes.com)
       // who lacks WOTD entirely in his title/description.
-      title: 'Binance WODL Solver — Today\'s Word of the Day Answer',
+      title: 'Binance WODL Solver - Today\'s Word of the Day Answer',
       link: [
         // Preconnect hints for known third-party origins. Cuts ~100-300ms
         // off the first paint of AdSense / analytics / theme-API requests
@@ -101,8 +101,8 @@ export default defineNuxtConfig({
       ],
       meta: [
         { charset: 'utf-8' },
-        { property: 'og:title', content: 'Binance WODL Solver — Today\'s Word of the Day Answer' },
-        { property: 'og:description', content: 'Free Binance WODL solver — also known as WOTD (Word of the Day). Enter green, yellow & gray clues and get instant 3–8 letter answers. No login.' },
+        { property: 'og:title', content: 'Binance WODL Solver - Today\'s Word of the Day Answer' },
+        { property: 'og:description', content: 'Free Binance WODL solver - also known as WOTD (Word of the Day). Enter green, yellow & gray clues and get instant 3–8 letter answers. No login.' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'Binance WODL Solver' },
         { property: 'og:url', content: 'https://wordl.ryxwaer.com/' },
@@ -110,25 +110,25 @@ export default defineNuxtConfig({
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { property: 'og:image:type', content: 'image/jpeg' },
-        { property: 'og:image:alt', content: 'Binance WODL Solver — letter tiles spelling WORDL' },
+        { property: 'og:image:alt', content: 'Binance WODL Solver - letter tiles spelling WORDL' },
         { property: 'og:locale', content: 'en_US' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'Binance WODL Solver — Today\'s Word of the Day Answer' },
+        { name: 'twitter:title', content: 'Binance WODL Solver - Today\'s Word of the Day Answer' },
         { name: 'twitter:description', content: 'Enter your clues, get today\'s Binance WODL / WOTD answer in seconds. Free, no login. 3–8 letter words.' },
         { name: 'twitter:image', content: 'https://wordl.ryxwaer.com/og-image.jpg' },
-        { name: 'twitter:image:alt', content: 'Binance WODL Solver — letter tiles spelling WORDL' },
+        { name: 'twitter:image:alt', content: 'Binance WODL Solver - letter tiles spelling WORDL' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Free Binance WODL solver — also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.' },
+        { name: 'description', content: 'Free Binance WODL solver - also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.' },
         // The app is Binance-WODL-specific (theme-aware ranking biases
         // results toward this week's crypto theme words). We deliberately
-        // do NOT target generic Wordle queries — a Wordle player would
+        // do NOT target generic Wordle queries - a Wordle player would
         // see crypto-themed words ranked first and get a worse experience.
         // Keep keywords focused on Binance WODL / WOTD only.
         { name: 'keywords', content: 'binance wodl, binance wodl solver, binance wotd, binance wotd solver, wodl solver, wotd solver, binance word of the day, word of the day solver, binance wodl answer today, wodl theme today, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, crypto word game, binance crypto word puzzle' },
         { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
         { name: 'msapplication-config', content: '/browserconfig.xml' },
-        // SSR fallbacks — keep in sync with --color-bg-solid in main.css
+        // SSR fallbacks - keep in sync with --color-bg-solid in main.css
         // At runtime, ColorBackground.vue overwrites these from CSS variables
         { name: 'color-scheme', content: 'light dark' },
         { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#f8f8f8' },

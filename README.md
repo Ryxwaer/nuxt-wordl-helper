@@ -1,6 +1,6 @@
 # 🟩🟨⬜ Nuxt Binance WODL Solver ⬜🟨🟩
 
-A simple web application built with [Nuxt 3](https://nuxt.com/) to help you find possible solutions for **Binance WODL** — officially **WOTD** (Word of the Day) — the daily crypto word puzzle inside the Binance app.
+A simple web application built with [Nuxt 3](https://nuxt.com/) to help you find possible solutions for **Binance WODL** - officially **WOTD** (Word of the Day) - the daily crypto word puzzle inside the Binance app.
 
 - https://wordl.ryxwaer.com/
 

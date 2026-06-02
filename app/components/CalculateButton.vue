@@ -159,7 +159,7 @@ const error = computed(
 const showCopyMessage = ref(false);
 const searched = ref(false);
 
-// Scroll fade detection — show bottom fade only when more content exists below
+// Scroll fade detection - show bottom fade only when more content exists below
 const resultsContainer = useTemplateRef<HTMLElement>('resultsContainer');
 const canScrollDown = ref(false);
 const showBackToTop = ref(false);
@@ -188,10 +188,10 @@ const scrollToTop = () => {
   resultsContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// Selected words container ref — used to lock height during overflow swap
+// Selected words container ref - used to lock height during overflow swap
 const selectedContainer = useTemplateRef<HTMLElement>('selectedContainer');
 
-// Hidden words tracking — toggle visibility instead of mutating the words array
+// Hidden words tracking - toggle visibility instead of mutating the words array
 const hiddenWords = ref(new Set<string>());
 const wordListEl = useTemplateRef<HTMLElement>('wordListEl');
 
@@ -449,7 +449,7 @@ const selectWord = (word: string) => {
 </script>
 
 <style scoped>
-/* mask-image needs vendor prefix for Safari — can't be expressed in Tailwind */
+/* mask-image needs vendor prefix for Safari - can't be expressed in Tailwind */
 .fade-bottom {
   mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, black 0%, black 78%, transparent 100%);

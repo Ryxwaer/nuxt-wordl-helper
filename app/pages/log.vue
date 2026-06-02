@@ -269,7 +269,7 @@
 
       <!-- Date range for current page -->
       <div v-if="logs.length" class="text-center text-xs text-gray-400 dark:text-gray-500 mt-1">
-        {{ formatDateFull(logs[logs.length - 1].timestamp) }} — {{ formatDateFull(logs[0].timestamp) }}
+        {{ formatDateFull(logs[logs.length - 1].timestamp) }} - {{ formatDateFull(logs[0].timestamp) }}
       </div>
       </template>
     </div>

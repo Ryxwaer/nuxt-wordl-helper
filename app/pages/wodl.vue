@@ -2,9 +2,9 @@
   <!-- Main page container -->
   <div class="container mx-auto px-4 py-8 max-w-7xl flex flex-col items-center">
     <!-- H1 heading outside the card. The live theme is injected as body
-         freshness (the SERP title stays static — see useSeoMeta note below). -->
+         freshness (the SERP title stays static - see useSeoMeta note below). -->
     <h1 class="text-3xl md:text-4xl font-bold text-center m-8 text-[var(--color-primary)] drop-shadow-[0_0_25px_var(--glow-primary)]">
-      Binance WODL Solver<template v-if="theme"> — {{ theme }} Theme</template>
+      Binance WODL Solver<template v-if="theme"> - {{ theme }} Theme</template>
     </h1>
 
     <div v-glow class="w-full max-w-5xl mb-8 p-8 glass-card rounded-3xl">
@@ -12,8 +12,8 @@
         What is Binance WODL?
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-        Binance <strong>WODL</strong> — officially called <strong>WOTD</strong>
-        (<em>Word of the Day</em>) by Binance — is a free daily crypto word
+        Binance <strong>WODL</strong> - officially called <strong>WOTD</strong>
+        (<em>Word of the Day</em>) by Binance - is a free daily crypto word
         puzzle inside the Binance app. Each puzzle gives you six attempts to
         guess a crypto-related word (Binance allows up to two puzzles per
         day), and players who solve the puzzle on five days within a weekly
@@ -80,7 +80,7 @@
         This Week's WODL Word Pool
       </h2>
       <p class="text-sm text-gray-500 dark:text-gray-500 text-center mb-4">
-        Binance assigns different words per account — try any word matching your letter count.
+        Binance assigns different words per account - try any word matching your letter count.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <div v-for="len in sortedLengths" :key="len" class="text-center">
@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-// Fetch current WODL theme (SSR — rendered into HTML for SEO)
+// Fetch current WODL theme (SSR - rendered into HTML for SEO)
 const { data: themeData } = await useFetch<{ theme: string | null }>('/api/theme')
 const theme = computed(() => themeData.value?.theme ?? null)
 
@@ -168,14 +168,14 @@ const sortedLengths = computed(() =>
 )
 const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 
-// SERP title is DYNAMIC on this page — and only this page; the homepage
+// SERP title is DYNAMIC on this page - and only this page; the homepage
 // solver keeps a static title. It bakes the live weekly theme into the
 // <title>, matching how the competitor answer pages rank for theme-specific
 // "binance word of the day [theme]" queries.
 //
 // Known tradeoff: slow-crawl engines (e.g. Brave) can show the previous
 // theme in the snippet for a while after the weekly rotation, since they
-// re-index late. We accept it — Google re-crawls /wodl within ~a day
+// re-index late. We accept it - Google re-crawls /wodl within ~a day
 // (verified via URL Inspection), the theme rotates only weekly, and the
 // competitors clearly get away with theme/date-in-title, so the freshness
 // upside outweighs the occasional stale snippet on minor engines.
@@ -186,8 +186,8 @@ const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 // pages stay differentiated.
 const pageTitle = computed(() =>
   theme.value
-    ? `Binance WODL Solver — ${theme.value} Theme & Answers`
-    : "Binance WODL Theme Words & Pool — WOTD Solver"
+    ? `Binance WODL Solver - ${theme.value} Theme & Answers`
+    : "Binance WODL Theme Words & Pool - WOTD Solver"
 );
 
 useSeoMeta({
@@ -200,13 +200,13 @@ useSeoMeta({
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
   // Binance WODL / WOTD only. We deliberately don't target generic
-  // Wordle queries — the solver biases toward this week's Binance crypto
+  // Wordle queries - the solver biases toward this week's Binance crypto
   // theme words, so a Wordle player would get a worse experience.
   keywords: "binance wodl, binance wodl solver, binance wotd, binance wotd solver, binance wodl theme, wodl theme today, wodl word pool, wodl 3 letter words, wodl 4 letter words, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, wodl 8 letter words, binance word of the day, wotd solver, word of the day solver",
 });
 
 // Canonical + structured data. This page declares both the WebApplication
-// (the solver) AND a HowTo — HowTo schema is frequently promoted into rich
+// (the solver) AND a HowTo - HowTo schema is frequently promoted into rich
 // SERP results for "how to ..." queries, which directly attacks the 0% CTR
 // problem flagged in the weekly audit.
 useHead({
@@ -230,7 +230,7 @@ useHead({
           "WOTD Solver"
         ],
         "url": "https://wordl.ryxwaer.com/wodl",
-        "description": "Free Binance WODL solver — also known as Binance WOTD or Word of the Day. Suggests possible answers based on your green, yellow and gray letter clues, and lists the current weekly theme's word pool (3–8 letters).",
+        "description": "Free Binance WODL solver - also known as Binance WOTD or Word of the Day. Suggests possible answers based on your green, yellow and gray letter clues, and lists the current weekly theme's word pool (3–8 letters).",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Any",
         "browserRequirements": "Requires JavaScript. Works in any modern browser.",
@@ -297,7 +297,7 @@ useHead({
             "name": "Is WODL the same as WOTD?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes — they are the same Binance game. Binance officially calls it WOTD (Word of the Day), but the player community widely refers to it as WODL (a Wordle-style nickname). Both names point to the same daily, theme-based crypto word puzzle inside the Binance app, and this solver works for either name."
+              "text": "Yes - they are the same Binance game. Binance officially calls it WOTD (Word of the Day), but the player community widely refers to it as WODL (a Wordle-style nickname). Both names point to the same daily, theme-based crypto word puzzle inside the Binance app, and this solver works for either name."
             }
           },
           {
@@ -323,7 +323,7 @@ useHead({
             "name": "How do I win Binance WODL rewards?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "To earn rewards in Binance WODL (WOTD), you need to correctly solve the daily puzzle on five days during a weekly theme. Players who reach five wins share that week's prize pool, which Binance announces in advance and pays out through the Binance Reward Hub — typically as Binance Points vouchers, BNB, or USDT vouchers depending on the theme. Each puzzle gives you up to six attempts to find the correct word, and Binance allows up to two puzzles per day."
+              "text": "To earn rewards in Binance WODL (WOTD), you need to correctly solve the daily puzzle on five days during a weekly theme. Players who reach five wins share that week's prize pool, which Binance announces in advance and pays out through the Binance Reward Hub - typically as Binance Points vouchers, BNB, or USDT vouchers depending on the theme. Each puzzle gives you up to six attempts to find the correct word, and Binance allows up to two puzzles per day."
             }
           },
           {
@@ -331,7 +331,7 @@ useHead({
             "name": "Does the WODL solver give me today's answer directly?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Binance assigns different words to different accounts from the weekly theme pool, so there isn't a single 'today's answer' that applies to everyone. The solver shows every word in this week's pool that matches your clues, with theme words ranked first — type your green, yellow and gray letters and the candidates appear instantly."
+              "text": "Binance assigns different words to different accounts from the weekly theme pool, so there isn't a single 'today's answer' that applies to everyone. The solver shows every word in this week's pool that matches your clues, with theme words ranked first - type your green, yellow and gray letters and the candidates appear instantly."
             }
           }
         ]

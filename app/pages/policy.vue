@@ -90,11 +90,11 @@
 
 <script setup lang="ts">
 useHead({
-  title: "Privacy Policy — Binance WODL Solver",
+  title: "Privacy Policy - Binance WODL Solver",
   meta: [
     {
       name: "description",
-      content: "Privacy Policy for the Binance WODL Solver — we don't store your data or use cookies.",
+      content: "Privacy Policy for the Binance WODL Solver - we don't store your data or use cookies.",
     },
     {
       name: "robots",

@@ -14,8 +14,8 @@
         🎯 What is Binance WODL?
       </h2>
       <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
-        Binance <strong>WODL</strong> — officially <strong>WOTD</strong>
-        (Word of the Day) — is a free daily crypto word puzzle inside the
+        Binance <strong>WODL</strong> - officially <strong>WOTD</strong>
+        (Word of the Day) - is a free daily crypto word puzzle inside the
         Binance app. Each week ships with a new theme and a pool of
         crypto-related words from 3 to 8 letters. You get six attempts per
         day, and players who solve the puzzle on five days during a weekly
@@ -141,7 +141,7 @@
         <li>
           Quickly mark letters you know aren't in the word using the keyboard.
         </li>
-        <li>Simple, fast, and free — no login required.</li>
+        <li>Simple, fast, and free - no login required.</li>
       </ul>
     </section>
 
@@ -160,10 +160,10 @@
 
 <script setup lang="ts">
 useSeoMeta({
-  title: "How to Use the Binance WODL (WOTD) Solver — Guide",
+  title: "How to Use the Binance WODL (WOTD) Solver - Guide",
   description:
-    "Step-by-step guide to using the Binance WODL solver — officially WOTD (Word of the Day). Enter color clues, get 3–8 letter answers in seconds.",
-  ogTitle: "How to Use the Binance WODL (WOTD) Solver — Guide",
+    "Step-by-step guide to using the Binance WODL solver - officially WOTD (Word of the Day). Enter color clues, get 3–8 letter answers in seconds.",
+  ogTitle: "How to Use the Binance WODL (WOTD) Solver - Guide",
   ogDescription:
     "Learn how to solve today's Binance WODL / WOTD puzzle. Enter your green, yellow & gray clues and the solver returns matching theme words instantly.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
@@ -191,7 +191,7 @@ useHead({
             "name": "What is Binance WODL?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Binance WODL — officially WOTD (Word of the Day) — is a free daily crypto word puzzle inside the Binance app. Each week ships with a new theme and a pool of crypto-related words from 3 to 8 letters. You get six attempts per day, and players who solve the puzzle on five days during a weekly theme qualify to share that week's prize pool. The game shows feedback with colored tiles after each guess: Green means the letter is correct and in the right spot, Yellow means the letter is in the word but in the wrong spot, and Grey means the letter is not in the word at all. The game lives in the Binance app under More → Gift & Campaign → Word of the Day."
+              "text": "Binance WODL - officially WOTD (Word of the Day) - is a free daily crypto word puzzle inside the Binance app. Each week ships with a new theme and a pool of crypto-related words from 3 to 8 letters. You get six attempts per day, and players who solve the puzzle on five days during a weekly theme qualify to share that week's prize pool. The game shows feedback with colored tiles after each guess: Green means the letter is correct and in the right spot, Yellow means the letter is in the word but in the wrong spot, and Grey means the letter is not in the word at all. The game lives in the Binance app under More → Gift & Campaign → Word of the Day."
             }
           },
           {

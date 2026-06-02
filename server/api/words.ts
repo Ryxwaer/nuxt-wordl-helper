@@ -15,7 +15,7 @@ function isMobileUA(ua: string | undefined): boolean {
 /**
  * Internal/non-public IPs we never want to log: loopback, "Unknown", and
  * private ranges (RFC 1918 / unique-local). In production the real client IP
- * comes via X-Forwarded-For, so legitimate users are public — only local dev
+ * comes via X-Forwarded-For, so legitimate users are public - only local dev
  * and container-to-container traffic (e.g. the demo runner hitting the solver
  * over the Docker network) lands in these ranges.
  */
@@ -72,7 +72,7 @@ function logQueryToDatabase(entry: LogEntry) {
 export default defineEventHandler(async (event) => {
     const { included, excluded, position } = await readBody(event)
 
-    // Extract request metadata synchronously — event context is still valid here
+    // Extract request metadata synchronously - event context is still valid here
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
     const userAgent = getRequestHeader(event, 'user-agent')
 

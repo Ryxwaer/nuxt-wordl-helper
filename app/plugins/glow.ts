@@ -1,5 +1,5 @@
 /**
- * v-glow directive — adds a mouse-tracking glow border to any element.
+ * v-glow directive - adds a mouse-tracking glow border to any element.
  *
  * Usage:
  *   <div v-glow class="rounded-3xl ...">
@@ -68,7 +68,7 @@ function stepSpring(s: GlowState) {
   s.velocityX = (s.velocityX + dx * s.tension) * (1 - s.friction)
   s.velocityY = (s.velocityY + dy * s.tension) * (1 - s.friction)
 
-  // Settled — snap and remove from active set
+  // Settled - snap and remove from active set
   if (
     Math.abs(dx) < 0.1 &&
     Math.abs(dy) < 0.1 &&

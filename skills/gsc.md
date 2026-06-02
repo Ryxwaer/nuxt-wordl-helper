@@ -21,7 +21,7 @@ Install once:
 pip install google-api-python-client google-auth
 ```
 
-Minimal Search Analytics query — top queries for the last 7 days:
+Minimal Search Analytics query - top queries for the last 7 days:
 
 ```python
 from google.oauth2 import service_account
@@ -85,11 +85,11 @@ Optional body fields:
 ## Limits & gotchas
 
 - **Data freshness:** GSC lags ~2 days. Always set `endDate = today − 2`.
-- **Daily quota:** 1,200 queries/day per property — easily enough for weekly audits.
+- **Daily quota:** 1,200 queries/day per property - easily enough for weekly audits.
 - **Aggregation:** sums in the API match the "by property" view in the UI, not the "by page" view. Numbers may differ slightly from screenshots.
 - **Anonymized queries:** GSC hides low-volume queries; impressions in the totals row may exceed the sum of visible rows.
 - **403 on first run:** almost always missing user permission in GSC, not a credentials problem. Re-check Settings → Users and permissions.
 
 ## Verifying weekly SEO reports
 
-When a report makes a claim about clicks/impressions/CTR/position, verify it directly with `searchanalytics().query()` for the same date range and dimension before acting on the recommendation. Past reports have hallucinated missing schema, missing meta descriptions, and missing OG tags that were actually present — GSC is the source of truth, not the report's prose.
+When a report makes a claim about clicks/impressions/CTR/position, verify it directly with `searchanalytics().query()` for the same date range and dimension before acting on the recommendation. Past reports have hallucinated missing schema, missing meta descriptions, and missing OG tags that were actually present - GSC is the source of truth, not the report's prose.

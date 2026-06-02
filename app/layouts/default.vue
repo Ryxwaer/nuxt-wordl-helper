@@ -29,7 +29,7 @@
       <!-- Extended footer for home page only -->
       <div v-if="isOnRoot" class="max-w-3xl mx-auto text-gray-600 dark:text-gray-400">
         <p class="mb-3">
-          This free Binance WODL solver - also known as <strong>WOTD</strong> (Word of the Day) — suggests
+          This free Binance WODL solver - also known as <strong>WOTD</strong> (Word of the Day) - suggests
           possible answers based on the clues you already have. Type in your green, yellow and gray letters
           and the tool instantly narrows this week's WODL theme word pool (3 to 8 letters) down to the words
           that still fit, with Binance's official theme words ranked first.
@@ -62,7 +62,7 @@
       <!-- Simple footer for other pages -->
       <div v-else class="text-gray-500 dark:text-gray-400">
         <p>This app helps you solve Binance WODL (Word of the Day) puzzles.</p>
-        <!-- Internal navigation links for SEO — distinct anchors per page so
+        <!-- Internal navigation links for SEO - distinct anchors per page so
              /  (the solver tool) and /wodl (theme word pool) don't compete
              for the same keyword. -->
         <nav class="flex justify-center gap-4 mt-3 mb-3 text-sm">
@@ -139,7 +139,7 @@ const redPacketConfig = appConfig.redPacket;
 
 // "Last Updated" date. The home and /wodl pages render the live current-week
 // word pool (rank=1 from the DB) on every request, so their freshness date is
-// the render time — not the build date, which would otherwise freeze at the
+// the render time - not the build date, which would otherwise freeze at the
 // last deploy and signal staleness while the content is actually current.
 // Static informational pages keep the build date. Computed once on the server
 // and reused on the client (useState) to avoid hydration mismatches.
