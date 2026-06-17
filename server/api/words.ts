@@ -69,7 +69,7 @@ function logQueryToDatabase(entry: LogEntry) {
         })
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const { included, excluded, position } = await readBody(event)
 
     // Extract request metadata synchronously - event context is still valid here
@@ -127,4 +127,17 @@ export default defineEventHandler(async (event) => {
     await client.close()
 
     return { words }
+}, {
+    // Cache identical queries for a short window so repeated "Calculate Words"
+    // clicks with the same clues are served from cache. On a cache HIT the
+    // handler body never runs, which is intentional: it also skips
+    // logQueryToDatabase(), so rapid repeats don't spam query_logs.
+    name: 'words',
+    maxAge: 60 * 20, // dedupe identical queries for 20 minutes, then refresh
+    // The query lives in the POST body, which Nitro's default key ignores -
+    // derive the cache key from the actual clues instead.
+    getKey: async (event) => {
+        const { included, excluded, position } = await readBody(event)
+        return JSON.stringify({ i: included, e: excluded, p: position })
+    },
 })
