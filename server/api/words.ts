@@ -1,11 +1,17 @@
 import { MongoClient } from 'mongodb'
 import { hash } from 'ohash'
 
+interface WordQuery {
+    included: string[]
+    excluded: string[]
+    position: string[]
+}
+
 interface LogEntry {
     ip: string
     userAgent: string | undefined
     isMobile: boolean
-    queryData: { included: string[]; excluded: string[]; position: string[] }
+    queryData: WordQuery
 }
 
 /** Detect mobile devices from the User-Agent string. */
@@ -36,111 +42,135 @@ function isInternalIP(ip: string | undefined): boolean {
 }
 
 /**
- * Fire-and-forget: inserts a log document without blocking the caller.
- * Accepts pre-extracted request data so the event context is never
- * accessed after the response has been sent.
+ * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
+ * handler so the promise is kept alive past the response (a bare detached
+ * promise can be dropped by the runtime, which is why logging silently stopped
+ * once it was moved inside the cached resolver).
  */
-function logQueryToDatabase(entry: LogEntry) {
+async function writeQueryLog(entry: LogEntry): Promise<void> {
     const { ip, userAgent, isMobile, queryData } = entry
 
     // Skip local dev / internal (container, LAN) requests
     if (isInternalIP(ip)) return
 
-    // Entire chain is intentionally not awaited by the caller
-    resolveCountry(ip)
-        .then(async (country) => {
-        const config = useRuntimeConfig()
-        const client = new MongoClient(config.DB_URI)
-        await client.connect()
+    const country = await resolveCountry(ip)
+    const config = useRuntimeConfig()
+    const client = new MongoClient(config.DB_URI)
 
-        const db = client.db()
-            await db.collection('query_logs').insertOne({
+    try {
+        await client.connect()
+        await client.db().collection('query_logs').insertOne({
             timestamp: new Date(),
             query: queryData,
             ip,
             country,
-                userAgent,
-                isMobile,
+            userAgent,
+            isMobile,
         })
-
+    } finally {
         await client.close()
-        })
-        .catch((error) => {
-        console.error('Error in logging process:', error)
-        })
+    }
 }
 
-export default defineCachedEventHandler(async (event) => {
-    const { included, excluded, position } = await readBody(event)
+/**
+ * Cached word lookup, keyed purely by the clues (`included` / `excluded` /
+ * `position`). The expensive Mongo aggregation only runs on a cache MISS, so
+ * repeated "Calculate Words" clicks with the same clues are served from cache.
+ *
+ * `swr: false` + `maxAge` means the entry hard-expires after the window: the
+ * next identical request runs fresh rather than being served stale.
+ *
+ * `onMiss` fires only when the resolver actually runs (i.e. a real miss); the
+ * handler uses it to log genuine new requests exactly once per cache window.
+ * It is intentionally excluded from `getKey` so it never affects the key.
+ */
+const getWords = defineCachedFunction(
+    async (_cacheKey: string, { included, excluded, position }: WordQuery, onMiss?: () => void) => {
+        onMiss?.()
 
-    // Extract request metadata synchronously - event context is still valid here
+        const config = useRuntimeConfig()
+        const client = new MongoClient(config.DB_URI)
+        await client.connect()
+
+        try {
+            const collection = client.db().collection(`length_${position.length}`)
+            const query: any = {}
+
+            if (included?.length) {
+                query.letters = { ...query.letters, $all: included }
+            }
+
+            if (excluded?.length) {
+                query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
+            }
+
+            position.forEach((letter: string, index: number) => {
+                if (letter) {
+                    query[`letters.${index}`] = letter
+                }
+            })
+
+            return await collection.aggregate([
+                { $match: query },
+                {
+                    $addFields: {
+                        distinctLettersCount: {
+                            $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
+                        },
+                        hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
+                    }
+                },
+                {
+                    $sort: {
+                        hasRank: -1,
+                        rank: -1,
+                        distinctLettersCount: -1
+                    }
+                },
+                { $project: { word: 1, rank: 1, _id: 0 } }
+            ]).toArray()
+        } finally {
+            await client.close()
+        }
+    },
+    {
+        name: 'words',
+        maxAge: 60 * 20, // dedupe identical queries for 20 minutes, then refresh
+        swr: false,      // hard-expire instead of serving stale
+        getKey: (cacheKey: string) => cacheKey,
+    }
+)
+
+export default defineEventHandler(async (event) => {
+    const { included, excluded, position } = await readBody<WordQuery>(event)
+
+    // Extract request metadata while the event context is still valid.
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
     const userAgent = getRequestHeader(event, 'user-agent')
-
-    // Fire-and-forget: log asynchronously without blocking the response
     const isMobile = isMobileUA(userAgent)
-    logQueryToDatabase({ ip, userAgent, isMobile, queryData: { included, excluded, position } })
 
-    // ── Main word query ──────────────────────────────────
-    const config = useRuntimeConfig()
-    const client = new MongoClient(config.DB_URI)
-    await client.connect()
+    // Stable, storage-safe cache key derived from the actual clues.
+    const cacheKey = hash({ i: included, e: excluded, p: position })
 
-    const db = client.db()
-    const collection = db.collection(`length_${position.length}`)
+    let cacheMiss = false
+    const words = await getWords(
+        cacheKey,
+        { included, excluded, position },
+        () => { cacheMiss = true }
+    )
 
-    const query: any = {}
+    // Log genuine new requests only (cache miss) → no spam from repeated clicks.
+    if (cacheMiss) {
+        const logPromise = writeQueryLog({
+            ip,
+            userAgent,
+            isMobile,
+            queryData: { included, excluded, position },
+        }).catch((error) => console.error('Error in logging process:', error))
 
-    if (included?.length) {
-        query.letters = { ...query.letters, $all: included }
+        // Keep the background write alive past the response.
+        event.waitUntil?.(logPromise)
     }
-
-    if (excluded?.length) {
-        query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
-    }
-
-    position.forEach((letter: string, index: number) => {
-        if (letter) {
-            query[`letters.${index}`] = letter
-        }
-    })
-
-    const words = await collection.aggregate([
-        { $match: query },
-        {
-            $addFields: {
-                distinctLettersCount: {
-                    $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
-                },
-                hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
-            }
-        },
-        {
-            $sort: {
-                hasRank: -1,
-                rank: -1,
-                distinctLettersCount: -1
-            }
-        },
-        { $project: { word: 1, rank: 1, _id: 0 } }
-    ]).toArray()
-
-    await client.close()
 
     return { words }
-}, {
-    // Cache the full response per unique filter set: same filters → cache hit
-    // (the previous response is replayed, no Mongo, no log), changed filters →
-    // miss → the handler runs (Mongo query + one log). Hard-expires after
-    // 20 minutes (swr: false → never serves stale).
-    maxAge: 60 * 20,
-    swr: false,
-    // getKey's result is passed through Nitro's escapeKey() (which strips all
-    // non-word chars), so we hash the clues to a plain alphanumeric string. A
-    // raw JSON key would get mangled and collapse different queries onto one
-    // entry (that was the "always 7 letters" bug).
-    getKey: async (event) => {
-        const { included, excluded, position } = await readBody<LogEntry['queryData']>(event)
-        return hash({ i: included, e: excluded, p: position })
-    },
 })
