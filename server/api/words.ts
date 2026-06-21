@@ -1,12 +1,6 @@
 import { MongoClient } from 'mongodb'
 import { hash } from 'ohash'
 
-interface WordQuery {
-    included: string[]
-    excluded: string[]
-    position: string[]
-}
-
 interface LogEntry {
     ip: string
     userAgent: string | undefined
@@ -76,99 +70,77 @@ function logQueryToDatabase(entry: LogEntry) {
         })
 }
 
-/**
- * Cached word lookup, keyed purely by the clues (`included` / `excluded` /
- * `position`). The expensive Mongo aggregation - and the one-time analytics
- * log - only run on a cache MISS, so repeated "Calculate Words" clicks with
- * the same clues are served from cache without touching the DB or adding
- * duplicate query_logs entries.
- *
- * `swr: false` + `maxAge` means the entry hard-expires after the window: the
- * next identical request runs fresh (re-logged, re-queried) rather than being
- * served stale.
- *
- * Caching is done at the function level (not via defineCachedEventHandler) on
- * purpose: a cached event handler reads the request body in `getKey` and again
- * in the handler across two different (proxied) event objects, which is
- * unreliable for POST bodies and made the cache key ignore `position`. Keying
- * off plain function arguments avoids that entirely.
- */
-const getWords = defineCachedFunction(
-    async (_cacheKey: string, { included, excluded, position }: WordQuery, logEntry: LogEntry) => {
-        // Side effect runs only on a cache miss → de-duplicated logging.
-        logQueryToDatabase(logEntry)
-
-        const config = useRuntimeConfig()
-        const client = new MongoClient(config.DB_URI)
-        await client.connect()
-
-        try {
-            const collection = client.db().collection(`length_${position.length}`)
-            const query: any = {}
-
-            if (included?.length) {
-                query.letters = { ...query.letters, $all: included }
-            }
-
-            if (excluded?.length) {
-                query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
-            }
-
-            position.forEach((letter: string, index: number) => {
-                if (letter) {
-                    query[`letters.${index}`] = letter
-                }
-            })
-
-            return await collection.aggregate([
-                { $match: query },
-                {
-                    $addFields: {
-                        distinctLettersCount: {
-                            $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
-                        },
-                        hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
-                    }
-                },
-                {
-                    $sort: {
-                        hasRank: -1,
-                        rank: -1,
-                        distinctLettersCount: -1
-                    }
-                },
-                { $project: { word: 1, rank: 1, _id: 0 } }
-            ]).toArray()
-        } finally {
-            await client.close()
-        }
-    },
-    {
-        name: 'words',
-        maxAge: 60 * 20, // dedupe identical queries for 20 minutes, then refresh
-        swr: false,      // hard-expire instead of serving stale
-        // Key on the clues only. The per-request log metadata (ip/userAgent)
-        // is passed through as a later argument but must NOT affect the key.
-        getKey: (cacheKey: string) => cacheKey,
-    }
-)
-
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const { included, excluded, position } = await readBody(event)
 
     // Extract request metadata synchronously - event context is still valid here
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
     const userAgent = getRequestHeader(event, 'user-agent')
+
+    // Fire-and-forget: log asynchronously without blocking the response
     const isMobile = isMobileUA(userAgent)
+    logQueryToDatabase({ ip, userAgent, isMobile, queryData: { included, excluded, position } })
 
-    // Stable, storage-safe cache key derived from the actual clues.
-    const cacheKey = hash({ i: included, e: excluded, p: position })
+    // ── Main word query ──────────────────────────────────
+    const config = useRuntimeConfig()
+    const client = new MongoClient(config.DB_URI)
+    await client.connect()
 
-    const words = await getWords(
-        cacheKey,
-        { included, excluded, position },
-        { ip, userAgent, isMobile, queryData: { included, excluded, position } }
-    )
+    const db = client.db()
+    const collection = db.collection(`length_${position.length}`)
+
+    const query: any = {}
+
+    if (included?.length) {
+        query.letters = { ...query.letters, $all: included }
+    }
+
+    if (excluded?.length) {
+        query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
+    }
+
+    position.forEach((letter: string, index: number) => {
+        if (letter) {
+            query[`letters.${index}`] = letter
+        }
+    })
+
+    const words = await collection.aggregate([
+        { $match: query },
+        {
+            $addFields: {
+                distinctLettersCount: {
+                    $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
+                },
+                hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
+            }
+        },
+        {
+            $sort: {
+                hasRank: -1,
+                rank: -1,
+                distinctLettersCount: -1
+            }
+        },
+        { $project: { word: 1, rank: 1, _id: 0 } }
+    ]).toArray()
+
+    await client.close()
 
     return { words }
+}, {
+    // Cache the full response per unique filter set: same filters → cache hit
+    // (the previous response is replayed, no Mongo, no log), changed filters →
+    // miss → the handler runs (Mongo query + one log). Hard-expires after
+    // 20 minutes (swr: false → never serves stale).
+    maxAge: 60 * 20,
+    swr: false,
+    // getKey's result is passed through Nitro's escapeKey() (which strips all
+    // non-word chars), so we hash the clues to a plain alphanumeric string. A
+    // raw JSON key would get mangled and collapse different queries onto one
+    // entry (that was the "always 7 letters" bug).
+    getKey: async (event) => {
+        const { included, excluded, position } = await readBody<LogEntry['queryData']>(event)
+        return hash({ i: included, e: excluded, p: position })
+    },
 })
