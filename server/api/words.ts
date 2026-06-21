@@ -1,4 +1,11 @@
 import { MongoClient } from 'mongodb'
+import { hash } from 'ohash'
+
+interface WordQuery {
+    included: string[]
+    excluded: string[]
+    position: string[]
+}
 
 interface LogEntry {
     ip: string
@@ -69,75 +76,99 @@ function logQueryToDatabase(entry: LogEntry) {
         })
 }
 
-export default defineCachedEventHandler(async (event) => {
+/**
+ * Cached word lookup, keyed purely by the clues (`included` / `excluded` /
+ * `position`). The expensive Mongo aggregation - and the one-time analytics
+ * log - only run on a cache MISS, so repeated "Calculate Words" clicks with
+ * the same clues are served from cache without touching the DB or adding
+ * duplicate query_logs entries.
+ *
+ * `swr: false` + `maxAge` means the entry hard-expires after the window: the
+ * next identical request runs fresh (re-logged, re-queried) rather than being
+ * served stale.
+ *
+ * Caching is done at the function level (not via defineCachedEventHandler) on
+ * purpose: a cached event handler reads the request body in `getKey` and again
+ * in the handler across two different (proxied) event objects, which is
+ * unreliable for POST bodies and made the cache key ignore `position`. Keying
+ * off plain function arguments avoids that entirely.
+ */
+const getWords = defineCachedFunction(
+    async (_cacheKey: string, { included, excluded, position }: WordQuery, logEntry: LogEntry) => {
+        // Side effect runs only on a cache miss → de-duplicated logging.
+        logQueryToDatabase(logEntry)
+
+        const config = useRuntimeConfig()
+        const client = new MongoClient(config.DB_URI)
+        await client.connect()
+
+        try {
+            const collection = client.db().collection(`length_${position.length}`)
+            const query: any = {}
+
+            if (included?.length) {
+                query.letters = { ...query.letters, $all: included }
+            }
+
+            if (excluded?.length) {
+                query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
+            }
+
+            position.forEach((letter: string, index: number) => {
+                if (letter) {
+                    query[`letters.${index}`] = letter
+                }
+            })
+
+            return await collection.aggregate([
+                { $match: query },
+                {
+                    $addFields: {
+                        distinctLettersCount: {
+                            $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
+                        },
+                        hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
+                    }
+                },
+                {
+                    $sort: {
+                        hasRank: -1,
+                        rank: -1,
+                        distinctLettersCount: -1
+                    }
+                },
+                { $project: { word: 1, rank: 1, _id: 0 } }
+            ]).toArray()
+        } finally {
+            await client.close()
+        }
+    },
+    {
+        name: 'words',
+        maxAge: 60 * 20, // dedupe identical queries for 20 minutes, then refresh
+        swr: false,      // hard-expire instead of serving stale
+        // Key on the clues only. The per-request log metadata (ip/userAgent)
+        // is passed through as a later argument but must NOT affect the key.
+        getKey: (cacheKey: string) => cacheKey,
+    }
+)
+
+export default defineEventHandler(async (event) => {
     const { included, excluded, position } = await readBody(event)
 
     // Extract request metadata synchronously - event context is still valid here
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
     const userAgent = getRequestHeader(event, 'user-agent')
-
-    // Fire-and-forget: log asynchronously without blocking the response
     const isMobile = isMobileUA(userAgent)
-    logQueryToDatabase({ ip, userAgent, isMobile, queryData: { included, excluded, position } })
 
-    // ── Main word query ──────────────────────────────────
-    const config = useRuntimeConfig()
-    const client = new MongoClient(config.DB_URI)
-    await client.connect()
+    // Stable, storage-safe cache key derived from the actual clues.
+    const cacheKey = hash({ i: included, e: excluded, p: position })
 
-    const db = client.db()
-    const collection = db.collection(`length_${position.length}`)
-
-    const query: any = {}
-
-    if (included?.length) {
-        query.letters = { ...query.letters, $all: included }
-    }
-
-    if (excluded?.length) {
-        query.letters = { ...query.letters, $not: { $elemMatch: { $in: excluded } } }
-    }
-
-    position.forEach((letter: string, index: number) => {
-        if (letter) {
-            query[`letters.${index}`] = letter
-        }
-    })
-
-    const words = await collection.aggregate([
-        { $match: query },
-        {
-            $addFields: {
-                distinctLettersCount: {
-                    $size: { $setUnion: [{ $ifNull: ["$letters", []] }, []] }
-                },
-                hasRank: { $cond: [{ $gt: ['$rank', 0] }, 1, 0] }
-            }
-        },
-        {
-            $sort: {
-                hasRank: -1,
-                rank: -1,
-                distinctLettersCount: -1
-            }
-        },
-        { $project: { word: 1, rank: 1, _id: 0 } }
-    ]).toArray()
-
-    await client.close()
+    const words = await getWords(
+        cacheKey,
+        { included, excluded, position },
+        { ip, userAgent, isMobile, queryData: { included, excluded, position } }
+    )
 
     return { words }
-}, {
-    // Cache identical queries for a short window so repeated "Calculate Words"
-    // clicks with the same clues are served from cache. On a cache HIT the
-    // handler body never runs, which is intentional: it also skips
-    // logQueryToDatabase(), so rapid repeats don't spam query_logs.
-    name: 'words',
-    maxAge: 60 * 20, // dedupe identical queries for 20 minutes, then refresh
-    // The query lives in the POST body, which Nitro's default key ignores -
-    // derive the cache key from the actual clues instead.
-    getKey: async (event) => {
-        const { included, excluded, position } = await readBody(event)
-        return JSON.stringify({ i: included, e: excluded, p: position })
-    },
 })
