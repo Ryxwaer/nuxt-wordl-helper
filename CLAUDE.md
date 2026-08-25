@@ -9,3 +9,14 @@ This is example post from binance that defines that weeks theme (blogpost) and d
 ## Tech stack
 - Make sure to utilize latest Nuxt features and tailwind
 - Every UI change needs to be in line with app's overall theme and `./app/assets/css/main.css`
+
+## Comments and documentation
+
+Do not explain changes in code comments. The code should read on its own.
+Comment only what the code cannot say - a constraint, a spec reference, a
+non-obvious `// 10.0.0.0/8`.
+
+If a decision or trade-off is worth keeping for the future, put it in
+`docs/documentation.md` instead, with a date. If it is not worth keeping,
+do not write it down at all. Dated analysis and metrics go in
+`docs/reports/`.
