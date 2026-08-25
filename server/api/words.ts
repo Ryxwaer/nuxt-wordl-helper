@@ -7,11 +7,24 @@ interface WordQuery {
     position: string[]
 }
 
+/**
+ * The clues plus the referrer the client read from `document.referrer`. It has
+ * to come from the body: this endpoint's own `Referer` header is the page the
+ * user is already on, so it never names the original source.
+ */
+interface WordRequest extends WordQuery {
+    referer?: string | null
+}
+
 interface LogEntry {
     ip: string
     userAgent: string | undefined
     isMobile: boolean
     queryData: WordQuery
+    cached: boolean
+    referer: string | null
+    refererHost: string | null
+    source: string
 }
 
 /** Detect mobile devices from the User-Agent string. */
@@ -41,6 +54,24 @@ function isInternalIP(ip: string | undefined): boolean {
     return false
 }
 
+/** Split a client-sent referrer into the host and a source label for the log. */
+function classifyReferer(referer: string | null | undefined, ownHost: string | undefined) {
+    if (!referer) return { referer: null, refererHost: null, source: 'direct' }
+
+    let host: string
+    try {
+        host = new URL(referer).host
+    } catch {
+        return { referer, refererHost: null, source: 'unparseable' }
+    }
+
+    return {
+        referer,
+        refererHost: host,
+        source: ownHost && host === ownHost ? 'internal' : host,
+    }
+}
+
 /**
  * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
  * handler so the promise is kept alive past the response (a bare detached
@@ -48,7 +79,7 @@ function isInternalIP(ip: string | undefined): boolean {
  * once it was moved inside the cached resolver).
  */
 async function writeQueryLog(entry: LogEntry): Promise<void> {
-    const { ip, userAgent, isMobile, queryData } = entry
+    const { ip, userAgent, isMobile, queryData, cached, referer, refererHost, source } = entry
 
     // Skip local dev / internal (container, LAN) requests
     if (isInternalIP(ip)) return
@@ -62,6 +93,10 @@ async function writeQueryLog(entry: LogEntry): Promise<void> {
         await client.db().collection('query_logs').insertOne({
             timestamp: new Date(),
             query: queryData,
+            cached,
+            referer,
+            refererHost,
+            source,
             ip,
             country,
             userAgent,
@@ -81,8 +116,9 @@ async function writeQueryLog(entry: LogEntry): Promise<void> {
  * next identical request runs fresh rather than being served stale.
  *
  * `onMiss` fires only when the resolver actually runs (i.e. a real miss); the
- * handler uses it to log genuine new requests exactly once per cache window.
- * It is intentionally excluded from `getKey` so it never affects the key.
+ * handler uses it to flag the log entry as cached or not. Note the key has no
+ * user component, so a hit can be someone else's query. It is intentionally
+ * excluded from `getKey` so it never affects the key.
  */
 const getWords = defineCachedFunction(
     async (_cacheKey: string, { included, excluded, position }: WordQuery, onMiss?: () => void) => {
@@ -142,7 +178,7 @@ const getWords = defineCachedFunction(
 )
 
 export default defineEventHandler(async (event) => {
-    const { included, excluded, position } = await readBody<WordQuery>(event)
+    const { included, excluded, position, referer } = await readBody<WordRequest>(event)
 
     // Extract request metadata while the event context is still valid.
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
@@ -159,18 +195,17 @@ export default defineEventHandler(async (event) => {
         () => { cacheMiss = true }
     )
 
-    // Log genuine new requests only (cache miss) → no spam from repeated clicks.
-    if (cacheMiss) {
-        const logPromise = writeQueryLog({
-            ip,
-            userAgent,
-            isMobile,
-            queryData: { included, excluded, position },
-        }).catch((error) => console.error('Error in logging process:', error))
+    const logPromise = writeQueryLog({
+        ip,
+        userAgent,
+        isMobile,
+        queryData: { included, excluded, position },
+        cached: !cacheMiss,
+        ...classifyReferer(referer, getRequestHost(event)),
+    }).catch((error) => console.error('Error in logging process:', error))
 
-        // Keep the background write alive past the response.
-        event.waitUntil?.(logPromise)
-    }
+    // Keep the background write alive past the response.
+    event.waitUntil?.(logPromise)
 
     return { words }
 })

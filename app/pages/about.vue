@@ -172,9 +172,8 @@ useSeoMeta({
     "how to use binance wodl solver, binance wodl guide, binance wodl tips, binance wotd help, binance wotd guide, word of the day solver tutorial, wodl color clues, wodl green yellow gray",
 });
 
-// Add canonical URL and FAQPage schema for rich snippets. The Q&As below
-// are mirrored 1:1 in the visible page sections above (per Google's
-// FAQPage policy: schema content MUST be visible on-page).
+// Q&As below must stay mirrored 1:1 by the visible sections above - Google
+// requires FAQPage content to be on-page.
 useHead({
   link: [
     { rel: 'canonical', href: 'https://wordl.ryxwaer.com/about' }

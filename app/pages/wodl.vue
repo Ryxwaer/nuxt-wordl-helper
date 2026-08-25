@@ -168,22 +168,7 @@ const sortedLengths = computed(() =>
 )
 const hasThemeWords = computed(() => sortedLengths.value.length > 0)
 
-// SERP title is DYNAMIC on this page - and only this page; the homepage
-// solver keeps a static title. It bakes the live weekly theme into the
-// <title>, matching how the competitor answer pages rank for theme-specific
-// "binance word of the day [theme]" queries.
-//
-// Known tradeoff: slow-crawl engines (e.g. Brave) can show the previous
-// theme in the snippet for a while after the weekly rotation, since they
-// re-index late. We accept it - Google re-crawls /wodl within ~a day
-// (verified via URL Inspection), the theme rotates only weekly, and the
-// competitors clearly get away with theme/date-in-title, so the freshness
-// upside outweighs the occasional stale snippet on minor engines.
-//
-// The page BODY also stays dynamic (the "Today's Binance WODL Theme" H2,
-// the word-pool grid, and the FAQ schema all inject the live theme), and
-// the homepage `/` deliberately keeps a static "Solver" title so the two
-// pages stay differentiated.
+// Theme-dependent here but static on `/` - see docs/documentation.md.
 const pageTitle = computed(() =>
   theme.value
     ? `Binance WODL Solver - ${theme.value} Theme & Answers`
@@ -199,16 +184,10 @@ useSeoMeta({
     "See this week's Binance WODL / WOTD theme word pool (3–8 letters) and use the free solver to find today's answer from your color clues.",
   ogImage: "https://wordl.ryxwaer.com/og-image.jpg",
   twitterImage: "https://wordl.ryxwaer.com/og-image.jpg",
-  // Binance WODL / WOTD only. We deliberately don't target generic
-  // Wordle queries - the solver biases toward this week's Binance crypto
-  // theme words, so a Wordle player would get a worse experience.
+  // Binance WODL/WOTD only, never generic Wordle - see docs/documentation.md.
   keywords: "binance wodl, binance wodl solver, binance wotd, binance wotd solver, binance wodl theme, wodl theme today, wodl word pool, wodl 3 letter words, wodl 4 letter words, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, wodl 8 letter words, binance word of the day, wotd solver, word of the day solver",
 });
 
-// Canonical + structured data. This page declares both the WebApplication
-// (the solver) AND a HowTo - HowTo schema is frequently promoted into rich
-// SERP results for "how to ..." queries, which directly attacks the 0% CTR
-// problem flagged in the weekly audit.
 useHead({
   link: [
     { rel: 'canonical', href: 'https://wordl.ryxwaer.com/wodl' }
@@ -220,9 +199,6 @@ useHead({
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Binance WODL Solver",
-        // alternateNames bridge WODL (community/search term) with WOTD
-        // (Binance's official name) so the entity matches both query
-        // families in Google's knowledge graph.
         "alternateName": [
           "Binance WOTD Solver",
           "Binance Word of the Day Solver",
@@ -282,12 +258,7 @@ useHead({
     },
     {
       type: 'application/ld+json',
-      // FAQ schema dedicated to bridging the WODL ↔ WOTD naming gap.
-      // Binance officially calls the game WOTD (Word of the Day) but
-      // search-volume in GSC is overwhelmingly on "wodl". Surfacing this
-      // explicitly (a) signals topical authority to Google's E-E-A-T,
-      // and (b) makes us eligible for rich snippets on the small but
-      // growing "what is wotd" / "wodl vs wotd" query family.
+      // Q&As here must stay mirrored by visible sections on the page.
       innerHTML: computed(() => JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
