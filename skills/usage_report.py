@@ -44,6 +44,50 @@ def classify_query(q: dict) -> str:
     return "empty"
 
 
+def report_visits(db) -> None:
+    """Acquisition channels, from the `visits` collection written by
+    server/middleware/track-visit.ts. Empty until that ships and traffic
+    arrives - this is what answers 'where do our users come from'."""
+    if "visits" not in db.list_collection_names():
+        print("\n=== VISITS ===\n  (no `visits` collection yet - deploy the "
+              "track-visit middleware and re-run in a few days)")
+        return
+
+    visits = list(db.visits.find({}, {"_id": 0}).sort("timestamp", 1))
+    if not visits:
+        print("\n=== VISITS ===\n  collection exists but is empty")
+        return
+
+    print(f"\n=== VISITS: {len(visits)} page views "
+          f"({visits[0]['timestamp']} -> {visits[-1]['timestamp']}) ===")
+
+    print("\n  ACQUISITION SOURCE (the whole point):")
+    for src, n in Counter(v.get("source") or "?" for v in visits).most_common(25):
+        ips = len({v.get("ip") for v in visits if (v.get("source") or "?") == src})
+        print(f"    {src:32} {n:>6} views  {ips:>4} IPs  {100*n/len(visits):>5.1f}%")
+
+    print("\n  LANDING PATH:")
+    for p, n in Counter(v.get("path") or "?" for v in visits).most_common(15):
+        print(f"    {p:32} {n:>6}")
+
+    tagged = [v for v in visits if v.get("queryString")]
+    if tagged:
+        print(f"\n  VIEWS WITH QUERY PARAMS ({len(tagged)}):")
+        for q, n in Counter(v["queryString"] for v in tagged).most_common(10):
+            print(f"    {q[:60]:62} {n:>5}")
+
+    print("\n  FUNNEL (landed -> ran the solver):")
+    visit_ips = {v.get("ip") for v in visits}
+    since = visits[0]["timestamp"]
+    solver_ips = {
+        d.get("ip") for d in db.query_logs.find({"timestamp": {"$gte": since}}, {"ip": 1})
+    }
+    converted = visit_ips & solver_ips
+    print(f"    IPs that landed:         {len(visit_ips)}")
+    print(f"    IPs that ran the solver: {len(converted)}"
+          f" ({100*len(converted)/len(visit_ips):.0f}%)")
+
+
 def main() -> None:
     db = MongoClient(load_db_uri(), serverSelectionTimeoutMS=20000).get_database()
 
@@ -137,6 +181,8 @@ def main() -> None:
         print(f"    {day}  {n:>3} IPs  {'#' * min(n, 40)}")
     print(f"  avg unique IPs/day over those 28 days: "
           f"{sum(len(by_day[d]) for d in days)/len(days):.1f}")
+
+    report_visits(db)
 
 
 if __name__ == "__main__":

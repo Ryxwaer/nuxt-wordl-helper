@@ -14,33 +14,6 @@ interface LogEntry {
     queryData: WordQuery
 }
 
-/** Detect mobile devices from the User-Agent string. */
-function isMobileUA(ua: string | undefined): boolean {
-    return /Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua || '')
-}
-
-/**
- * Internal/non-public IPs we never want to log: loopback, "Unknown", and
- * private ranges (RFC 1918 / unique-local). In production the real client IP
- * comes via X-Forwarded-For, so legitimate users are public - only local dev
- * and container-to-container traffic (e.g. the demo runner hitting the solver
- * over the Docker network) lands in these ranges.
- */
-function isInternalIP(ip: string | undefined): boolean {
-    if (!ip || ip === 'Unknown') return true
-    if (ip === '127.0.0.1' || ip === '::1') return true
-    // IPv4-mapped IPv6, e.g. ::ffff:172.18.0.3
-    const v4 = ip.startsWith('::ffff:') ? ip.slice(7) : ip
-    if (/^127\./.test(v4)) return true                       // loopback
-    if (/^10\./.test(v4)) return true                        // 10.0.0.0/8
-    if (/^192\.168\./.test(v4)) return true                  // 192.168.0.0/16
-    if (/^172\.(1[6-9]|2\d|3[01])\./.test(v4)) return true   // 172.16.0.0/12
-    if (/^169\.254\./.test(v4)) return true                  // link-local
-    if (/^f[cd][0-9a-f]{2}:/i.test(ip)) return true          // IPv6 unique-local fc00::/7
-    if (/^fe80:/i.test(ip)) return true                      // IPv6 link-local
-    return false
-}
-
 /**
  * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
  * handler so the promise is kept alive past the response (a bare detached
@@ -145,9 +118,7 @@ export default defineEventHandler(async (event) => {
     const { included, excluded, position } = await readBody<WordQuery>(event)
 
     // Extract request metadata while the event context is still valid.
-    const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
-    const userAgent = getRequestHeader(event, 'user-agent')
-    const isMobile = isMobileUA(userAgent)
+    const { ip, userAgent, isMobile } = getClientMeta(event)
 
     // Stable, storage-safe cache key derived from the actual clues.
     const cacheKey = hash({ i: included, e: excluded, p: position })
