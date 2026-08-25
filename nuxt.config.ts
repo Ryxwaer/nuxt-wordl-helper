@@ -7,16 +7,8 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts', '@nuxtjs/sitemap'],
 
   sitemap: {
-    // Generate at runtime, not at prerender time. The sitemap.list() API
-    // showed `indexed: 0 / submitted: 3` with 2 warnings on 2026-05-24
-    // because the sitemap was being baked at build time - `lastmod` then
-    // stayed frozen at the deploy timestamp for weeks (e.g. all three
-    // URLs were stuck at 2026-04-24 long after fresh deploys), and Google
-    // flags lastmod-not-updating-despite-changefreq=daily as a warning.
-    //
-    // With cacheMaxAgeSeconds and the route excluded from Nitro prerender,
-    // the urls() function runs per-request (cached for 10 minutes) so
-    // `lastmod` is always within a 10-minute window of "now".
+    // `urls` is a build-time source, so lastmod is deploy time, not "now".
+    // Knowingly accepted - see docs/documentation.md.
     cacheMaxAgeSeconds: 600,
     urls: () => {
       const now = new Date().toISOString()
@@ -94,11 +86,7 @@ export default defineNuxtConfig({
         { name: 'twitter:image:alt', content: 'Binance WODL Solver - letter tiles spelling WORDL' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Free Binance WODL solver - also known as WOTD or Word of the Day. Enter green, yellow & gray clues and get instant 3–8 letter answers.' },
-        // The app is Binance-WODL-specific (theme-aware ranking biases
-        // results toward this week's crypto theme words). We deliberately
-        // do NOT target generic Wordle queries - a Wordle player would
-        // see crypto-themed words ranked first and get a worse experience.
-        // Keep keywords focused on Binance WODL / WOTD only.
+        // Binance WODL/WOTD only, never generic Wordle - see docs/documentation.md.
         { name: 'keywords', content: 'binance wodl, binance wodl solver, binance wotd, binance wotd solver, wodl solver, wotd solver, binance word of the day, word of the day solver, binance wodl answer today, wodl theme today, wodl 5 letter words, wodl 6 letter words, wodl 7 letter words, crypto word game, binance crypto word puzzle' },
         { name: 'msapplication-TileColor', content: '#0a0a0a' },
         { name: 'msapplication-TileImage', content: '/favicon-144x144.png' },
@@ -118,9 +106,7 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      // Excluding /sitemap.xml from prerender lets @nuxtjs/sitemap serve
-      // it at request time (with a 600s SWR cache, see `sitemap` config
-      // above) so `<lastmod>` reflects "now" instead of the build time.
+      // Excluded so @nuxtjs/sitemap serves the XML at request time.
       ignore: ['/debug', '/sitemap.xml']
     }
   }

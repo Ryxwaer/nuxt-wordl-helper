@@ -122,6 +122,29 @@ The privacy policy had claimed "we do not log or store these requests" and
 request. Those claims were removed rather than replaced with a disclosure:
 the policy is now silent on server-side logging by owner decision.
 
+### FAQPage schema only where the Q&As are visible on-page
+*pre-existing, documented 2026-08-25*
+
+Google's structured-data policy requires FAQPage Q&As to be visible to the
+user on the same page. `/wodl` and `/about` carry the schema because both
+render the matching sections; `/` deliberately carries none, since its
+"What is Binance WODL?" section was removed on 2025-05-24. Schema without
+backing content risks rich-result loss or a manual penalty, so do not add it
+back to `/` without adding the visible content too.
+
+`/wodl` also declares `HowTo`, which Google frequently promotes into rich
+results for "how to ..." queries - the one lever available against that
+page's near-zero CTR.
+
+### Footer "Last Updated" date has two sources
+*pre-existing, documented 2026-08-25*
+
+`/` and `/wodl` render the live current-week word pool, so they date from
+render time. Static informational pages use the build date. Using the build
+date everywhere would signal staleness on exactly the two pages whose
+content is always current. The value goes through `useState` so SSR and
+hydration agree.
+
 ### SERP titles: static on `/`, dynamic on `/wodl`
 *pre-existing, see `docs/reports/2025-05-24.md`*
 
