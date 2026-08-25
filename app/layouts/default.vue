@@ -137,12 +137,8 @@ useHead({
 // Get red packet configuration from app config
 const redPacketConfig = appConfig.redPacket;
 
-// "Last Updated" date. The home and /wodl pages render the live current-week
-// word pool (rank=1 from the DB) on every request, so their freshness date is
-// the render time - not the build date, which would otherwise freeze at the
-// last deploy and signal staleness while the content is actually current.
-// Static informational pages keep the build date. Computed once on the server
-// and reused on the client (useState) to avoid hydration mismatches.
+// These date from render time, everything else from build time - see
+// docs/documentation.md. useState keeps SSR and hydration in agreement.
 const LIVE_DATA_ROUTES = ['/', '/wodl'];
 const renderDateIso = useState('renderDateIso', () => new Date().toISOString());
 
