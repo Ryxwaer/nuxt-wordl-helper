@@ -51,19 +51,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      // Static, theme-agnostic title. Earlier sessions used a dynamic
-      // theme-name-in-title pattern ("…- \"Pre-IPO Assets\" Theme Words…")
-      // for a freshness signal, but slow-crawl engines (Brave, Bing) end
-      // up serving multi-week-stale SERP snippets ("Pre-IPO Assets" still
-      // showing in Brave 2+ weeks after the theme changed). Body content
-      // (H2 / word pool / FAQ schema) stays dynamic for Google's crawl
-      // freshness signals; only the SERP-facing title + meta-description
-      // are now static. See report/2025-05-24.md.
-      //
-      // Naming: WODL is the community/search term, WOTD is Binance's
-      // official name. Including both maximises query coverage AND
-      // outflanks the current #1 competitor (miguelroquefernandes.com)
-      // who lacks WOTD entirely in his title/description.
+      // Kept theme-agnostic on purpose - see docs/documentation.md.
       title: 'Binance WODL Solver - Today\'s Word of the Day Answer',
       link: [
         // Preconnect hint for the theme API, which every render depends on.

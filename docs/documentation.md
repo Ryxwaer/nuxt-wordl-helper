@@ -1,7 +1,8 @@
 # Documentation
 
 Running log of schemas, server behaviour, and decisions that are not obvious
-from the code. Analysis and metrics live in `report/`; this file is the "why".
+from the code. Analysis and metrics live in `docs/reports/`; this file is the
+"why".
 
 ---
 
@@ -10,7 +11,7 @@ from the code. Analysis and metrics live in `report/`; this file is the "why".
 | Collection | Written by | Contents |
 |---|---|---|
 | `length_3` … `length_10` | scraper service (external) | Word dictionaries. `letters` array per word, plus `rank` (theme words get `rank: 1`). |
-| `query_logs` | `server/api/words.ts` | One doc per solver run: `timestamp`, `query` (the clues), `ip`, `country`, `userAgent`, `isMobile`. |
+| `query_logs` | `server/api/words.ts` | One doc per solver run: `timestamp`, `query` (the clues), `cached`, `ip`, `country`, `userAgent`, `isMobile`. |
 | `visits` | `server/middleware/track-visit.ts` | One doc per page render: `timestamp`, `path`, `queryString`, `referer`, `refererHost`, `source`, `ip`, `country`, `userAgent`, `isMobile`. |
 
 `source` on `visits` is `direct` (no referrer), `internal` (our own host),
@@ -18,9 +19,41 @@ from the code. Analysis and metrics live in `report/`; this file is the "why".
 
 Read both with `.venv-skills/bin/python skills/usage_report.py`.
 
+### `query_logs` before and after 2026-08-25
+
+All 4 544 rows predating the `cached` flag were back-filled to
+`cached: false` on 2026-08-25 - correct rather than assumed, since the old
+handler only ever logged misses. No row is missing the field.
+
+What the back-fill cannot repair is that cache *hits* were never written at
+all before that date, so history contains no `cached: true` rows and
+undercounts real usage. Compare months spanning the change on the `uncached`
+column, not `runs`, or the step change will read as growth. See the decision
+below.
+
 ---
 
 ## Decisions
+
+### Every solver request is logged, with a `cached` flag
+*2026-08-25*
+
+Previously the log write was skipped on a cache hit, which was described in
+the code as avoiding "spam from repeated clicks". It was not doing that.
+
+The `getWords` cache key is the clues alone, with no user component, so it is
+shared across every visitor. A hit meant *somebody* had run that query in the
+last 20 minutes, not that this visitor had. So a second person running the
+same query inside the window was never recorded at all. The bias is worst
+exactly where it matters most: the empty query - no clues entered, 23 % of all
+recorded runs - has a single cache key, so at most one empty query per 20
+minutes was ever logged, no matter how many people ran one.
+
+Every request is now logged with `cached: true | false`, and the existing
+4 544 rows were back-filled to `false`. This means the 16 months of history is
+a floor on real usage, not a measurement, and the undercount is heaviest on
+the most common queries. The cache itself is unchanged - hits still skip the
+aggregation.
 
 ### Visit tracking lives in middleware, not in the solver endpoint
 *2026-08-25*
@@ -40,11 +73,15 @@ row, a kept crawler corrupts the whole funnel.
 ### Two different Mongo connection strategies
 *2026-08-25*
 
-`api/words.ts` opens and closes a client per write. That is fine there: it
-only writes on a cache miss, a few hundred times a day. The visit middleware
-runs on every page render, so it uses the pooled client in
-`server/utils/mongo.ts` instead. A failed connect clears the cached promise
-so the next request retries rather than being stuck with a rejected one.
+Analytics writes - the visit middleware and the solver's query log - go
+through the pooled client in `server/utils/mongo.ts`, since both now run on
+every request. A failed connect clears the cached promise so the next request
+retries rather than being stuck with a rejected one.
+
+The word aggregation in `api/words.ts` still opens and closes its own client
+per cache miss. It is wasteful and could move to the pool, but it is the hot
+path of the app's only real feature and has run untouched for 16 months, so
+it was left alone rather than bundled into an analytics change.
 
 ### Log writes use `event.waitUntil`
 *pre-existing, documented 2026-08-25*
@@ -86,12 +123,16 @@ request. Those claims were removed rather than replaced with a disclosure:
 the policy is now silent on server-side logging by owner decision.
 
 ### SERP titles: static on `/`, dynamic on `/wodl`
-*pre-existing, see `report/2025-05-24.md`*
+*pre-existing, see `docs/reports/2025-05-24.md`*
 
 The homepage title is theme-agnostic on purpose. Slow-crawl engines (Brave,
 Bing) served multi-week-stale snippets when the theme name was in the title.
 `/wodl` accepts that trade-off because Google recrawls it roughly daily.
 Body content on both pages stays dynamic for freshness.
+
+The title carries both "WODL" and "WOTD": WODL is the community and search
+term, WOTD is Binance's official name. Covering both also outflanks the
+then-#1 competitor (miguelroquefernandes.com), whose title omits WOTD.
 
 ### The solver targets Binance WODL only, not generic Wordle
 *pre-existing*

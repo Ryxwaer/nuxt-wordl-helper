@@ -102,8 +102,12 @@ def main() -> None:
     human = [d for d in logs if not is_bot(d.get("userAgent"))]
     print(f"non-bot runs: {len(human)}  (bot/tool UA: {total - len(human)})")
 
+    hits = sum(1 for d in human if d.get("cached"))
+    print(f"served from cache: {hits} ({100*hits/len(human):.0f}% hit rate)")
+
     print("\n=== MONTHLY (non-bot) ===")
-    print(f"{'month':9} {'runs':>6} {'IPs':>5} {'mobile%':>8} {'with_clues%':>12} {'runs/IP':>8}")
+    print(f"{'month':9} {'runs':>6} {'uncached':>9} {'hit%':>6} {'IPs':>5} "
+          f"{'mobile%':>8} {'with_clues%':>12} {'runs/IP':>8}")
     months: dict[str, list] = {}
     for d in human:
         months.setdefault(d["timestamp"].strftime("%Y-%m"), []).append(d)
@@ -112,8 +116,10 @@ def main() -> None:
         ips = {r.get("ip") for r in rows}
         mob = sum(1 for r in rows if r.get("isMobile"))
         clued = sum(1 for r in rows if classify_query(r.get("query")) == "with_clues")
+        hits = sum(1 for r in rows if r.get("cached"))
         print(
-            f"{m:9} {len(rows):>6} {len(ips):>5} {100*mob/len(rows):>7.0f}% "
+            f"{m:9} {len(rows):>6} {len(rows)-hits:>9} {100*hits/len(rows):>5.0f}% "
+            f"{len(ips):>5} {100*mob/len(rows):>7.0f}% "
             f"{100*clued/len(rows):>11.0f}% {len(rows)/len(ips):>8.1f}"
         )
 

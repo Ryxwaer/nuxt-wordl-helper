@@ -12,50 +12,32 @@ interface LogEntry {
     userAgent: string | undefined
     isMobile: boolean
     queryData: WordQuery
+    cached: boolean
 }
 
-/**
- * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
- * handler so the promise is kept alive past the response (a bare detached
- * promise can be dropped by the runtime, which is why logging silently stopped
- * once it was moved inside the cached resolver).
- */
 async function writeQueryLog(entry: LogEntry): Promise<void> {
-    const { ip, userAgent, isMobile, queryData } = entry
+    const { ip, userAgent, isMobile, queryData, cached } = entry
 
-    // Skip local dev / internal (container, LAN) requests
     if (isInternalIP(ip)) return
 
     const country = await resolveCountry(ip)
-    const config = useRuntimeConfig()
-    const client = new MongoClient(config.DB_URI)
+    const db = await getDb()
 
-    try {
-        await client.connect()
-        await client.db().collection('query_logs').insertOne({
-            timestamp: new Date(),
-            query: queryData,
-            ip,
-            country,
-            userAgent,
-            isMobile,
-        })
-    } finally {
-        await client.close()
-    }
+    await db.collection('query_logs').insertOne({
+        timestamp: new Date(),
+        query: queryData,
+        cached,
+        ip,
+        country,
+        userAgent,
+        isMobile,
+    })
 }
 
 /**
- * Cached word lookup, keyed purely by the clues (`included` / `excluded` /
- * `position`). The expensive Mongo aggregation only runs on a cache MISS, so
- * repeated "Calculate Words" clicks with the same clues are served from cache.
- *
- * `swr: false` + `maxAge` means the entry hard-expires after the window: the
- * next identical request runs fresh rather than being served stale.
- *
- * `onMiss` fires only when the resolver actually runs (i.e. a real miss); the
- * handler uses it to log genuine new requests exactly once per cache window.
- * It is intentionally excluded from `getKey` so it never affects the key.
+ * The cache key is the clues alone, so it is shared across all users - a hit
+ * means someone, not necessarily this visitor, ran the same query recently.
+ * `onMiss` is excluded from `getKey` so it never affects the key.
  */
 const getWords = defineCachedFunction(
     async (_cacheKey: string, { included, excluded, position }: WordQuery, onMiss?: () => void) => {
@@ -116,11 +98,8 @@ const getWords = defineCachedFunction(
 
 export default defineEventHandler(async (event) => {
     const { included, excluded, position } = await readBody<WordQuery>(event)
-
-    // Extract request metadata while the event context is still valid.
     const { ip, userAgent, isMobile } = getClientMeta(event)
 
-    // Stable, storage-safe cache key derived from the actual clues.
     const cacheKey = hash({ i: included, e: excluded, p: position })
 
     let cacheMiss = false
@@ -130,18 +109,15 @@ export default defineEventHandler(async (event) => {
         () => { cacheMiss = true }
     )
 
-    // Log genuine new requests only (cache miss) → no spam from repeated clicks.
-    if (cacheMiss) {
-        const logPromise = writeQueryLog({
-            ip,
-            userAgent,
-            isMobile,
-            queryData: { included, excluded, position },
-        }).catch((error) => console.error('Error in logging process:', error))
+    const logPromise = writeQueryLog({
+        ip,
+        userAgent,
+        isMobile,
+        queryData: { included, excluded, position },
+        cached: !cacheMiss,
+    }).catch(error => console.error('Query logging failed:', error))
 
-        // Keep the background write alive past the response.
-        event.waitUntil?.(logPromise)
-    }
+    event.waitUntil?.(logPromise) // a detached promise can be dropped mid-flight
 
     return { words }
 })
