@@ -4,10 +4,7 @@ export default defineNuxtConfig({
 
   ssr: true,
 
-  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts', ['@piwikpro/nuxt-piwik-pro', {
-    containerId: "48a0f7d5-b139-4e3d-94f8-62e23b7f1b6d",
-    containerUrl: "https://ryxwaer.containers.piwik.pro",
-  }], '@nuxtjs/sitemap'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxt/scripts', '@nuxtjs/sitemap'],
 
   sitemap: {
     // Generate at runtime, not at prerender time. The sitemap.list() API
@@ -33,10 +30,6 @@ export default defineNuxtConfig({
   },
   scripts: {
     registry: {
-      googleAdsense: {
-        client: "ca-pub-9197371272439471",
-        autoAds: true,
-      },
       cloudflareWebAnalytics: {
         token: '4d5de9c91e9f466e843d81b9daaef673'
       }
@@ -73,14 +66,8 @@ export default defineNuxtConfig({
       // who lacks WOTD entirely in his title/description.
       title: 'Binance WODL Solver - Today\'s Word of the Day Answer',
       link: [
-        // Preconnect hints for known third-party origins. Cuts ~100-300ms
-        // off the first paint of AdSense / analytics / theme-API requests
-        // on cold cache, which feeds into Core Web Vitals (LCP / INP).
-        // `crossorigin` is required on preconnects to origins that serve
-        // CORS-eligible requests (AdSense, fonts).
-        { rel: 'preconnect', href: 'https://pagead2.googlesyndication.com', crossorigin: '' },
+        // Preconnect hint for the theme API, which every render depends on.
         { rel: 'preconnect', href: 'https://wotd-theme.ryxwaer.com' },
-        { rel: 'preconnect', href: 'https://ryxwaer.containers.piwik.pro' },
         { rel: 'apple-touch-icon', sizes: '57x57', href: '/favicon-57x57.png' },
         { rel: 'apple-touch-icon', sizes: '60x60', href: '/favicon-60x60.png' },
         { rel: 'apple-touch-icon', sizes: '72x72', href: '/favicon-72x72.png' },

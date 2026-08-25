@@ -23,8 +23,17 @@ skills/*-credentials.json
 skills/*.key.json
 **/service-account*.json
 
+# Python virtualenvs (skills/ tooling)
+.venv/
+.venv-skills/
+__pycache__/
+*.py[cod]
+
 # Log files
 logs/
+
+# Scratch output from analysis runs
+.tmp_shots/
 
 # IDE/editor files
 .idea/
