@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-First-party usage report from `query_logs`.
+Real-usage report from the app's own `query_logs` collection.
 
-Reads DB_URI from .env so no credential is passed on the command line.
+This is the only first-party signal of humans actually using the solver
+(GSC stops at the click; Cloudflare page views are bot-polluted). Reads
+DB_URI from .env so no credential is passed on the command line.
 """
 from __future__ import annotations
 

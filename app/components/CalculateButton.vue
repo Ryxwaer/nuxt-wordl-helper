@@ -256,8 +256,7 @@ const fetchWords = async () => {
   try {
     const res = await $fetch<{ words: { word: string; rank: number }[] }>("/api/words", {
       method: "POST",
-      // The POST's own Referer header is always this page, so the originating
-      // URL has to be read here instead.
+      // Sent from here because the POST's own Referer header is just this page.
       body: { ...getData(), referer: document.referrer || null },
     });
     words.value = res.words;

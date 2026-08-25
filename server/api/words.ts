@@ -7,6 +7,11 @@ interface WordQuery {
     position: string[]
 }
 
+/**
+ * The clues plus the referrer the client read from `document.referrer`. It has
+ * to come from the body: this endpoint's own `Referer` header is the page the
+ * user is already on, so it never names the original source.
+ */
 interface WordRequest extends WordQuery {
     referer?: string | null
 }
@@ -17,35 +22,103 @@ interface LogEntry {
     isMobile: boolean
     queryData: WordQuery
     cached: boolean
-    referer: RefererInfo
+    referer: string | null
+    refererHost: string | null
+    source: string
 }
 
-async function writeQueryLog(entry: LogEntry): Promise<void> {
-    const { ip, userAgent, isMobile, queryData, cached, referer } = entry
-
-    if (isInternalIP(ip)) return
-
-    const country = await resolveCountry(ip)
-    const db = await getDb()
-
-    await db.collection('query_logs').insertOne({
-        timestamp: new Date(),
-        query: queryData,
-        cached,
-        referer: referer.referer,
-        refererHost: referer.refererHost,
-        source: referer.source,
-        ip,
-        country,
-        userAgent,
-        isMobile,
-    })
+/** Detect mobile devices from the User-Agent string. */
+function isMobileUA(ua: string | undefined): boolean {
+    return /Mobile|Android|iPhone|iPad|iPod|webOS|BlackBerry|Opera Mini|IEMobile/i.test(ua || '')
 }
 
 /**
- * The cache key is the clues alone, so it is shared across all users - a hit
- * means someone, not necessarily this visitor, ran the same query recently.
- * `onMiss` is excluded from `getKey` so it never affects the key.
+ * Internal/non-public IPs we never want to log: loopback, "Unknown", and
+ * private ranges (RFC 1918 / unique-local). In production the real client IP
+ * comes via X-Forwarded-For, so legitimate users are public - only local dev
+ * and container-to-container traffic (e.g. the demo runner hitting the solver
+ * over the Docker network) lands in these ranges.
+ */
+function isInternalIP(ip: string | undefined): boolean {
+    if (!ip || ip === 'Unknown') return true
+    if (ip === '127.0.0.1' || ip === '::1') return true
+    // IPv4-mapped IPv6, e.g. ::ffff:172.18.0.3
+    const v4 = ip.startsWith('::ffff:') ? ip.slice(7) : ip
+    if (/^127\./.test(v4)) return true                       // loopback
+    if (/^10\./.test(v4)) return true                        // 10.0.0.0/8
+    if (/^192\.168\./.test(v4)) return true                  // 192.168.0.0/16
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(v4)) return true   // 172.16.0.0/12
+    if (/^169\.254\./.test(v4)) return true                  // link-local
+    if (/^f[cd][0-9a-f]{2}:/i.test(ip)) return true          // IPv6 unique-local fc00::/7
+    if (/^fe80:/i.test(ip)) return true                      // IPv6 link-local
+    return false
+}
+
+/** Split a client-sent referrer into the host and a source label for the log. */
+function classifyReferer(referer: string | null | undefined, ownHost: string | undefined) {
+    if (!referer) return { referer: null, refererHost: null, source: 'direct' }
+
+    let host: string
+    try {
+        host = new URL(referer).host
+    } catch {
+        return { referer, refererHost: null, source: 'unparseable' }
+    }
+
+    return {
+        referer,
+        refererHost: host,
+        source: ownHost && host === ownHost ? 'internal' : host,
+    }
+}
+
+/**
+ * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
+ * handler so the promise is kept alive past the response (a bare detached
+ * promise can be dropped by the runtime, which is why logging silently stopped
+ * once it was moved inside the cached resolver).
+ */
+async function writeQueryLog(entry: LogEntry): Promise<void> {
+    const { ip, userAgent, isMobile, queryData, cached, referer, refererHost, source } = entry
+
+    // Skip local dev / internal (container, LAN) requests
+    if (isInternalIP(ip)) return
+
+    const country = await resolveCountry(ip)
+    const config = useRuntimeConfig()
+    const client = new MongoClient(config.DB_URI)
+
+    try {
+        await client.connect()
+        await client.db().collection('query_logs').insertOne({
+            timestamp: new Date(),
+            query: queryData,
+            cached,
+            referer,
+            refererHost,
+            source,
+            ip,
+            country,
+            userAgent,
+            isMobile,
+        })
+    } finally {
+        await client.close()
+    }
+}
+
+/**
+ * Cached word lookup, keyed purely by the clues (`included` / `excluded` /
+ * `position`). The expensive Mongo aggregation only runs on a cache MISS, so
+ * repeated "Calculate Words" clicks with the same clues are served from cache.
+ *
+ * `swr: false` + `maxAge` means the entry hard-expires after the window: the
+ * next identical request runs fresh rather than being served stale.
+ *
+ * `onMiss` fires only when the resolver actually runs (i.e. a real miss); the
+ * handler uses it to flag the log entry as cached or not. Note the key has no
+ * user component, so a hit can be someone else's query. It is intentionally
+ * excluded from `getKey` so it never affects the key.
  */
 const getWords = defineCachedFunction(
     async (_cacheKey: string, { included, excluded, position }: WordQuery, onMiss?: () => void) => {
@@ -106,8 +179,13 @@ const getWords = defineCachedFunction(
 
 export default defineEventHandler(async (event) => {
     const { included, excluded, position, referer } = await readBody<WordRequest>(event)
-    const { ip, userAgent, isMobile } = getClientMeta(event)
 
+    // Extract request metadata while the event context is still valid.
+    const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
+    const userAgent = getRequestHeader(event, 'user-agent')
+    const isMobile = isMobileUA(userAgent)
+
+    // Stable, storage-safe cache key derived from the actual clues.
     const cacheKey = hash({ i: included, e: excluded, p: position })
 
     let cacheMiss = false
@@ -123,10 +201,11 @@ export default defineEventHandler(async (event) => {
         isMobile,
         queryData: { included, excluded, position },
         cached: !cacheMiss,
-        referer: classifyReferer(referer, getRequestHost(event)),
-    }).catch(error => console.error('Query logging failed:', error))
+        ...classifyReferer(referer, getRequestHost(event)),
+    }).catch((error) => console.error('Error in logging process:', error))
 
-    event.waitUntil?.(logPromise) // a detached promise can be dropped mid-flight
+    // Keep the background write alive past the response.
+    event.waitUntil?.(logPromise)
 
     return { words }
 })

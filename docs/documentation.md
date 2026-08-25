@@ -74,24 +74,15 @@ but only on a run. That requires the client to send it: by the time the
 `CalculateButton.vue` reads `document.referrer` and passes it in the body for
 `classifyReferer` to resolve server-side.
 
-Consequences accepted: no funnel (landed versus used) and no bounce rate,
-and the referrer is client-supplied so it is advisory rather than
-trustworthy. Dropping page tracking also removed the need for bot filtering
-at write time - crawlers do not click Calculate - so `isBotUA` went with it.
+Consequences accepted: no funnel (landed versus used) and no bounce rate, and
+the referrer is client-supplied so it is advisory rather than trustworthy. No
+bot filtering happens at write time either - crawlers do not click Calculate.
 `skills/usage_report.py` still filters bot user agents when reading.
 
-### Two different Mongo connection strategies
-*2026-08-25*
-
-The query-log write goes through the pooled client in
-`server/utils/mongo.ts`, since it now runs on every solver request rather
-than only on cache misses. A failed connect clears the cached promise so the
-next request retries rather than being stuck with a rejected one.
-
-The word aggregation in `api/words.ts` still opens and closes its own client
-per cache miss. It is wasteful and could move to the pool, but it is the hot
-path of the app's only real feature and has run untouched for 16 months, so
-it was left alone rather than bundled into an analytics change.
+The removal also took a pooled Mongo client and a `server/utils/request.ts`
+of shared helpers with it. Both existed only to serve the middleware, and
+once it was gone `api/words.ts` was their sole consumer, so the endpoint
+keeps its own connect-write-close per request as it always had.
 
 ### Log writes use `event.waitUntil`
 *pre-existing, documented 2026-08-25*
