@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-Real-usage report from the app's own `query_logs` collection.
+First-party usage report from `query_logs` and `visits`.
 
-This is the only first-party signal of humans actually using the solver
-(GSC stops at the click; Cloudflare page views are bot-polluted). Reads
-DB_URI from .env so no credential is passed on the command line.
+Reads DB_URI from .env so no credential is passed on the command line.
 """
 from __future__ import annotations
 
@@ -45,9 +43,7 @@ def classify_query(q: dict) -> str:
 
 
 def report_visits(db) -> None:
-    """Acquisition channels, from the `visits` collection written by
-    server/middleware/track-visit.ts. Empty until that ships and traffic
-    arrives - this is what answers 'where do our users come from'."""
+    """Acquisition channels, from the `visits` collection."""
     if "visits" not in db.list_collection_names():
         print("\n=== VISITS ===\n  (no `visits` collection yet - deploy the "
               "track-visit middleware and re-run in a few days)")
@@ -61,7 +57,7 @@ def report_visits(db) -> None:
     print(f"\n=== VISITS: {len(visits)} page views "
           f"({visits[0]['timestamp']} -> {visits[-1]['timestamp']}) ===")
 
-    print("\n  ACQUISITION SOURCE (the whole point):")
+    print("\n  ACQUISITION SOURCE:")
     for src, n in Counter(v.get("source") or "?" for v in visits).most_common(25):
         ips = len({v.get("ip") for v in visits if (v.get("source") or "?") == src})
         print(f"    {src:32} {n:>6} views  {ips:>4} IPs  {100*n/len(visits):>5.1f}%")
