@@ -44,20 +44,6 @@ def classify_query(q: dict) -> str:
     return "empty"
 
 
-def report_acquisition(human: list) -> None:
-    """Where solver users came from, for rows that carry a referer."""
-    tagged = [d for d in human if "source" in d]
-    if not tagged:
-        print("\n=== ACQUISITION ===\n  (no run carries a referer yet - deploy "
-              "and re-run in a few days)")
-        return
-
-    print(f"\n=== ACQUISITION ({len(tagged)} of {len(human)} runs carry a referer) ===")
-    for src, n in Counter(d["source"] or "?" for d in tagged).most_common(25):
-        ips = len({d.get("ip") for d in tagged if (d["source"] or "?") == src})
-        print(f"  {src:32} {n:>6} runs  {ips:>4} IPs  {100*n/len(tagged):>5.1f}%")
-
-
 def main() -> None:
     db = MongoClient(load_db_uri(), serverSelectionTimeoutMS=20000).get_database()
 
@@ -136,7 +122,7 @@ def main() -> None:
     returning = sum(v for k, v in dist.items() if k > 1)
     print(f"  returning IPs (>1 day): {returning} ({100*returning/len(ip_days):.0f}%)")
 
-    print("\n=== FIELDS PRESENT (is a referrer being captured at all?) ===")
+    print("\n=== FIELDS PRESENT ===")
     fields = Counter(k for d in logs for k in d)
     print(" ", dict(fields))
 
@@ -157,8 +143,6 @@ def main() -> None:
         print(f"    {day}  {n:>3} IPs  {'#' * min(n, 40)}")
     print(f"  avg unique IPs/day over those 28 days: "
           f"{sum(len(by_day[d]) for d in days)/len(days):.1f}")
-
-    report_acquisition(human)
 
 
 if __name__ == "__main__":

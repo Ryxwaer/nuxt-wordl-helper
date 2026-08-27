@@ -7,24 +7,12 @@ interface WordQuery {
     position: string[]
 }
 
-/**
- * The clues plus the referrer the client read from `document.referrer`. It has
- * to come from the body: this endpoint's own `Referer` header is the page the
- * user is already on, so it never names the original source.
- */
-interface WordRequest extends WordQuery {
-    referer?: string | null
-}
-
 interface LogEntry {
     ip: string
     userAgent: string | undefined
     isMobile: boolean
     queryData: WordQuery
     cached: boolean
-    referer: string | null
-    refererHost: string | null
-    source: string
 }
 
 /** Detect mobile devices from the User-Agent string. */
@@ -54,24 +42,6 @@ function isInternalIP(ip: string | undefined): boolean {
     return false
 }
 
-/** Split a client-sent referrer into the host and a source label for the log. */
-function classifyReferer(referer: string | null | undefined, ownHost: string | undefined) {
-    if (!referer) return { referer: null, refererHost: null, source: 'direct' }
-
-    let host: string
-    try {
-        host = new URL(referer).host
-    } catch {
-        return { referer, refererHost: null, source: 'unparseable' }
-    }
-
-    return {
-        referer,
-        refererHost: host,
-        source: ownHost && host === ownHost ? 'internal' : host,
-    }
-}
-
 /**
  * Inserts a single analytics log document. Awaited via `event.waitUntil` in the
  * handler so the promise is kept alive past the response (a bare detached
@@ -79,7 +49,7 @@ function classifyReferer(referer: string | null | undefined, ownHost: string | u
  * once it was moved inside the cached resolver).
  */
 async function writeQueryLog(entry: LogEntry): Promise<void> {
-    const { ip, userAgent, isMobile, queryData, cached, referer, refererHost, source } = entry
+    const { ip, userAgent, isMobile, queryData, cached } = entry
 
     // Skip local dev / internal (container, LAN) requests
     if (isInternalIP(ip)) return
@@ -94,9 +64,6 @@ async function writeQueryLog(entry: LogEntry): Promise<void> {
             timestamp: new Date(),
             query: queryData,
             cached,
-            referer,
-            refererHost,
-            source,
             ip,
             country,
             userAgent,
@@ -178,7 +145,7 @@ const getWords = defineCachedFunction(
 )
 
 export default defineEventHandler(async (event) => {
-    const { included, excluded, position, referer } = await readBody<WordRequest>(event)
+    const { included, excluded, position } = await readBody<WordQuery>(event)
 
     // Extract request metadata while the event context is still valid.
     const ip = getRequestIP(event, { xForwardedFor: true }) || 'Unknown'
@@ -201,7 +168,6 @@ export default defineEventHandler(async (event) => {
         isMobile,
         queryData: { included, excluded, position },
         cached: !cacheMiss,
-        ...classifyReferer(referer, getRequestHost(event)),
     }).catch((error) => console.error('Error in logging process:', error))
 
     // Keep the background write alive past the response.
