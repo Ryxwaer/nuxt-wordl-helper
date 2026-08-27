@@ -11,13 +11,13 @@ from the code. Analysis and metrics live in `docs/reports/`; this file is the
 | Collection | Written by | Contents |
 |---|---|---|
 | `length_3` … `length_10` | scraper service (external) | Word dictionaries. `letters` array per word, plus `rank` (theme words get `rank: 1`). |
-| `query_logs` | `server/api/words.ts` | One doc per solver run: `timestamp`, `query` (the clues), `cached`, `referer`, `refererHost`, `source`, `ip`, `country`, `userAgent`, `isMobile`. |
+| `query_logs` | `server/api/words.ts` | One doc per solver run: `timestamp`, `query` (the clues), `cached`, `ip`, `country`, `userAgent`, `isMobile`. |
 
 `query_logs` is the only analytics collection. **Page visits are not
 recorded** - see the decision below.
 
-`source` is `direct` (no referrer), `internal` (our own host), `unparseable`,
-or the referring host verbatim.
+Acquisition is not in Mongo. It lives in the nginx-proxy-manager access log -
+see the decision below.
 
 Read it with `.venv-skills/bin/python skills/usage_report.py`.
 
@@ -68,14 +68,7 @@ An earlier attempt at this used Nitro middleware writing a `visits` document
 per page render, which was rejected for exactly that reason and removed. The
 empty collection was dropped.
 
-The referrer is still captured, because it answers where usage comes from,
-but only on a run. That requires the client to send it: by the time the
-`/api/words` POST happens, its own `Referer` header is our own page, so
-`CalculateButton.vue` reads `document.referrer` and passes it in the body for
-`classifyReferer` to resolve server-side.
-
-Consequences accepted: no funnel (landed versus used) and no bounce rate, and
-the referrer is client-supplied so it is advisory rather than trustworthy. No
+Consequences accepted: no funnel (landed versus used) and no bounce rate. No
 bot filtering happens at write time either - crawlers do not click Calculate.
 `skills/usage_report.py` still filters bot user agents when reading.
 
@@ -83,6 +76,42 @@ The removal also took a pooled Mongo client and a `server/utils/request.ts`
 of shared helpers with it. Both existed only to serve the middleware, and
 once it was gone `api/words.ts` was their sole consumer, so the endpoint
 keeps its own connect-write-close per request as it always had.
+
+### Acquisition is read from the proxy log, not stored by the app
+*2026-08-27*
+
+The app briefly captured `document.referrer` on each run into `referer`,
+`refererHost` and `source`. That was removed two days later: nginx-proxy-manager
+already logs `$http_referer` on every request, so the app was duplicating it.
+
+The proxy is also the better source. On the entry page load it records the true
+external referrer. On the `/api/words` POST it records the *current page URL*,
+which retains any query string - so a landing tagged `?utm_source=chatgpt.com`
+attributes that solver run to ChatGPT with no app code at all. By the time the
+app-side field was removed it had captured 0 referrers across 31 runs, while
+the proxy log had already attributed 10 runs to ChatGPT that way.
+
+The near-empty field was not a bug. It was verified end to end - a visit
+arriving from an external page did store `refererHost: example.com`. Genuine
+external referrers are simply rare here: 172 of 49 855 page views, 0.3 %. The
+rest is 78.6 % with no referrer (PWA launches, typed URLs, links tapped in
+messaging apps, which drop the referrer on hand-off to the browser), plus
+scanner traffic that spoofs a referer.
+
+Caveats when reading that log. `binance.com` referrals are fake - 8 datacentre
+IPs, exactly 7 hits each, one shared user agent. Count page requests only;
+assets inherit the page URL as their referer and multiply every visit by ~10.
+
+Log lives at `/data/logs/proxy-host-3_access.log` in the
+`nginx-proxy-manager-app-1` container, host path
+`/var/home/core/docker/nginx-proxy-manager/data/logs/`. Retention was raised
+from 4 to 52 weekly rotations on 2026-08-27 via a `logrotate-npm.conf`
+bind-mounted over `/etc/logrotate.d/nginx-proxy-manager`, because the image
+default would discard the history. That mount must not be read-only and needs
+SELinux label `container_file_t`: the NPM entrypoint chmods the file, and a
+failure there aborts s6 and takes every proxied site down.
+
+The three dead fields were unset from the existing documents.
 
 ### Log writes use `event.waitUntil`
 *pre-existing, documented 2026-08-25*
